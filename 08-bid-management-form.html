@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>投标管理填报 · 销售</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 18px; }
+.bid-stat-card { padding: 14px; border-radius: var(--r-md); }
+.bid-stat-card.win { background: var(--ink-green-soft); border: 1px solid var(--ink-green-mid); }
+.bid-stat-card.wait { background: var(--amber-soft); border: 1px solid var(--amber-mid); }
+.bid-stat-card.plan { background: var(--blue-soft); border: 1px solid var(--blue-mid); }
+.bid-stat-card.lose { background: var(--crimson-soft); border: 1px solid rgba(153,27,27,0.2); }
+.bid-stat-card .v { font-family: var(--font-display); font-size: 32px; font-weight: 400; line-height: 1; }
+.bid-stat-card .v.win-c { color: var(--ink-green); }
+.bid-stat-card .v.wait-c { color: var(--amber); }
+.bid-stat-card .v.plan-c { color: var(--blue); }
+.bid-stat-card .v.lose-c { color: var(--crimson); }
+.bid-stat-card .label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px; color: var(--ink-mute); }
+.bid-stat-card .meta { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-top: 2px; }
+.risk-tag { display: inline-flex; align-items: center; gap: 3px; padding: 1px 6px; font-family: var(--font-mono); font-size: 9px; border-radius: 3px; background: var(--crimson-soft); color: var(--crimson); border: 1px solid rgba(153,27,27,0.2); margin-right: 3px; }
+.risk-tags-cell { display: flex; flex-wrap: wrap; gap: 3px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">业绩 <em>运营</em></div>
+    <div class="brand-sub">PERFORMANCE OPS</div>
+    <div class="nav-section">看板</div>
+    <a class="nav-item">驾驶舱</a>
+    <a class="nav-item">区域业绩</a>
+    <div class="nav-section">明细报表</div>
+    <a class="nav-item">5 张明细</a>
+    <div class="nav-section">数据维护</div>
+    <a class="nav-item">商机管理</a>
+    <a class="nav-item">商机 Review</a>
+    <a class="nav-item active">投标管理</a>
+    <a class="nav-item">售前活动登记</a>
+    <a class="nav-item">月度预测·签单</a>
+    <a class="nav-item">月度预测·回款</a>
+    <div class="nav-section">导入 / 配置</div>
+    <a class="nav-item">指标配置</a>
+  </aside>
+
+  <main class="main">
+    <div class="crumb">数据维护 <span class="sep">/</span> 投标管理</div>
+    <h1 class="page-title">投标 <em>管理</em></h1>
+    <div class="page-meta">销售在投标立项时录入 · 状态变更时实时维护 · 风险标签必填，是预警的关键信号</div>
+
+    <!-- 投标四宫格 -->
+    <div class="kpi-row">
+      <div class="bid-stat-card plan">
+        <div class="v plan-c">10</div>
+        <div class="label">待投</div>
+        <div class="meta">¥ 1,709 万 · 全部本季内</div>
+      </div>
+      <div class="bid-stat-card wait">
+        <div class="v wait-c">6</div>
+        <div class="label">等结果</div>
+        <div class="meta">¥ 1,004 万 · 含 2 高风险</div>
+      </div>
+      <div class="bid-stat-card win">
+        <div class="v win-c">1</div>
+        <div class="label">中标</div>
+        <div class="meta">¥ 135 万</div>
+      </div>
+      <div class="bid-stat-card lose">
+        <div class="v lose-c">1</div>
+        <div class="label">丢标</div>
+        <div class="meta">¥ 130 万</div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">合计 18 项</div>
+        <div class="value">¥ 2,978<span class="unit">万</span></div>
+        <div class="delta">已投 8/18 · 出率 50% · 中标率 17%（行业 30%）</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn primary">+ 新增投标项</button>
+      <div class="group">状态 <select><option>全部</option><option>待投</option><option>已投</option><option>等结果</option><option>中标</option><option>丢标</option></select></div>
+      <div class="group">风险 <select><option>全部</option><option>有风险</option><option>无风险</option></select></div>
+      <div class="group">主推月 <select><option>全部</option><option>4 月</option><option>5 月</option><option>6 月</option></select></div>
+      <div class="group">区域 <select><option>全部</option><option>央企</option><option>广东</option><option>山东</option></select></div>
+      <input class="search" placeholder="客户/项目搜索...">
+      <div class="stat">合计金额 <strong>¥ 2,978 万</strong></div>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width: 28px;">#</th>
+          <th>项目名称</th>
+          <th>客户名称</th>
+          <th>MU/区域</th>
+          <th>客户经理</th>
+          <th>售前经理</th>
+          <th class="num">投标金额</th>
+          <th>关键应用</th>
+          <th>参与厂商</th>
+          <th>投标日期</th>
+          <th>投标结果</th>
+          <th class="num">概率</th>
+          <th>达成可能</th>
+          <th>风险标签 ⚠ 必填</th>
+          <th>当前进展 / 结果备注</th>
+          <th style="width: 60px;">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="mono">1</td>
+          <td>
+            <div style="font-weight: 500;">贵州磷化（集团）人力资源</div>
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">OPP-2025-0098</div>
+          </td>
+          <td>贵州磷化集团</td>
+          <td>西部 · 贵州</td>
+          <td>刘正</td>
+          <td>陈飞</td>
+          <td class="num"><input class="cell" value="418" style="text-align: right;"> 万</td>
+          <td><input class="cell" value="HCM 全套"></td>
+          <td><input class="cell" value="北森,用友"></td>
+          <td><input class="cell" type="date" value="2026-04-02" style="font-family: var(--font-mono);"></td>
+          <td><select class="cell" style="background: var(--amber-soft); color: var(--amber); font-weight: 600;"><option>等结果</option></select></td>
+          <td class="num"><input class="cell" value="35%" style="text-align: right;"></td>
+          <td><select class="cell" style="background: var(--amber-soft); color: var(--amber);"><option>争取</option></select></td>
+          <td>
+            <div class="risk-tags-cell">
+              <span class="risk-tag">客户关系风险</span>
+              <span class="risk-tag">竞对倾向</span>
+              <span class="risk-tag">博弈阶段</span>
+            </div>
+          </td>
+          <td><textarea class="cell" rows="2" style="font-family: var(--font-cn); font-size: 11px;">客户倾向用友 · 我方价格高 7 分 · 5/12 出结果</textarea></td>
+          <td><a style="font-size: 11px; color: var(--blue); cursor: pointer;">编辑</a></td>
+        </tr>
+        <tr>
+          <td class="mono">2</td>
+          <td>
+            <div style="font-weight: 500;">湖北宏泰 HCM</div>
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">OPP-2025-0210</div>
+          </td>
+          <td>湖北宏泰</td>
+          <td>华东 · 湖北</td>
+          <td>李雷</td>
+          <td>周明</td>
+          <td class="num"><input class="cell" value="150" style="text-align: right;"> 万</td>
+          <td><input class="cell" value="薪酬+绩效"></td>
+          <td><input class="cell" value="北森"></td>
+          <td><input class="cell" type="date" value="2026-04-25" style="font-family: var(--font-mono);"></td>
+          <td><select class="cell" style="background: var(--amber-soft); color: var(--amber); font-weight: 600;"><option>等结果</option></select></td>
+          <td class="num"><input class="cell" value="50%" style="text-align: right;"></td>
+          <td><select class="cell" style="background: var(--amber-soft); color: var(--amber);"><option>争取</option></select></td>
+          <td>
+            <div class="risk-tags-cell">
+              <span class="risk-tag">博弈阶段</span>
+            </div>
+          </td>
+          <td><textarea class="cell" rows="2" style="font-family: var(--font-cn); font-size: 11px;">技术分领先 · 价格 vs 北森持平 · 客户内部讨论中</textarea></td>
+          <td><a style="font-size: 11px; color: var(--blue); cursor: pointer;">编辑</a></td>
+        </tr>
+        <tr>
+          <td class="mono">3</td>
+          <td>
+            <div style="font-weight: 500;">山东工商银行薪酬升级</div>
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">OPP-2026-0301</div>
+          </td>
+          <td>山东工商银行</td>
+          <td>山东 · 山东</td>
+          <td>王正</td>
+          <td>陈飞</td>
+          <td class="num"><input class="cell" value="280" style="text-align: right;"> 万</td>
+          <td><input class="cell" value="薪酬模块"></td>
+          <td><input class="cell" value="未确定"></td>
+          <td><input class="cell" type="date" value="2026-05-22" style="font-family: var(--font-mono);"></td>
+          <td><select class="cell" style="background: var(--blue-soft); color: var(--blue); font-weight: 600;"><option>待投</option></select></td>
+          <td class="num"><input class="cell" value="60%" style="text-align: right;"></td>
+          <td><select class="cell" style="background: var(--steel-soft); color: var(--steel);"><option>承诺</option></select></td>
+          <td>
+            <div class="risk-tags-cell">
+              <span class="risk-tag" style="background: var(--ink-green-soft); color: var(--ink-green); border-color: var(--ink-green-mid);">无风险</span>
+            </div>
+          </td>
+          <td><textarea class="cell" rows="2" style="font-family: var(--font-cn); font-size: 11px;">客户已发标书 · 招标准备中 · 5/22 提交</textarea></td>
+          <td><a style="font-size: 11px; color: var(--blue); cursor: pointer;">编辑</a></td>
+        </tr>
+        <tr>
+          <td class="mono">4</td>
+          <td>
+            <div style="font-weight: 500;">南方航空人力升级</div>
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">OPP-2025-0188</div>
+          </td>
+          <td>南方航空</td>
+          <td>广东 · 广东</td>
+          <td>王浩</td>
+          <td>李明</td>
+          <td class="num"><input class="cell" value="680" style="text-align: right;"> 万</td>
+          <td><input class="cell" value="HCM 全套"></td>
+          <td><input class="cell" value="北森,SAP"></td>
+          <td><input class="cell" type="date" value="2026-04-15" style="font-family: var(--font-mono);"></td>
+          <td><select class="cell" style="background: var(--ink-green); color: #faf8f3; font-weight: 600;"><option>中标</option></select></td>
+          <td class="num"><input class="cell" value="100%" style="text-align: right;"></td>
+          <td><select class="cell" style="background: var(--ink-green-soft); color: var(--ink-green);"><option>已达成</option></select></td>
+          <td><span class="risk-tag" style="background: var(--ink-green); color: #faf8f3; border: none;">已中标</span></td>
+          <td><textarea class="cell" rows="2" style="font-family: var(--font-cn); font-size: 11px;">4/26 中标 · 5/15 用印 · 等签合同</textarea></td>
+          <td><a style="font-size: 11px; color: var(--blue); cursor: pointer;">编辑</a></td>
+        </tr>
+        <tr style="opacity: 0.7;">
+          <td class="mono">5</td>
+          <td>
+            <div style="font-weight: 500;">某省电网 HCM 升级</div>
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">OPP-2026-0033</div>
+          </td>
+          <td>某省电网</td>
+          <td>华北 · 北京</td>
+          <td>李雷</td>
+          <td>陈飞</td>
+          <td class="num"><input class="cell" value="130" style="text-align: right;"> 万</td>
+          <td><input class="cell" value="薪酬"></td>
+          <td><input class="cell" value="北森"></td>
+          <td><input class="cell" type="date" value="2026-04-08" style="font-family: var(--font-mono);"></td>
+          <td><select class="cell" style="background: var(--crimson); color: #faf8f3; font-weight: 600;"><option>丢标</option></select></td>
+          <td class="num"><input class="cell" value="0%" style="text-align: right;"></td>
+          <td>—</td>
+          <td><div class="risk-tags-cell"><span class="risk-tag">竞对倾向</span></div></td>
+          <td><textarea class="cell" rows="2" style="font-family: var(--font-cn); font-size: 11px;">4/20 丢标 · 北森报价低 30% · 客户长期合作偏好</textarea></td>
+          <td><a style="font-size: 11px; color: var(--blue); cursor: pointer;">复盘</a></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <div class="label">⚙ 风险标签 5 种 · 多选</div>
+      <div class="text">
+        <span class="risk-tag">盲投</span><span class="risk-tag">预计丢标</span><span class="risk-tag">客户关系风险</span><span class="risk-tag">博弈阶段</span><span class="risk-tag">竞对倾向</span><br>
+        风险标签是<b>看板"投标推进"卡 ⚠ 风险项</b>分组的来源 · 必填（无风险也要勾"无风险"）· 高风险项目自动进入董事长晨报红色提醒
+      </div>
+    </div>
+
+    <div style="margin-top: 30px; padding: 16px 18px; background: var(--bg-paper); border-radius: var(--r-md); border: 1px dashed var(--line-strong);">
+      <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;">本页字段 → v3 design doc §4.1.3 投标 / 预计投标明细</div>
+      <div style="font-family: var(--font-cn); font-size: 12px; color: var(--ink-soft); line-height: 1.7;">
+        <b style="color: var(--ink);">14 个字段</b>：项目名称 / 客户 / MU+区域（自动）/ 客户经理 / 售前经理 / 投标金额 / 关键应用 / 参与厂商 / 投标日期 / 投标结果（5 选 1：待投/已投/中标/丢标/等结果）/ 中标概率 / 达成可能（承诺/争取/风险）/ <b>风险标签（多选 5 选）</b>/ 结果备注<br>
+        <b style="color: var(--ink);">驱动看板</b>：投标四宫格 (中标/等结果/待投/丢标) · 投标推进卡 ⚠ 风险项分组
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+if (new URLSearchParams(location.search).get('embedded') === '1') {
+  const sb = document.querySelector('.sidebar'); if (sb) sb.style.display = 'none';
+  const app = document.querySelector('.app'); if (app) app.style.gridTemplateColumns = '1fr';
+}
+</script>
+</body>
+</html>

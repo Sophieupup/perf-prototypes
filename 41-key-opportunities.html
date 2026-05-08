@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>2.1 全年重点商机 · 汇总+明细</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.summary-section { background: var(--bg-paper); border: 1px solid var(--line); border-radius: var(--r-md); padding: 18px 22px; margin-bottom: 16px; }
+.summary-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.summary-head h2 { font-family: var(--font-display); font-size: 24px; font-weight: 400; }
+.summary-head h2 em { font-style: italic; color: var(--ink-green); }
+.summary-head .lbl { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase; }
+
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+.kpi-card-x { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px 16px; box-shadow: var(--shadow-card); }
+.kpi-card-x .label { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+.kpi-card-x .value { font-family: var(--font-display); font-size: 30px; font-weight: 400; line-height: 1; letter-spacing: -0.02em; }
+.kpi-card-x .value .unit { font-family: var(--font-cn); font-size: 12px; color: var(--ink-mute); margin-left: 4px; }
+.kpi-card-x .delta { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-top: 4px; }
+.kpi-card-x.good .value { color: var(--ink-green); }
+.kpi-card-x.warn .value { color: var(--amber); }
+
+.stage-funnel { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; }
+.stage-cell { padding: 12px 10px; background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); text-align: center; cursor: pointer; transition: all 0.1s; }
+.stage-cell:hover { border-color: var(--ink); }
+.stage-cell.active { background: var(--ink); color: #faf8f3; border-color: var(--ink); }
+.stage-cell .stage-name { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; }
+.stage-cell.active .stage-name { color: var(--ink-faint); }
+.stage-cell .count { font-family: var(--font-display); font-size: 26px; font-weight: 400; line-height: 1; }
+.stage-cell .pct { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 4px; }
+.stage-cell.active .pct { color: var(--ink-faint); }
+.stage-cell .amt { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px; }
+.stage-cell.active .amt { color: var(--ink-faint); }
+
+.bid-status-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 14px; background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); }
+.bid-status-cell { text-align: center; padding: 8px 4px; border-right: 1px solid var(--line); }
+.bid-status-cell:last-child { border-right: none; }
+.bid-status-cell .v { font-family: var(--font-display); font-size: 26px; font-weight: 400; line-height: 1; }
+.bid-status-cell .v.win { color: var(--ink-green); }
+.bid-status-cell .v.lose { color: var(--crimson); }
+.bid-status-cell .v.wait { color: var(--amber); }
+.bid-status-cell .v.plan { color: var(--blue); }
+.bid-status-cell .v.idle { color: var(--ink-mute); }
+.bid-status-cell .lbl { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 4px; }
+.bid-status-cell .amt { font-family: var(--font-mono); font-size: 10px; color: var(--ink-soft); margin-top: 2px; }
+
+.section-divider { font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); letter-spacing: 0.14em; text-transform: uppercase; margin: 24px 0 12px; padding-top: 16px; border-top: 1px solid var(--line); }
+
+.toolbar-2 { background: var(--bg-paper); border: 1px solid var(--line); border-radius: var(--r-md); padding: 10px 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+.toolbar-2 select, .toolbar-2 input { padding: 5px 10px; font-family: var(--font-cn); font-size: 12px; border: 1px solid var(--line-mid); border-radius: 4px; background: var(--bg-card); color: var(--ink); }
+.toolbar-2 input.search { width: 240px; font-family: var(--font-sans); padding: 6px 12px; }
+.toolbar-2 .group { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); }
+.toolbar-2 .stat { margin-left: auto; font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); }
+.toolbar-2 .stat strong { font-family: var(--font-display); font-size: 16px; color: var(--ink); }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">业绩 <em>运营</em></div>
+    <div class="brand-sub">PERFORMANCE OPS · v4</div>
+    <div class="nav-section">1 经营驾驶舱</div>
+    <a class="nav-item">1.1 整体业绩</a>
+    <a class="nav-item">1.2 区域业绩</a>
+    <div class="nav-section">2 明细报表</div>
+    <a class="nav-item active">2.1 全年重点商机</a>
+    <a class="nav-item">2.2 投标明细</a>
+    <a class="nav-item">2.3 签单明细</a>
+    <a class="nav-item">2.4 回款明细</a>
+    <div class="nav-section">3 业务功能</div>
+    <a class="nav-item">3.1.1 客户管理</a>
+    <a class="nav-item">3.1.2 商机管理</a>
+    <a class="nav-item">3.2.1 项目管理</a>
+    <a class="nav-item">3.2.2 回款里程碑</a>
+    <div class="nav-section">4 数据导入与维护</div>
+    <a class="nav-item">4.1 项目明细导入</a>
+    <a class="nav-item">4.2 签单明细导入</a>
+    <a class="nav-item">4.3 回款明细导入</a>
+    <a class="nav-item">4.4 项目对应表</a>
+    <a class="nav-item">4.5 低毛利项目</a>
+    <a class="nav-item">4.6 指标导入</a>
+    <a class="nav-item">4.7 区域划分</a>
+  </aside>
+
+  <main class="main">
+    <div class="crumb">明细报表 <span class="sep">/</span> 全年重点商机</div>
+    <h1 class="page-title">2.1 全年 <em>重点商机</em></h1>
+    <div class="page-meta">≥ 500 万阈值（指标配置可调）· 数据源 商机管理 · 实时聚合 + 周快照对比 · v7 加战役分组视图</div>
+
+    <!-- ===== 上半：汇总数据 ===== -->
+    <div class="summary-section">
+      <div class="summary-head">
+        <h2>汇总 <em>数据</em></h2>
+        <span class="lbl">SUMMARY · 实时</span>
+      </div>
+
+      <!-- 4 个 KPI -->
+      <div class="kpi-grid">
+        <div class="kpi-card-x good">
+          <div class="label">重点商机个数</div>
+          <div class="value">47<span class="unit">项</span></div>
+          <div class="delta">vs 上周 +3 · vs 月初 +5</div>
+        </div>
+        <div class="kpi-card-x">
+          <div class="label">重点商机总金额</div>
+          <div class="value">¥ 4,128<span class="unit">万</span></div>
+          <div class="delta">单项均额 ¥ 88 万</div>
+        </div>
+        <div class="kpi-card-x warn">
+          <div class="label">占商机库金额比例</div>
+          <div class="value">17.6<span class="unit">%</span></div>
+          <div class="delta">商机库总 ¥ 23,400 万 · 47/142 = 33% 项数</div>
+        </div>
+        <div class="kpi-card-x good">
+          <div class="label">加权预测金额</div>
+          <div class="value">¥ 2,890<span class="unit">万</span></div>
+          <div class="delta">commit×0.7 + struggle×0.2 + done×1.0</div>
+        </div>
+      </div>
+
+      <!-- S1-S4 阶段分布 + 中标未签单 + 已签单 + 丢标 + 弃标 (8 阶段) -->
+      <div class="section-divider">商机阶段分布 · 8 阶段（点击钻取）</div>
+      <div class="stage-funnel">
+        <div class="stage-cell">
+          <div class="stage-name">S1 发现</div>
+          <div class="count">4</div>
+          <div class="pct">8.5%</div>
+          <div class="amt">¥ 360 万</div>
+        </div>
+        <div class="stage-cell">
+          <div class="stage-name">S2 确认</div>
+          <div class="count">7</div>
+          <div class="pct">14.9%</div>
+          <div class="amt">¥ 720 万</div>
+        </div>
+        <div class="stage-cell">
+          <div class="stage-name">S3 方案</div>
+          <div class="count">9</div>
+          <div class="pct">19.1%</div>
+          <div class="amt">¥ 980 万</div>
+        </div>
+        <div class="stage-cell active">
+          <div class="stage-name">S4 投标</div>
+          <div class="count">11</div>
+          <div class="pct">23.4%</div>
+          <div class="amt">¥ 1,420 万</div>
+        </div>
+        <div class="stage-cell">
+          <div class="stage-name">中标未签单</div>
+          <div class="count">8</div>
+          <div class="pct">17.0%</div>
+          <div class="amt">¥ 1,180 万</div>
+        </div>
+        <div class="stage-cell">
+          <div class="stage-name">已签单</div>
+          <div class="count">5</div>
+          <div class="pct">10.6%</div>
+          <div class="amt">¥ 920 万</div>
+        </div>
+        <div class="stage-cell">
+          <div class="stage-name">丢标</div>
+          <div class="count">2</div>
+          <div class="pct">4.3%</div>
+          <div class="amt">¥ 280 万</div>
+        </div>
+        <div class="stage-cell">
+          <div class="stage-name">弃标</div>
+          <div class="count">1</div>
+          <div class="pct">2.1%</div>
+          <div class="amt">¥ 180 万</div>
+        </div>
+      </div>
+
+      <!-- 投标 / 中标 状况 -->
+      <div class="section-divider">投标进展（含全部重点商机的投标状况）</div>
+      <div class="bid-status-bar">
+        <div class="bid-status-cell">
+          <div class="v win">5</div>
+          <div class="lbl">已中标</div>
+          <div class="amt">¥ 920 万</div>
+        </div>
+        <div class="bid-status-cell">
+          <div class="v wait">8</div>
+          <div class="lbl">等结果</div>
+          <div class="amt">¥ 1,180 万</div>
+        </div>
+        <div class="bid-status-cell">
+          <div class="v plan">11</div>
+          <div class="lbl">待投</div>
+          <div class="amt">¥ 1,420 万</div>
+        </div>
+        <div class="bid-status-cell">
+          <div class="v lose">2</div>
+          <div class="lbl">丢标</div>
+          <div class="amt">¥ 280 万</div>
+        </div>
+        <div class="bid-status-cell">
+          <div class="v idle">21</div>
+          <div class="lbl">未到投标阶段</div>
+          <div class="amt">¥ 2,328 万 · S1-S3 总</div>
+        </div>
+      </div>
+
+      <!-- 中标率 -->
+      <div style="display: flex; gap: 12px; margin-top: 14px;">
+        <div style="flex: 1; padding: 10px 14px; background: var(--bg-card-quiet); border: 1px solid var(--line); border-radius: var(--r-md);">
+          <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase;">中标率</div>
+          <div style="font-family: var(--font-display); font-style: italic; font-size: 22px; color: var(--ink-green); margin-top: 4px;">71.4% <span style="font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); font-style: normal;">5 中标 / 7 已出结果</span></div>
+        </div>
+        <div style="flex: 1; padding: 10px 14px; background: var(--bg-card-quiet); border: 1px solid var(--line); border-radius: var(--r-md);">
+          <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase;">已签单率</div>
+          <div style="font-family: var(--font-display); font-style: italic; font-size: 22px; color: var(--ink); margin-top: 4px;">62.5% <span style="font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); font-style: normal;">5 已签 / 8 中标</span></div>
+        </div>
+        <div style="flex: 1; padding: 10px 14px; background: var(--bg-card-quiet); border: 1px solid var(--line); border-radius: var(--r-md);">
+          <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase;">商机金额衰减率</div>
+          <div style="font-family: var(--font-display); font-style: italic; font-size: 22px; color: var(--ink); margin-top: 4px;">22.3% <span style="font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); font-style: normal;">¥ 920 已签 / ¥ 4,128 总</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 下半：明细列表 ===== -->
+    <div class="summary-section" style="background: var(--bg-card); padding: 0;">
+      <div class="summary-head" style="padding: 16px 20px 12px;">
+        <h2>明细 <em>列表</em></h2>
+        <span class="lbl">DETAIL · 47 项 · 按金额降序</span>
+      </div>
+
+      <!-- 视图切换（v7 新增） -->
+      <div style="margin: 0 16px 12px; padding: 4px; background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); display: inline-flex; gap: 4px;">
+        <div style="padding: 6px 14px; font-family: var(--font-cn); font-size: 12px; cursor: pointer; border-radius: 4px;">默认列表</div>
+        <div style="padding: 6px 14px; font-family: var(--font-cn); font-size: 12px; cursor: pointer; border-radius: 4px; background: var(--ink); color: #faf8f3; font-weight: 500;">按战役分组 ✓</div>
+        <div style="padding: 6px 14px; font-family: var(--font-cn); font-size: 12px; cursor: pointer; border-radius: 4px;">按区域分组</div>
+        <div style="padding: 6px 14px; font-family: var(--font-cn); font-size: 12px; cursor: pointer; border-radius: 4px;">按行业分组</div>
+      </div>
+
+      <!-- 战役分组汇总条 -->
+      <div style="margin: 0 16px 14px; padding: 12px 14px; background: var(--ink-green-soft); border: 1px solid var(--ink-green-mid); border-radius: var(--r-md); display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px;">
+        <div>
+          <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.06em; text-transform: uppercase;">2026 央企战役</div>
+          <div style="font-family: var(--font-display); font-size: 18px; color: var(--ink-green); margin-top: 2px;">¥ 1,766 / 8,000 万</div>
+          <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-green);">达成 22% · 18 商机</div>
+        </div>
+        <div>
+          <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.06em; text-transform: uppercase;">2026 区域薪酬</div>
+          <div style="font-family: var(--font-display); font-size: 18px; color: var(--amber); margin-top: 2px;">¥ 662 / 5,500 万</div>
+          <div style="font-family: var(--font-mono); font-size: 9px; color: var(--amber);">达成 12% · 10 商机</div>
+        </div>
+        <div>
+          <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.06em; text-transform: uppercase;">2026 区域银行</div>
+          <div style="font-family: var(--font-display); font-size: 18px; color: var(--ink-green); margin-top: 2px;">¥ 558 / 1,500 万</div>
+          <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-green);">达成 38% · 8 商机</div>
+        </div>
+        <div>
+          <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.06em; text-transform: uppercase;">2026 AI Copilot</div>
+          <div style="font-family: var(--font-display); font-size: 18px; color: var(--amber); margin-top: 2px;">¥ 114 / 1,500 万</div>
+          <div style="font-family: var(--font-mono); font-size: 9px; color: var(--amber);">达成 8% · 4 商机</div>
+        </div>
+        <div>
+          <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.06em; text-transform: uppercase;">2026 钢铁</div>
+          <div style="font-family: var(--font-display); font-size: 18px; color: var(--ink-green); margin-top: 2px;">¥ 312 / 600 万</div>
+          <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-green);">达成 52% · 4 商机</div>
+        </div>
+        <div>
+          <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.06em; text-transform: uppercase;">未归战役</div>
+          <div style="font-family: var(--font-display); font-size: 18px; color: var(--steel); margin-top: 2px;">¥ 716 万</div>
+          <div style="font-family: var(--font-mono); font-size: 9px; color: var(--steel);">3 商机 · 不计入战役报表</div>
+        </div>
+      </div>
+
+      <div class="toolbar-2" style="margin: 0 16px 14px; border-radius: 0;">
+        <div class="group">区域 <select><option>全部</option><option>央企</option><option>广东</option><option>山东</option></select></div>
+        <div class="group">阶段 <select><option>全部 (47)</option><option>S1 (4)</option><option>S2 (7)</option><option>S3 (9)</option><option>S4 (11)</option><option>中标未签单 (8)</option><option>已签单 (5)</option></select></div>
+        <div class="group">达成可能 <select><option>全部</option><option>承诺</option><option>争取</option><option>风险</option></select></div>
+        <div class="group">主推月 <select><option>全部</option><option>5 月</option><option>6 月</option><option>7 月</option></select></div>
+        <div class="group">战役 <select><option>全部</option><option>2026 央企战役</option><option>2026 区域薪酬战役</option><option>2026 区域银行战役</option><option>未归战役</option></select></div>
+        <input class="search" placeholder="商机名/客户/合同号 搜索...">
+        <div class="stat">合计 <strong>¥ 4,128 万</strong></div>
+      </div>
+
+      <table class="data-table" style="border: none; border-radius: 0; box-shadow: none;">
+        <thead>
+          <tr>
+            <th style="width: 30px;">#</th>
+            <th>商机编号</th>
+            <th>商机名称</th>
+            <th>客户</th>
+            <th>HCM 区域</th>
+            <th>商机阶段</th>
+            <th class="num">预计签单</th>
+            <th class="num">预计毛利<br>(×80%)</th>
+            <th>主推月 + 状态</th>
+            <th>4-5-6 可达</th>
+            <th>归档达成</th>
+            <th class="mono">归档时间</th>
+            <th>本周变动</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">1</td>
+            <td class="mono">OPP-2025-0123</td>
+            <td>中信集团总部 HCM 综合运维</td>
+            <td>中信集团</td>
+            <td>央企</td>
+            <td><span class="pill stage">中标未签单</span></td>
+            <td class="num"><b>2,800</b></td>
+            <td class="num">2,240</td>
+            <td><span class="pill commit">5月·承诺</span></td>
+            <td><span class="tri-cell"><span class="month empty">—</span><span class="month commit primary">⭐承</span><span class="month empty">—</span></span></td>
+            <td><span class="pill commit">承诺</span></td>
+            <td class="mono">5/30</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td class="mono">2</td>
+            <td class="mono">OPP-2026-0011</td>
+            <td>中信华创信用 HCM</td>
+            <td>中信华创</td>
+            <td>央企</td>
+            <td><span class="pill stage">S3-方案</span></td>
+            <td class="num"><b>1,920</b></td>
+            <td class="num">1,536</td>
+            <td><span class="pill commit">6月·承诺</span></td>
+            <td><span class="tri-cell"><span class="month empty">—</span><span class="month empty">—</span><span class="month commit primary">⭐承</span></span></td>
+            <td><span class="pill commit">承诺</span></td>
+            <td class="mono">6/25</td>
+            <td>5/2 方案二审通过</td>
+          </tr>
+          <tr>
+            <td class="mono">3</td>
+            <td class="mono">OPP-2025-0188</td>
+            <td>南方航空人力升级</td>
+            <td>南方航空</td>
+            <td>广东</td>
+            <td><span class="pill stage">已签单</span></td>
+            <td class="num"><b>680</b></td>
+            <td class="num">544</td>
+            <td><span class="pill done">4月·已达成</span></td>
+            <td><span class="tri-cell"><span class="month done">达</span><span class="month empty">—</span><span class="month empty">—</span></span></td>
+            <td><span class="pill done">已达成</span></td>
+            <td class="mono">4/28</td>
+            <td>4/26 中标</td>
+          </tr>
+          <tr>
+            <td class="mono">4</td>
+            <td class="mono">OPP-2025-0210</td>
+            <td>湖北宏泰 HCM</td>
+            <td>湖北宏泰</td>
+            <td>华东</td>
+            <td><span class="pill stage">S4-投标</span></td>
+            <td class="num"><b>580</b></td>
+            <td class="num">464</td>
+            <td><span class="pill struggle">6月·争取</span></td>
+            <td><span class="tri-cell"><span class="month empty">—</span><span class="month empty">—</span><span class="month struggle primary">⭐争</span></span></td>
+            <td><span class="pill struggle">争取</span></td>
+            <td class="mono">6/30</td>
+            <td>4/30 已投标</td>
+          </tr>
+          <tr>
+            <td class="mono">5</td>
+            <td class="mono">OPP-2025-0234</td>
+            <td>山东出版集团一期 HCM</td>
+            <td>山东出版集团</td>
+            <td>山东</td>
+            <td><span class="pill stage">S4-投标</span></td>
+            <td class="num"><b>640</b></td>
+            <td class="num">512</td>
+            <td><span class="pill commit">5月·承诺</span></td>
+            <td><span class="tri-cell"><span class="month empty">—</span><span class="month commit primary">⭐承</span><span class="month empty">—</span></span></td>
+            <td><span class="pill commit">承诺</span></td>
+            <td class="mono">5/15</td>
+            <td>变 <span class="pill new">新</span>→<span class="pill commit">承</span></td>
+          </tr>
+          <tr>
+            <td class="mono">6</td>
+            <td class="mono">OPP-2025-0098</td>
+            <td>贵州磷化集团人力资源</td>
+            <td>贵州磷化</td>
+            <td>西部</td>
+            <td><span class="pill stage">S4-投标</span></td>
+            <td class="num"><b>418</b></td>
+            <td class="num">334</td>
+            <td><span class="pill struggle">5月·争取</span></td>
+            <td><span class="tri-cell"><span class="month empty">—</span><span class="month struggle primary">⭐争</span><span class="month struggle">争</span></span></td>
+            <td><span class="pill struggle">争取</span></td>
+            <td class="mono">6/15</td>
+            <td>⚠ 客户倾向用友</td>
+          </tr>
+          <tr>
+            <td class="mono">7</td>
+            <td class="mono">OPP-2026-0067</td>
+            <td>华夏银行薪酬模块</td>
+            <td>华夏银行</td>
+            <td>华北</td>
+            <td><span class="pill stage">已签单</span></td>
+            <td class="num"><b>540</b></td>
+            <td class="num">432</td>
+            <td><span class="pill done">5月·已达成</span></td>
+            <td><span class="tri-cell"><span class="month empty">—</span><span class="month done">达</span><span class="month empty">—</span></span></td>
+            <td><span class="pill done">已达成</span></td>
+            <td class="mono">5/3</td>
+            <td>5/3 实际签 540</td>
+          </tr>
+          <tr>
+            <td class="mono">8</td>
+            <td class="mono">OPP-2026-0045</td>
+            <td>中建八局海外人力</td>
+            <td>中建八局</td>
+            <td>央企</td>
+            <td><span class="pill stage">S4-投标</span></td>
+            <td class="num"><b>510</b></td>
+            <td class="num">408</td>
+            <td><span class="pill commit">4月·承诺</span></td>
+            <td><span class="tri-cell"><span class="month commit primary">⭐承</span><span class="month empty">—</span><span class="month empty">—</span></span></td>
+            <td><span class="pill commit">承诺</span></td>
+            <td class="mono">4/28</td>
+            <td>4/29 客户已确认</td>
+          </tr>
+          <tr style="background: var(--bg-card-quiet);">
+            <td colspan="13" style="text-align: center; padding: 14px; color: var(--ink-mute); font-family: var(--font-mono); font-size: 11px;">⌄ 还有 39 行 · 滚动加载</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <div class="label">💡 关于"重点商机"的定义</div>
+      <div class="text">
+        重点商机 = 商机库中 <code style="font-family: var(--font-mono); background: var(--bg-card-accent); padding: 1px 4px;">预计签单金额 ≥ 500 万</code>（阈值在 4.6 指标导入可调）AND <code style="font-family: var(--font-mono); background: var(--bg-card-accent); padding: 1px 4px;">商机状态 = 进行中</code>。<br>
+        本页所有数据均为 <b>派生计算</b>，源头来自 3.1.2 商机管理。在商机管理修改字段会自动反映到本页。
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+if (new URLSearchParams(location.search).get('embedded') === '1') {
+  const sb = document.querySelector('.sidebar'); if (sb) sb.style.display = 'none';
+  const app = document.querySelector('.app'); if (app) app.style.gridTemplateColumns = '1fr';
+}
+</script>
+</body>
+</html>

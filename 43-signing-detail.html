@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>2.3 签单明细 · 已发生+预测</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.summary-section { background: var(--bg-paper); border: 1px solid var(--line); border-radius: var(--r-md); padding: 18px 22px; margin-bottom: 16px; }
+.summary-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.summary-head h2 { font-family: var(--font-display); font-size: 24px; font-weight: 400; }
+.summary-head h2 em { font-style: italic; color: var(--ink-green); }
+.summary-head .lbl { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase; }
+.kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 14px; }
+.kpi-card-x { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px 16px; box-shadow: var(--shadow-card); }
+.kpi-card-x.win { border-left: 3px solid var(--ink-green); }
+.kpi-card-x.commit { border-left: 3px solid var(--steel); }
+.kpi-card-x.struggle { border-left: 3px solid var(--amber); }
+.kpi-card-x.new { border-left: 3px solid var(--blue); }
+.kpi-card-x.delay { border-left: 3px solid var(--crimson); }
+.kpi-card-x .label { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+.kpi-card-x .value { font-family: var(--font-display); font-size: 30px; font-weight: 400; line-height: 1; }
+.kpi-card-x .value .unit { font-family: var(--font-cn); font-size: 12px; color: var(--ink-mute); margin-left: 4px; }
+.kpi-card-x .delta { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-top: 4px; }
+.kpi-card-x.win .value { color: var(--ink-green); }
+.kpi-card-x.commit .value { color: var(--steel); }
+.kpi-card-x.struggle .value { color: var(--amber); }
+.kpi-card-x.delay .value { color: var(--crimson); }
+
+.toolbar-2 { background: var(--bg-paper); border: 1px solid var(--line); border-radius: var(--r-md); padding: 10px 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+.toolbar-2 select, .toolbar-2 input { padding: 5px 10px; font-family: var(--font-cn); font-size: 12px; border: 1px solid var(--line-mid); border-radius: 4px; background: var(--bg-card); }
+.toolbar-2 input.search { width: 240px; padding: 6px 12px; }
+.toolbar-2 .group { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); }
+
+.split-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--line-strong); margin-bottom: 14px; }
+.split-tab { padding: 10px 18px; font-family: var(--font-cn); font-size: 13px; color: var(--ink-mute); cursor: pointer; border-bottom: 2px solid transparent; }
+.split-tab.active { color: var(--ink); border-bottom-color: var(--ink); font-weight: 500; }
+.split-tab .count { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-left: 4px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">业绩 <em>运营</em></div>
+    <div class="brand-sub">PERFORMANCE OPS · v4</div>
+    <div class="nav-section">1 经营驾驶舱</div>
+    <a class="nav-item">1.1 整体业绩</a>
+    <a class="nav-item">1.2 区域业绩</a>
+    <div class="nav-section">2 明细报表</div>
+    <a class="nav-item">2.1 全年重点商机</a>
+    <a class="nav-item">2.2 投标明细</a>
+    <a class="nav-item active">2.3 签单明细</a>
+    <a class="nav-item">2.4 回款明细</a>
+    <div class="nav-section">3 业务功能</div>
+    <a class="nav-item">3.1.1 客户管理</a>
+    <a class="nav-item">3.1.2 商机管理</a>
+    <a class="nav-item">3.2.1 项目管理</a>
+    <a class="nav-item">3.2.2 回款里程碑</a>
+    <div class="nav-section">4 数据导入</div>
+    <a class="nav-item">4.1-4.7 ...</a>
+  </aside>
+
+  <main class="main">
+    <div class="crumb">明细报表 <span class="sep">/</span> 签单明细</div>
+    <h1 class="page-title">2.3 签单 <em>明细</em></h1>
+    <div class="page-meta">已发生（OMS 实际签单）+ 当季预测（商机管理）合并 · 实时</div>
+
+    <!-- 上半：5 数汇总 -->
+    <div class="summary-section">
+      <div class="summary-head">
+        <h2>汇总 <em>数据</em></h2>
+        <span class="lbl">SUMMARY · 5 状态</span>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi-card-x win">
+          <div class="label">已签单 (Done)</div>
+          <div class="value">62<span class="unit">项</span></div>
+          <div class="delta">¥ 4,360 万 · YTD</div>
+        </div>
+        <div class="kpi-card-x commit">
+          <div class="label">承诺 (Commit)</div>
+          <div class="value">14</div>
+          <div class="delta">¥ 1,820 万 · 本季承诺</div>
+        </div>
+        <div class="kpi-card-x struggle">
+          <div class="label">争取 (Struggle)</div>
+          <div class="value">22</div>
+          <div class="delta">¥ 2,140 万 · 本季争取</div>
+        </div>
+        <div class="kpi-card-x new">
+          <div class="label">新增 (New)</div>
+          <div class="value">5</div>
+          <div class="delta">¥ 380 万 · 本周新进</div>
+        </div>
+        <div class="kpi-card-x delay">
+          <div class="label">延期 (Delay)</div>
+          <div class="value">8</div>
+          <div class="delta">¥ 920 万 · 推到下季</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding-top: 14px; border-top: 1px dashed var(--line);">
+        <div style="padding: 10px 12px; background: var(--bg-card-quiet); border-radius: 5px;">
+          <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase;">YTD 实际签单</div>
+          <div style="font-family: var(--font-display); font-size: 22px; color: var(--ink); margin-top: 4px;">¥ 4,360 万</div>
+        </div>
+        <div style="padding: 10px 12px; background: var(--bg-card-quiet); border-radius: 5px;">
+          <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase;">本季加权预测</div>
+          <div style="font-family: var(--font-display); font-size: 22px; color: var(--ink-green); margin-top: 4px;">¥ 1,702 万</div>
+        </div>
+        <div style="padding: 10px 12px; background: var(--bg-card-quiet); border-radius: 5px;">
+          <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase;">本季签单毛利</div>
+          <div style="font-family: var(--font-display); font-size: 22px; color: var(--ink-green); margin-top: 4px;">¥ 1,362 万</div>
+        </div>
+        <div style="padding: 10px 12px; background: var(--bg-card-quiet); border-radius: 5px;">
+          <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase;">YTD 达成率</div>
+          <div style="font-family: var(--font-display); font-style: italic; font-size: 22px; color: var(--amber); margin-top: 4px;">61%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 下半：明细表 -->
+    <div class="summary-section" style="background: var(--bg-card); padding: 0;">
+      <div class="summary-head" style="padding: 16px 20px 12px;">
+        <h2>明细 <em>列表</em></h2>
+        <span class="lbl">DETAIL · 已发生 + 预测合并</span>
+      </div>
+
+      <div class="split-tabs" style="margin: 0 16px; border-bottom-color: var(--line);">
+        <span class="split-tab active">全部 <span class="count">111</span></span>
+        <span class="split-tab">已签单（已发生）<span class="count">62</span></span>
+        <span class="split-tab">本季预测 <span class="count">49</span></span>
+      </div>
+
+      <div class="toolbar-2" style="margin: 0 16px 14px; border-radius: 0;">
+        <div class="group">区域 <select><option>全部</option></select></div>
+        <div class="group">主推月 <select><option>全部</option><option>4</option><option>5</option><option>6</option></select></div>
+        <div class="group">状态 <select><option>全部</option><option>已签单</option><option>承诺</option><option>争取</option><option>延期</option><option>新增</option></select></div>
+        <input class="search" placeholder="项目/客户/合同号 搜索...">
+      </div>
+
+      <table class="data-table" style="border: none; border-radius: 0; box-shadow: none;">
+        <thead>
+          <tr>
+            <th style="width: 28px;">#</th>
+            <th>商机 / 项目</th>
+            <th>合同编号</th>
+            <th>客户</th>
+            <th>区域 / MU</th>
+            <th>客户经理</th>
+            <th class="num">签单金额</th>
+            <th class="num">签单毛利<br>(×80%)</th>
+            <th>签单日期</th>
+            <th>状态</th>
+            <th>主推月</th>
+            <th>当前进展</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- 已签单 -->
+          <tr style="background: var(--ink-green-soft);">
+            <td class="mono">1</td>
+            <td>南方航空人力升级</td>
+            <td class="mono">XS-LCTR-2026-0098</td>
+            <td>南方航空</td>
+            <td>广东 · 广东</td>
+            <td>王浩</td>
+            <td class="num"><b>680</b></td>
+            <td class="num">544</td>
+            <td class="mono">2026-04-28</td>
+            <td><span class="pill done">已签单</span></td>
+            <td><span class="pill done">4 月已达成</span></td>
+            <td>4/28 实际签约</td>
+          </tr>
+          <tr style="background: var(--ink-green-soft);">
+            <td class="mono">2</td>
+            <td>华夏银行薪酬模块</td>
+            <td class="mono">XS-LCTR-2026-0067</td>
+            <td>华夏银行</td>
+            <td>华北 · 北京</td>
+            <td>李雷</td>
+            <td class="num"><b>540</b></td>
+            <td class="num">432</td>
+            <td class="mono">2026-05-03</td>
+            <td><span class="pill done">已签单</span></td>
+            <td><span class="pill done">5 月已达成</span></td>
+            <td>5/3 实际签 540</td>
+          </tr>
+          <!-- 承诺 -->
+          <tr>
+            <td class="mono">3</td>
+            <td>中信集团总部 HCM 综合运维</td>
+            <td class="mono">—（待签）</td>
+            <td>中信集团</td>
+            <td>央企 · 战略客户</td>
+            <td>张华</td>
+            <td class="num"><b>2,800</b></td>
+            <td class="num">2,240</td>
+            <td class="mono">5/30 预计</td>
+            <td><span class="pill commit">承诺</span></td>
+            <td><span class="pill commit">5 月承诺</span></td>
+            <td>客户法务 OK · 5/15 用印</td>
+          </tr>
+          <tr>
+            <td class="mono">4</td>
+            <td>中建八局海外人力</td>
+            <td class="mono">—（待签）</td>
+            <td>中建八局</td>
+            <td>央企 · 大企业</td>
+            <td>张华</td>
+            <td class="num"><b>510</b></td>
+            <td class="num">408</td>
+            <td class="mono">4/28 预计</td>
+            <td><span class="pill commit">承诺</span></td>
+            <td><span class="pill commit">4 月承诺</span></td>
+            <td>4/29 客户已确认</td>
+          </tr>
+          <!-- 争取 -->
+          <tr>
+            <td class="mono">5</td>
+            <td>山东出版集团一期 HCM</td>
+            <td class="mono">—（投标中）</td>
+            <td>山东出版集团</td>
+            <td>山东 · 山东</td>
+            <td>王正</td>
+            <td class="num"><b>640</b></td>
+            <td class="num">512</td>
+            <td class="mono">5/15 预计</td>
+            <td><span class="pill struggle">争取</span></td>
+            <td><span class="pill struggle">5 月争取</span></td>
+            <td>等投标结果 5/12</td>
+          </tr>
+          <tr>
+            <td class="mono">6</td>
+            <td>湖北宏泰 HCM</td>
+            <td class="mono">—（投标中）</td>
+            <td>湖北宏泰</td>
+            <td>华东 · 湖北</td>
+            <td>李雷</td>
+            <td class="num"><b>580</b></td>
+            <td class="num">464</td>
+            <td class="mono">6/30 预计</td>
+            <td><span class="pill struggle">争取</span></td>
+            <td><span class="pill struggle">6 月争取</span></td>
+            <td>价格 vs 北森持平</td>
+          </tr>
+          <!-- 延期 -->
+          <tr style="opacity: 0.7;">
+            <td class="mono">7</td>
+            <td>珠海水控 HCM</td>
+            <td class="mono">—</td>
+            <td>珠海水控</td>
+            <td>广东 · 广东</td>
+            <td>王浩</td>
+            <td class="num">153</td>
+            <td class="num">122</td>
+            <td class="mono">推 Q3</td>
+            <td><span class="pill delay">延期</span></td>
+            <td><span class="pill delay">5 月延期</span></td>
+            <td>数科流程慢</td>
+          </tr>
+          <!-- 新增 -->
+          <tr style="background: var(--blue-soft);">
+            <td class="mono">8</td>
+            <td>山东出版数据中台扩容</td>
+            <td class="mono">—</td>
+            <td>山东出版</td>
+            <td>山东 · 山东</td>
+            <td>王正</td>
+            <td class="num"><b>64</b></td>
+            <td class="num">51</td>
+            <td class="mono">5/30 预计</td>
+            <td><span class="pill new">新增</span></td>
+            <td><span class="pill struggle">5 月争取</span></td>
+            <td>本周新立项</td>
+          </tr>
+          <tr style="background: var(--bg-card-quiet);">
+            <td colspan="12" style="text-align: center; padding: 14px; color: var(--ink-mute); font-family: var(--font-mono); font-size: 11px;">⌄ 还有 103 行 · 含已签 60 项 + 本季预测 43 项</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <div class="label">💡 数据来源说明</div>
+      <div class="text">
+        <b>已签单（已发生）行</b>：来源 OMS API（4.2 签单明细导入），实时同步 · 不可在本页编辑<br>
+        <b>预测行（承诺/争取/新增/延期）</b>：来源 3.1.2 商机管理 → 主推月 + 状态字段 · 在本页只读，编辑跳转<br>
+        <b>5 状态机</b>：done（已签）/ commit（承诺，权重 70%）/ struggle（争取，20%）/ new（本周新进）/ delay（延期下季）
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+if (new URLSearchParams(location.search).get('embedded') === '1') {
+  const sb = document.querySelector('.sidebar'); if (sb) sb.style.display = 'none';
+  const app = document.querySelector('.app'); if (app) app.style.gridTemplateColumns = '1fr';
+}
+</script>
+</body>
+</html>

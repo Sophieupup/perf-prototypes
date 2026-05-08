@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>3.2.2 回款里程碑</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 18px; }
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line-strong); margin-bottom: 14px; }
+.tab { padding: 10px 18px; font-family: var(--font-cn); font-size: 13px; color: var(--ink-mute); cursor: pointer; border-bottom: 2px solid transparent; }
+.tab.active { color: var(--ink); border-bottom-color: var(--ink); font-weight: 500; }
+.auto-import-banner { background: linear-gradient(90deg, var(--blue-soft), transparent); border: 1px solid var(--blue-mid); border-radius: var(--r-md); padding: 12px 16px; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+.auto-import-banner .icon { width: 32px; height: 32px; background: var(--blue); color: #faf8f3; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.mp-pill { display: inline-block; padding: 2px 8px; font-family: var(--font-mono); font-size: 9px; border-radius: 3px; font-weight: 500; }
+.mp-1 { background: var(--bg-card-quiet); color: var(--ink-soft); }
+.mp-2 { background: var(--blue-soft); color: var(--blue); }
+.mp-3 { background: var(--amber-soft); color: var(--amber); }
+.mp-4 { background: var(--ink-green-soft); color: var(--ink-green); }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">业绩 <em>运营</em></div>
+    <div class="brand-sub">PERFORMANCE OPS · v4</div>
+    <div class="nav-section">3 业务功能</div>
+    <a class="nav-item">3.1.1 客户管理</a>
+    <a class="nav-item">3.1.2 商机管理</a>
+    <a class="nav-item">3.1.3 营销战役管理</a>
+    <a class="nav-item">3.2.1 项目管理</a>
+    <a class="nav-item active">3.2.2 回款里程碑</a>
+  </aside>
+
+  <main class="main">
+    <div class="crumb">业务功能 <span class="sep">/</span> 交付管理 <span class="sep">/</span> 回款里程碑</div>
+    <h1 class="page-title">3.2.2 回款 <em>里程碑</em></h1>
+    <div class="page-meta">回款里程碑台账 + 周度 Review + 里程碑变更 + 任务跟进 · 沿用 AR/里程碑文档第 3.2.2 / 3.3 节 · 含自动补录</div>
+
+    <div class="auto-import-banner">
+      <div class="icon">⚙</div>
+      <div>
+        <div style="font-family: var(--font-cn); font-size: 13px; font-weight: 500;">⭐ 自动补录功能 · 解决"已签未启动 + 非无条件收付款"灰色地带</div>
+        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-top: 2px;">每天 18:00 OMS 拉数后，对比 商机.是否签单首付款=false 过滤 · 今天补 <b style="color: var(--blue);">2 项</b> 待 review</div>
+      </div>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="label">回款节点总数</div><div class="value">542</div><div class="delta">在 156 项目里</div></div>
+      <div class="kpi-card warn"><div class="label">本周待 Review</div><div class="value">28</div><div class="delta">含 2 自动补录</div></div>
+      <div class="kpi-card good"><div class="label">里程碑达成率</div><div class="value">82<span class="unit">%</span></div><div class="delta">YTD 124/151</div></div>
+      <div class="kpi-card bad"><div class="label">AR 应收逾期</div><div class="value">¥ 234<span class="unit">万</span></div><div class="delta">12 笔逾期 30+ 天</div></div>
+      <div class="kpi-card"><div class="label">本月预测回款</div><div class="value">¥ 412<span class="unit">万</span></div><div class="delta">实际 380 +8% 超预期</div></div>
+    </div>
+
+    <div class="tabs">
+      <span class="tab active">回款 Review (28)</span>
+      <span class="tab">里程碑变更 (5)</span>
+      <span class="tab">任务跟进 (43)</span>
+      <span class="tab">回款里程碑台账 (542)</span>
+    </div>
+
+    <div class="toolbar">
+      <div class="group">区域 <select><option>全部</option></select></div>
+      <div class="group">里程碑进度 <select><option>全部</option><option>进行中</option><option>已达标客户确认中</option><option>业务应收单发起中</option><option>已达成</option></select></div>
+      <div class="group">回款进度 <select><option>全部</option><option>发票未开</option><option>发票已开</option><option>客户付款中</option><option>已回款</option></select></div>
+      <div class="group">达成预测 <select><option>全部</option><option>承诺</option><option>争取</option><option>风险</option></select></div>
+      <input class="search" placeholder="项目编号/合同号 搜索...">
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width: 28px;">#</th>
+          <th>回款顺序</th>
+          <th>项目 / 合同</th>
+          <th>回款类型</th>
+          <th>回款条件</th>
+          <th class="num">计划金额</th>
+          <th>基准达成</th>
+          <th>计划达成 / 矫正</th>
+          <th>条件预测</th>
+          <th>里程碑进度</th>
+          <th>回款预测</th>
+          <th>回款进度</th>
+          <th>开票日期</th>
+          <th>下一步</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background: var(--blue-soft);">
+          <td class="mono">1</td>
+          <td class="mono">P-2026-0234-01</td>
+          <td>⭐ 山东出版集团一期 HCM <span class="pill new" style="margin-left: 4px;">自动补录</span></td>
+          <td><span class="pill stage">首付款</span></td>
+          <td>合同盖章 + 发起付款</td>
+          <td class="num">19.2</td>
+          <td class="mono">5/15</td>
+          <td class="mono">5/15 → <input class="cell" type="date" value="2026-05-20" style="width: 130px; font-family: var(--font-mono);"></td>
+          <td><select class="cell" style="background: var(--steel-soft); color: var(--steel);"><option>承诺</option></select></td>
+          <td><span class="mp-pill mp-1">进行中</span></td>
+          <td><select class="cell" style="background: var(--amber-soft); color: var(--amber);"><option>争取</option></select></td>
+          <td><span class="mp-pill mp-1">发票未开</span></td>
+          <td>—</td>
+          <td><a style="color: var(--blue); font-size: 11px;">→ 派工</a></td>
+        </tr>
+        <tr>
+          <td class="mono">2</td>
+          <td class="mono">P-2026-0098-02</td>
+          <td>百果园数据中台</td>
+          <td><span class="pill stage">上线款</span></td>
+          <td>UAT + 培训完成</td>
+          <td class="num">17</td>
+          <td class="mono">5/8</td>
+          <td class="mono">5/8（未矫正）</td>
+          <td><span class="pill commit">承诺</span></td>
+          <td><span class="mp-pill mp-3">应收单发起中</span></td>
+          <td><span class="pill commit">承诺</span></td>
+          <td><span class="mp-pill mp-2">发票已开</span></td>
+          <td class="mono">5/3</td>
+          <td><span class="pill done">已派工</span></td>
+        </tr>
+        <tr>
+          <td class="mono">3</td>
+          <td class="mono">P-2024-0179-04</td>
+          <td>安徽昊源化工 ERP 终验</td>
+          <td><span class="pill stage">终验款</span></td>
+          <td>客户验收 + 测试报告</td>
+          <td class="num">68</td>
+          <td class="mono">4/30</td>
+          <td class="mono"><span style="color: var(--crimson);">4/30 → 6/15</span> <span class="pill" style="background: var(--crimson-soft); color: var(--crimson); font-size: 9px;">矫正 2 次</span></td>
+          <td><select class="cell" style="background: var(--crimson-soft); color: var(--crimson);"><option>风险</option></select></td>
+          <td><span class="mp-pill mp-2">已达标客户确认中</span></td>
+          <td><select class="cell" style="background: var(--crimson-soft); color: var(--crimson);"><option>风险</option></select></td>
+          <td><span class="mp-pill mp-1">发票未开</span></td>
+          <td>—</td>
+          <td><a style="color: var(--crimson); font-size: 11px;">⚠ 派工</a></td>
+        </tr>
+        <tr style="background: var(--ink-green-soft);">
+          <td class="mono">4</td>
+          <td class="mono">P-2025-0234-03</td>
+          <td>长城证券数智薪酬终验</td>
+          <td><span class="pill stage">终验款</span></td>
+          <td>系统验收 + 报告</td>
+          <td class="num">30</td>
+          <td class="mono">4/10</td>
+          <td class="mono">4/10（已达成）</td>
+          <td><span class="pill done">已达成</span></td>
+          <td><span class="mp-pill mp-4">已达成</span></td>
+          <td><span class="pill done">已达成</span></td>
+          <td><span class="mp-pill mp-4">已回款</span></td>
+          <td class="mono">4/12</td>
+          <td>—</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <div class="label">⭐ 自动补录逻辑（v3 用户决策 Q6 落地）</div>
+      <div class="text">
+        每天 18:00 OMS 拉数后系统自动对账：<br>
+        ① 找出所有<b>实际签单</b>的合同（OMS 已记录）<br>
+        ② 检查对应商机的"<b>是否签单首付款</b>"字段<br>
+        ③ 若 <code style="font-family: var(--font-mono); background: var(--bg-card-accent); padding: 1px 4px;">是否签单首付款 = false</code> 且 该合同还没在本表中 → <b>自动插入 pending_review 行</b>，发待办<br>
+        若 = true → 合同立即收款，假设无 AR 风险，不补录<br><br>
+        <b>4 个 Tab 内容</b>（沿用 AR 文档 §3.3）：<b>回款 Review</b>（每周更新预测和进度）/ <b>里程碑变更</b>（项目经理申请矫正达成日期）/ <b>任务跟进</b>（PMO/区总派工 + 责任人反馈）/ <b>台账</b>（全量只读）
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+if (new URLSearchParams(location.search).get('embedded') === '1') {
+  const sb = document.querySelector('.sidebar'); if (sb) sb.style.display = 'none';
+  const app = document.querySelector('.app'); if (app) app.style.gridTemplateColumns = '1fr';
+}
+</script>
+</body>
+</html>

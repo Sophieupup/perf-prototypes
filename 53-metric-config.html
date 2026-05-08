@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><title>4.6 指标与预测模型设置</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.section { background: var(--bg-paper); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 22px; margin-bottom: 18px; }
+.section-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.section-head h2 { font-family: var(--font-display); font-size: 22px; font-weight: 400; }
+.section-head h2 em { font-style: italic; color: var(--ink-green); }
+
+/* 4 大目标 tab */
+.tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 4px; background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); margin-bottom: 18px; }
+.tab { padding: 12px 14px; font-family: var(--font-cn); font-size: 14px; cursor: pointer; border-radius: var(--r-sm); display: flex; flex-direction: column; gap: 4px; align-items: flex-start; border: 1px solid transparent; }
+.tab .tab-num { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.1em; }
+.tab .tab-name { font-family: var(--font-display); font-size: 18px; line-height: 1.05; }
+.tab .tab-name em { font-style: italic; color: var(--ink-green); }
+.tab .tab-target { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); }
+.tab.active { background: var(--bg-paper); border-color: var(--ink); box-shadow: 0 1px 0 rgba(28,31,30,.04); }
+.tab.active .tab-num { color: var(--ink); }
+.tab:not(.active):hover { background: var(--bg-card-quiet); }
+
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+/* 4 栏目（月度比例 / 月度指标 / 累计比例 / 累计指标） */
+.metric-table { width: 100%; background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); border-collapse: separate; border-spacing: 0; box-shadow: var(--shadow-card); margin-top: 12px; }
+.metric-table th { padding: 10px 12px; font-family: var(--font-mono); font-size: 9px; font-weight: 600; color: var(--ink-mute); letter-spacing: 0.06em; text-transform: uppercase; text-align: center; background: var(--bg-card-quiet); border-bottom: 1px solid var(--line-mid); border-right: 1px solid var(--line); }
+.metric-table th:last-child { border-right: none; }
+.metric-table th.month-col { width: 56px; text-align: center; }
+.metric-table td { padding: 6px 8px; font-family: var(--font-mono); font-size: 12px; text-align: right; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); }
+.metric-table td:last-child { border-right: none; }
+.metric-table td.month { font-family: var(--font-display); font-size: 13px; color: var(--ink); text-align: center; background: var(--bg-card-quiet); font-weight: 500; }
+.metric-table td.input-cell input { width: 100%; padding: 4px 8px; font-family: var(--font-mono); font-size: 12px; text-align: right; border: 1px solid var(--line-mid); border-radius: 4px; background: var(--bg-card); color: var(--ink); }
+.metric-table td.input-cell input:focus { border-color: var(--ink); background: #fff; outline: none; }
+.metric-table tr.ytd-row td { background: var(--ink-green-soft); font-weight: 600; color: var(--ink-green); }
+.metric-table tr.ytd-row td.month { background: var(--ink-green); color: #faf8f3; font-family: var(--font-mono); font-weight: 600; font-size: 11px; }
+.metric-table tr:last-child td { border-bottom: none; }
+.metric-table .pct { color: var(--blue); }
+.metric-table .num-amt { color: var(--ink); }
+.metric-table .achieved { font-size: 10px; color: var(--ink-mute); }
+
+.year-target-card { display: grid; grid-template-columns: 320px 1fr; gap: 16px; align-items: center; padding: 14px 18px; background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); margin-bottom: 12px; }
+.year-target-card .left { font-family: var(--font-cn); font-size: 13px; }
+.year-target-card .left .label { color: var(--ink-mute); font-size: 11px; margin-bottom: 4px; }
+.year-target-card .left input.num { padding: 6px 10px; font-family: var(--font-display); font-size: 22px; border: 1px solid var(--line-mid); border-radius: 5px; background: var(--bg-card-quiet); width: 140px; text-align: right; }
+.year-target-card .left .unit { color: var(--ink-mute); font-size: 12px; }
+.year-target-card .right { font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); line-height: 1.6; }
+.year-target-card .right b { color: var(--ink); }
+
+.weight-formula { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px; }
+.weight-formula .formula { font-family: var(--font-mono); font-size: 13px; padding: 8px 12px; background: var(--bg-card-accent); border-radius: 5px; margin-bottom: 12px; }
+.weight-formula .breakdown { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.weight-formula .item .name { font-family: var(--font-cn); font-size: 11px; color: var(--ink-soft); }
+.weight-formula .item input { padding: 5px 8px; font-family: var(--font-display); font-size: 18px; border: 1px solid var(--line-mid); border-radius: 4px; width: 70px; text-align: right; margin-top: 4px; background: var(--bg-card); }
+.weight-formula .check { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line-mid); font-family: var(--font-mono); font-size: 11px; color: var(--ink-green); }
+</style></head><body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">业绩 <em>运营</em></div>
+    <div class="brand-sub">PERFORMANCE OPS · v6</div>
+    <div class="nav-section">4 数据导入与维护</div>
+    <a class="nav-item">4.1 签单明细导入</a>
+    <a class="nav-item">4.2 回款明细导入</a>
+    <a class="nav-item">4.3 项目明细导入</a>
+    <a class="nav-item">4.4 里程碑导入</a>
+    <a class="nav-item">4.5 项目对应表</a>
+    <a class="nav-item active">4.6 指标与预测模型设置</a>
+    <a class="nav-item">4.7 区域划分与权限控制</a>
+  </aside>
+
+  <main class="main">
+    <div class="crumb">数据导入与维护 <span class="sep">/</span> 指标与预测模型设置</div>
+    <h1 class="page-title">4.6 指标与<em>预测模型</em>设置</h1>
+    <div class="page-meta">4 大业绩目标 · 签单 / 签单毛利 / 回款收入 / 回款毛利 · 各自 4 栏（月度比例 / 月度指标 / 累计比例 / 累计指标）· admin only · 改动记录审计日志</div>
+
+    <!-- 4 大目标 Tab -->
+    <div class="tabs">
+      <div class="tab active" data-tab="signing">
+        <div class="tab-num">A · 商机源</div>
+        <div class="tab-name">签 <em>单</em></div>
+        <div class="tab-target">FY26 23,800 万 · YTD 4,360 (61%)</div>
+      </div>
+      <div class="tab" data-tab="signing-margin">
+        <div class="tab-num">B · 商机源 × 毛利率</div>
+        <div class="tab-name">签单 <em>毛利</em></div>
+        <div class="tab-target">FY26 19,040 万 · YTD 3,488 (61%)</div>
+      </div>
+      <div class="tab" data-tab="payment-revenue">
+        <div class="tab-num">C · 里程碑源</div>
+        <div class="tab-name">回款 <em>收入</em></div>
+        <div class="tab-target">FY26 23,800 万 · YTD 2,485 (52%)</div>
+      </div>
+      <div class="tab" data-tab="payment-margin">
+        <div class="tab-num">D · 里程碑源 × 毛利率</div>
+        <div class="tab-name">回款 <em>毛利</em></div>
+        <div class="tab-target">FY26 19,040 万 · YTD 1,956 (52%)</div>
+      </div>
+    </div>
+
+    <!-- A. 签单 -->
+    <div class="tab-pane active" data-pane="signing">
+      <div class="section">
+        <div class="section-head"><h2>A. 签单 · 年度<em>目标</em>与月度<em>分布</em></h2></div>
+        <div class="year-target-card">
+          <div class="left">
+            <div class="label">年度签单目标 (annual_signing_target)</div>
+            <input class="num" value="23,800"> <span class="unit">万元</span>
+          </div>
+          <div class="right">
+            数据源：<b>2.3 签单明细</b>（已发生）+ <b>3.1.2 商机管理</b>（预测）<br>
+            归集口径：<b>HCM 区域（签单）</b> · 来自 4.5 项目对应表
+          </div>
+        </div>
+
+        <table class="metric-table">
+          <thead>
+            <tr>
+              <th class="month-col">月</th>
+              <th>① 月度比例 <span style="font-weight: 400; text-transform: none; color: var(--blue); font-size: 10px;">(%)</span></th>
+              <th>② 月度指标 <span style="font-weight: 400; text-transform: none; color: var(--blue); font-size: 10px;">(万元)</span></th>
+              <th>③ 累计比例 <span style="font-weight: 400; text-transform: none; color: var(--blue); font-size: 10px;">(%)</span></th>
+              <th>④ 累计指标 <span style="font-weight: 400; text-transform: none; color: var(--blue); font-size: 10px;">(万元)</span></th>
+              <th>YTD 实际 / 达成率</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="month">1</td><td class="input-cell"><input value="6"></td><td class="num-amt">1,428</td><td class="pct">6%</td><td class="num-amt">1,428</td><td class="achieved">962 / 67%</td></tr>
+            <tr><td class="month">2</td><td class="input-cell"><input value="5"></td><td class="num-amt">1,190</td><td class="pct">11%</td><td class="num-amt">2,618</td><td class="achieved">1,738 / 66%</td></tr>
+            <tr><td class="month">3</td><td class="input-cell"><input value="9"></td><td class="num-amt">2,142</td><td class="pct">20%</td><td class="num-amt">4,760</td><td class="achieved">3,168 / 67%</td></tr>
+            <tr><td class="month">4</td><td class="input-cell"><input value="10"></td><td class="num-amt">2,380</td><td class="pct">30%</td><td class="num-amt">7,140</td><td class="achieved">4,360 / 61%</td></tr>
+            <tr class="ytd-row"><td class="month">YTD</td><td>30%</td><td>7,140</td><td>30%</td><td>7,140</td><td>4,360 · 61%</td></tr>
+            <tr><td class="month">5</td><td class="input-cell"><input value="9"></td><td class="num-amt">2,142</td><td class="pct">39%</td><td class="num-amt">9,282</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">6</td><td class="input-cell"><input value="11"></td><td class="num-amt">2,618</td><td class="pct">50%</td><td class="num-amt">11,900</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">7</td><td class="input-cell"><input value="8"></td><td class="num-amt">1,904</td><td class="pct">58%</td><td class="num-amt">13,804</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">8</td><td class="input-cell"><input value="7"></td><td class="num-amt">1,666</td><td class="pct">65%</td><td class="num-amt">15,470</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">9</td><td class="input-cell"><input value="9"></td><td class="num-amt">2,142</td><td class="pct">74%</td><td class="num-amt">17,612</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">10</td><td class="input-cell"><input value="9"></td><td class="num-amt">2,142</td><td class="pct">83%</td><td class="num-amt">19,754</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">11</td><td class="input-cell"><input value="9"></td><td class="num-amt">2,142</td><td class="pct">92%</td><td class="num-amt">21,896</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">12</td><td class="input-cell"><input value="8"></td><td class="num-amt">1,904</td><td class="pct">100%</td><td class="num-amt">23,800</td><td class="achieved">— 待发生</td></tr>
+          </tbody>
+        </table>
+        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-top: 8px;">
+          ① 月度比例输入即可 · ② = ① × 年度目标 · ③ = ①累加 · ④ = ③ × 年度目标 · 改 ① 自动重算 ②③④
+        </div>
+      </div>
+    </div>
+
+    <!-- B. 签单毛利 -->
+    <div class="tab-pane" data-pane="signing-margin">
+      <div class="section">
+        <div class="section-head"><h2>B. 签单毛利 · 年度<em>目标</em>与月度<em>分布</em></h2></div>
+        <div class="year-target-card">
+          <div class="left">
+            <div class="label">年度签单毛利目标</div>
+            <input class="num" value="19,040"> <span class="unit">万元 (= 23,800 × 80%)</span>
+          </div>
+          <div class="right">
+            数据源：<b>签单金额 × 项目毛利率</b>（默认 80%，例外项在 admin 项目主表维护）<br>
+            归集口径：<b>HCM 区域（签单）</b>
+          </div>
+        </div>
+
+        <table class="metric-table">
+          <thead>
+            <tr>
+              <th class="month-col">月</th>
+              <th>① 月度比例 <span style="font-weight: 400; text-transform: none; color: var(--blue); font-size: 10px;">(%)</span></th>
+              <th>② 月度指标 <span style="font-weight: 400; text-transform: none; color: var(--blue); font-size: 10px;">(万元)</span></th>
+              <th>③ 累计比例 <span style="font-weight: 400; text-transform: none; color: var(--blue); font-size: 10px;">(%)</span></th>
+              <th>④ 累计指标 <span style="font-weight: 400; text-transform: none; color: var(--blue); font-size: 10px;">(万元)</span></th>
+              <th>YTD 实际 / 达成率</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="month">1</td><td class="input-cell"><input value="6"></td><td class="num-amt">1,142</td><td class="pct">6%</td><td class="num-amt">1,142</td><td class="achieved">770 / 67%</td></tr>
+            <tr><td class="month">2</td><td class="input-cell"><input value="5"></td><td class="num-amt">952</td><td class="pct">11%</td><td class="num-amt">2,094</td><td class="achieved">1,390 / 66%</td></tr>
+            <tr><td class="month">3</td><td class="input-cell"><input value="9"></td><td class="num-amt">1,714</td><td class="pct">20%</td><td class="num-amt">3,808</td><td class="achieved">2,534 / 67%</td></tr>
+            <tr><td class="month">4</td><td class="input-cell"><input value="10"></td><td class="num-amt">1,904</td><td class="pct">30%</td><td class="num-amt">5,712</td><td class="achieved">3,488 / 61%</td></tr>
+            <tr class="ytd-row"><td class="month">YTD</td><td>30%</td><td>5,712</td><td>30%</td><td>5,712</td><td>3,488 · 61%</td></tr>
+            <tr><td class="month">5</td><td class="input-cell"><input value="9"></td><td class="num-amt">1,714</td><td class="pct">39%</td><td class="num-amt">7,426</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">6</td><td class="input-cell"><input value="11"></td><td class="num-amt">2,094</td><td class="pct">50%</td><td class="num-amt">9,520</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">7</td><td class="input-cell"><input value="8"></td><td class="num-amt">1,523</td><td class="pct">58%</td><td class="num-amt">11,043</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">8</td><td class="input-cell"><input value="7"></td><td class="num-amt">1,333</td><td class="pct">65%</td><td class="num-amt">12,376</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">9</td><td class="input-cell"><input value="9"></td><td class="num-amt">1,714</td><td class="pct">74%</td><td class="num-amt">14,090</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">10</td><td class="input-cell"><input value="9"></td><td class="num-amt">1,714</td><td class="pct">83%</td><td class="num-amt">15,803</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">11</td><td class="input-cell"><input value="9"></td><td class="num-amt">1,714</td><td class="pct">92%</td><td class="num-amt">17,517</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">12</td><td class="input-cell"><input value="8"></td><td class="num-amt">1,523</td><td class="pct">100%</td><td class="num-amt">19,040</td><td class="achieved">— 待发生</td></tr>
+          </tbody>
+        </table>
+        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-top: 8px;">
+          沿用签单的月度比例（同时点确认）· 实际值 = 签单金额 × 当行项目毛利率
+        </div>
+      </div>
+    </div>
+
+    <!-- C. 回款收入 -->
+    <div class="tab-pane" data-pane="payment-revenue">
+      <div class="section">
+        <div class="section-head"><h2>C. 回款收入 · 年度<em>目标</em>与月度<em>分布</em></h2></div>
+        <div class="year-target-card">
+          <div class="left">
+            <div class="label">年度回款收入目标</div>
+            <input class="num" value="23,800"> <span class="unit">万元</span>
+          </div>
+          <div class="right">
+            数据源：<b>4.4 里程碑导入</b>（计划日）+ <b>3.2.2 回款里程碑</b>（已确认）<br>
+            归集口径：<b>HCM 区域（收入）</b> · 来自 4.5 项目对应表
+          </div>
+        </div>
+
+        <table class="metric-table">
+          <thead>
+            <tr>
+              <th class="month-col">月</th>
+              <th>① 月度比例 <span style="font-weight: 400; text-transform: none; color: var(--blue); font-size: 10px;">(%)</span></th>
+              <th>② 月度指标 <span style="font-weight: 400; text-transform: none; color: var(--blue); font-size: 10px;">(万元)</span></th>
+              <th>③ 累计比例 <span style="font-weight: 400; text-transform: none; color: var(--blue); font-size: 10px;">(%)</span></th>
+              <th>④ 累计指标 <span style="font-weight: 400; text-transform: none; color: var(--blue); font-size: 10px;">(万元)</span></th>
+              <th>YTD 实际 / 达成率</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="month">1</td><td class="input-cell"><input value="4"></td><td class="num-amt">952</td><td class="pct">4%</td><td class="num-amt">952</td><td class="achieved">498 / 52%</td></tr>
+            <tr><td class="month">2</td><td class="input-cell"><input value="3"></td><td class="num-amt">714</td><td class="pct">7%</td><td class="num-amt">1,666</td><td class="achieved">876 / 53%</td></tr>
+            <tr><td class="month">3</td><td class="input-cell"><input value="6"></td><td class="num-amt">1,428</td><td class="pct">13%</td><td class="num-amt">3,094</td><td class="achieved">1,623 / 52%</td></tr>
+            <tr><td class="month">4</td><td class="input-cell"><input value="7"></td><td class="num-amt">1,666</td><td class="pct">20%</td><td class="num-amt">4,760</td><td class="achieved">2,485 / 52%</td></tr>
+            <tr class="ytd-row"><td class="month">YTD</td><td>20%</td><td>4,760</td><td>20%</td><td>4,760</td><td>2,485 · 52%</td></tr>
+            <tr><td class="month">5</td><td class="input-cell"><input value="8"></td><td class="num-amt">1,904</td><td class="pct">28%</td><td class="num-amt">6,664</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">6</td><td class="input-cell"><input value="10"></td><td class="num-amt">2,380</td><td class="pct">38%</td><td class="num-amt">9,044</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">7</td><td class="input-cell"><input value="9"></td><td class="num-amt">2,142</td><td class="pct">47%</td><td class="num-amt">11,186</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">8</td><td class="input-cell"><input value="9"></td><td class="num-amt">2,142</td><td class="pct">56%</td><td class="num-amt">13,328</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">9</td><td class="input-cell"><input value="10"></td><td class="num-amt">2,380</td><td class="pct">66%</td><td class="num-amt">15,708</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">10</td><td class="input-cell"><input value="11"></td><td class="num-amt">2,618</td><td class="pct">77%</td><td class="num-amt">18,326</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">11</td><td class="input-cell"><input value="11"></td><td class="num-amt">2,618</td><td class="pct">88%</td><td class="num-amt">20,944</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">12</td><td class="input-cell"><input value="12"></td><td class="num-amt">2,856</td><td class="pct">100%</td><td class="num-amt">23,800</td><td class="achieved">— 待发生</td></tr>
+          </tbody>
+        </table>
+        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-top: 8px;">
+          回款月度比例与签单不同（回款滞后 1-2 月）· 来自合同里程碑约定日的自然分布
+        </div>
+      </div>
+    </div>
+
+    <!-- D. 回款毛利 -->
+    <div class="tab-pane" data-pane="payment-margin">
+      <div class="section">
+        <div class="section-head"><h2>D. 回款毛利 · 年度<em>目标</em>与月度<em>分布</em></h2></div>
+        <div class="year-target-card">
+          <div class="left">
+            <div class="label">年度回款毛利目标</div>
+            <input class="num" value="19,040"> <span class="unit">万元 (= 23,800 × 80%)</span>
+          </div>
+          <div class="right">
+            数据源：<b>回款收入 × 项目毛利率</b><br>
+            归集口径：<b>HCM 区域（收入）</b>
+          </div>
+        </div>
+
+        <table class="metric-table">
+          <thead>
+            <tr>
+              <th class="month-col">月</th>
+              <th>① 月度比例 <span style="font-weight: 400; text-transform: none; color: var(--blue); font-size: 10px;">(%)</span></th>
+              <th>② 月度指标 <span style="font-weight: 400; text-transform: none; color: var(--blue); font-size: 10px;">(万元)</span></th>
+              <th>③ 累计比例 <span style="font-weight: 400; text-transform: none; color: var(--blue); font-size: 10px;">(%)</span></th>
+              <th>④ 累计指标 <span style="font-weight: 400; text-transform: none; color: var(--blue); font-size: 10px;">(万元)</span></th>
+              <th>YTD 实际 / 达成率</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="month">1</td><td class="input-cell"><input value="4"></td><td class="num-amt">762</td><td class="pct">4%</td><td class="num-amt">762</td><td class="achieved">398 / 52%</td></tr>
+            <tr><td class="month">2</td><td class="input-cell"><input value="3"></td><td class="num-amt">571</td><td class="pct">7%</td><td class="num-amt">1,333</td><td class="achieved">701 / 53%</td></tr>
+            <tr><td class="month">3</td><td class="input-cell"><input value="6"></td><td class="num-amt">1,142</td><td class="pct">13%</td><td class="num-amt">2,475</td><td class="achieved">1,298 / 52%</td></tr>
+            <tr><td class="month">4</td><td class="input-cell"><input value="7"></td><td class="num-amt">1,333</td><td class="pct">20%</td><td class="num-amt">3,808</td><td class="achieved">1,956 / 51%</td></tr>
+            <tr class="ytd-row"><td class="month">YTD</td><td>20%</td><td>3,808</td><td>20%</td><td>3,808</td><td>1,956 · 51%</td></tr>
+            <tr><td class="month">5</td><td class="input-cell"><input value="8"></td><td class="num-amt">1,523</td><td class="pct">28%</td><td class="num-amt">5,331</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">6</td><td class="input-cell"><input value="10"></td><td class="num-amt">1,904</td><td class="pct">38%</td><td class="num-amt">7,235</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">7</td><td class="input-cell"><input value="9"></td><td class="num-amt">1,714</td><td class="pct">47%</td><td class="num-amt">8,949</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">8</td><td class="input-cell"><input value="9"></td><td class="num-amt">1,714</td><td class="pct">56%</td><td class="num-amt">10,663</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">9</td><td class="input-cell"><input value="10"></td><td class="num-amt">1,904</td><td class="pct">66%</td><td class="num-amt">12,567</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">10</td><td class="input-cell"><input value="11"></td><td class="num-amt">2,094</td><td class="pct">77%</td><td class="num-amt">14,661</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">11</td><td class="input-cell"><input value="11"></td><td class="num-amt">2,094</td><td class="pct">88%</td><td class="num-amt">16,755</td><td class="achieved">— 待发生</td></tr>
+            <tr><td class="month">12</td><td class="input-cell"><input value="12"></td><td class="num-amt">2,285</td><td class="pct">100%</td><td class="num-amt">19,040</td><td class="achieved">— 待发生</td></tr>
+          </tbody>
+        </table>
+        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-top: 8px;">
+          沿用回款收入月度比例（同源）· 实际值 = 该次回款 × 项目实际毛利率
+        </div>
+      </div>
+    </div>
+
+    <!-- 综合评分（全局） -->
+    <div class="section">
+      <div class="section-head"><h2>综合<em>评分</em>权重（全局）</h2></div>
+      <div class="weight-formula">
+        <div class="formula">综合评分 = 签单毛利达成率 × <span style="color: var(--ink-green);">w₁</span> + 回款收入达成率 × <span style="color: var(--ink-green);">w₂</span> + 回款毛利达成率 × <span style="color: var(--ink-green);">w₃</span></div>
+        <div class="breakdown">
+          <div class="item"><div class="name">w₁ 签单毛利</div><input value="30"> %</div>
+          <div class="item"><div class="name">w₂ 回款收入</div><input value="20"> %</div>
+          <div class="item"><div class="name">w₃ 回款毛利</div><input value="50"> %</div>
+        </div>
+        <div class="check">✓ 合计 100% · 签单（指标 A）不进综合评分公式（仅作过程指标）· W16 实测 0.8348</div>
+      </div>
+    </div>
+
+    <!-- 月度预测加权（全局） -->
+    <div class="section">
+      <div class="section-head"><h2>月度<em>预测</em>加权（全局）</h2></div>
+      <div class="weight-formula">
+        <div class="formula">月度预测 = 当月已达成 × <span style="color: var(--ink-green);">γ</span> + 当月承诺 × <span style="color: var(--ink-green);">α</span> + 当月争取 × <span style="color: var(--ink-green);">β</span> + 延期/新增 × <span style="color: var(--ink-green);">δ</span></div>
+        <div class="breakdown" style="grid-template-columns: repeat(4, 1fr);">
+          <div class="item"><div class="name">γ 已达成</div><input value="100"> %</div>
+          <div class="item"><div class="name">α 承诺</div><input value="70"> %</div>
+          <div class="item"><div class="name">β 争取</div><input value="20"> %</div>
+          <div class="item"><div class="name">δ 延期/新增</div><input value="0"> %</div>
+        </div>
+        <div class="check">✓ 4 大目标共用同一组系数 · pandas 验证：4 月签单预测 = 862.25 万（与实测一致）</div>
+      </div>
+    </div>
+
+    <!-- 默认毛利率 -->
+    <div class="section">
+      <div class="section-head"><h2>默认<em>毛利率</em>与例外</h2></div>
+      <div style="display: grid; grid-template-columns: 220px 1fr 240px; gap: 12px; align-items: center; padding: 10px 0;">
+        <div style="font-family: var(--font-cn); font-size: 13px; font-weight: 500;">默认毛利率</div>
+        <div><input class="num" style="width: 110px; padding: 6px 10px; font-family: var(--font-display); font-size: 17px; border: 1px solid var(--line-mid); border-radius: 5px; text-align: right;" value="80"> %</div>
+        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">例外项目：在 admin 项目主表中按行设置（如低毛利、纯转包等），覆盖默认值</div>
+      </div>
+    </div>
+
+    <!-- 快照锁定 -->
+    <div class="section" style="border: 2px solid var(--ink-green);">
+      <div class="section-head"><h2>📸 快照 · <em>锁定 / 解锁</em></h2></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div style="background: var(--bg-card); border: 1px solid var(--line); border-left: 3px solid var(--ink-green); border-radius: var(--r-md); padding: 16px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <h3 style="font-family: var(--font-display); font-size: 18px;">周快照 <em style="font-style: italic; color: var(--ink-green);">· 默认</em></h3>
+            <span style="padding: 3px 9px; border-radius: 12px; background: var(--ink-green-soft); color: var(--ink-green); border: 1px solid var(--ink-green-mid); font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600;">🔒 已锁定</span>
+          </div>
+          <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-bottom: 10px;">每周五 18:00 freeze · 下次 5/8 18:00</div>
+          <button class="btn warn" style="font-size: 12px; padding: 6px 12px;">🔓 解锁</button>
+          <button class="btn ghost" style="font-size: 12px; padding: 6px 12px;">立即手动 freeze</button>
+        </div>
+        <div style="background: var(--bg-card); border: 1px solid var(--line); border-left: 3px solid var(--amber); border-radius: var(--r-md); padding: 16px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <h3 style="font-family: var(--font-display); font-size: 18px;">月快照 <em style="font-style: italic; color: var(--ink-green);">· 临时</em></h3>
+            <span style="padding: 3px 9px; border-radius: 12px; background: var(--amber-soft); color: var(--amber); border: 1px solid var(--amber-mid); font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600;">🔓 已解锁</span>
+          </div>
+          <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-bottom: 10px;">默认每月 1 日 00:00 · 临时调到 5/30 18:00（5/31 周六，提前一天）</div>
+          <button class="btn primary" style="font-size: 12px; padding: 6px 12px;">保存调整</button>
+          <button class="btn" style="font-size: 12px; padding: 6px 12px;">🔒 锁回默认</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script>
+if (new URLSearchParams(location.search).get('embedded') === '1') { document.querySelector('.sidebar').style.display = 'none'; document.querySelector('.app').style.gridTemplateColumns = '1fr'; }
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const target = tab.dataset.tab;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.toggle('active', p.dataset.pane === target));
+  });
+});
+</script>
+</body></html>

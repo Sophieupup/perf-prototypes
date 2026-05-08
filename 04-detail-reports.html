@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>5 张明细报表 · PC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-stage: #ebe8df; --bg-paper: #faf8f3; --bg-card: #ffffff; --bg-card-quiet: #fcfbf7; --bg-card-accent: #f5f2e9;
+  --ink: #1c1f1e; --ink-soft: #44504a; --ink-mute: #8b928d; --ink-faint: #c8ccc6;
+  --ink-green: #1e5537; --ink-green-soft: rgba(30,85,55,0.08); --ink-green-mid: rgba(30,85,55,0.22);
+  --steel: #475569; --steel-soft: rgba(71,85,105,0.08);
+  --amber: #b45309; --amber-soft: rgba(180,83,9,0.08); --amber-mid: rgba(180,83,9,0.22);
+  --crimson: #991b1b; --crimson-soft: rgba(153,27,27,0.08);
+  --blue: #1d4ed8; --blue-soft: rgba(37,99,235,0.08); --blue-mid: rgba(37,99,235,0.22);
+  --line: rgba(28,31,30,0.08); --line-mid: rgba(28,31,30,0.12); --line-strong: rgba(28,31,30,0.18);
+  --r-sm: 6px; --r-md: 10px; --r-lg: 14px;
+  --font-display: 'Instrument Serif', 'Noto Serif SC', Georgia, serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-sans: 'Manrope', 'PingFang SC', sans-serif;
+  --font-cn: 'Noto Serif SC', 'PingFang SC', serif;
+  --shadow-card: 0 1px 0 rgba(28,31,30,.02), 0 2px 6px rgba(28,31,30,.04);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg-stage); color: var(--ink); font-family: var(--font-sans); font-size: 13px; line-height: 1.55; }
+
+.app { min-height: 100vh; display: grid; grid-template-columns: 220px 1fr; }
+.sidebar { background: var(--bg-paper); border-right: 1px solid var(--line); padding: 24px 18px; }
+.brand { font-family: var(--font-display); font-size: 22px; line-height: 1.05; }
+.brand em { font-style: italic; color: var(--ink-green); }
+.brand-sub { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 28px; }
+.nav-section { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.14em; text-transform: uppercase; margin: 18px 0 6px; padding-top: 12px; border-top: 1px solid var(--line); }
+.nav-item { display: block; padding: 7px 10px; font-family: var(--font-cn); font-size: 13px; color: var(--ink-soft); border-radius: 6px; cursor: pointer; }
+.nav-item.active { background: var(--ink); color: #faf8f3; }
+
+.main { padding: 24px 28px 60px; }
+.crumb { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+.crumb .sep { color: var(--ink-faint); margin: 0 6px; }
+h1 { font-family: var(--font-display); font-size: 32px; font-weight: 400; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 6px; }
+h1 em { font-style: italic; color: var(--ink-green); }
+.page-meta { font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); margin-bottom: 18px; }
+
+/* Report tabs */
+.report-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--line-strong); margin-bottom: 16px; flex-wrap: wrap; }
+.report-tab { padding: 10px 18px; font-family: var(--font-cn); font-size: 13px; color: var(--ink-mute); cursor: pointer; border-bottom: 2px solid transparent; }
+.report-tab.active { color: var(--ink); border-bottom-color: var(--ink); font-weight: 500; }
+.report-tab .count { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-left: 4px; }
+.report-tab.active .count { color: var(--ink); }
+
+/* Report description bar */
+.report-desc { background: var(--bg-paper); border: 1px solid var(--line); border-radius: var(--r-md); padding: 12px 16px; margin-bottom: 14px; display: flex; gap: 16px; align-items: center; }
+.report-desc .label { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase; }
+.report-desc .source { font-family: var(--font-cn); font-size: 12px; color: var(--ink-soft); flex: 1; }
+.report-desc .source code { font-family: var(--font-mono); font-size: 11px; background: var(--bg-card-accent); padding: 1px 5px; border-radius: 3px; color: var(--ink); }
+
+/* Filter bar */
+.filter-bar { background: var(--bg-paper); border: 1px solid var(--line); border-radius: var(--r-md); padding: 10px 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+.filter-bar .group { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); }
+.filter-bar select { padding: 5px 10px; font-family: var(--font-cn); font-size: 12px; border: 1px solid var(--line-mid); border-radius: 4px; background: var(--bg-card); color: var(--ink); }
+.filter-bar input.search { padding: 6px 12px; font-family: var(--font-sans); font-size: 12px; border: 1px solid var(--line-mid); border-radius: 4px; background: var(--bg-card); width: 240px; }
+.filter-bar .stat { margin-left: auto; font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); }
+.filter-bar .stat strong { font-family: var(--font-display); font-size: 16px; color: var(--ink); font-weight: 400; }
+.filter-bar .stat .green { color: var(--ink-green); }
+.filter-bar .stat .amber { color: var(--amber); }
+.filter-bar .stat .crimson { color: var(--crimson); }
+
+/* Snapshot version selector */
+.snapshot-sel { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; background: var(--ink-green-soft); border: 1px solid var(--ink-green-mid); border-radius: 4px; font-family: var(--font-mono); font-size: 10px; color: var(--ink-green); }
+.snapshot-sel select { padding: 2px 6px; font-family: var(--font-mono); font-size: 10px; background: transparent; border: none; color: var(--ink-green); cursor: pointer; }
+
+/* Data table */
+.data-table { width: 100%; background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); border-collapse: separate; border-spacing: 0; box-shadow: var(--shadow-card); overflow: hidden; }
+.data-table th { padding: 9px 10px; font-family: var(--font-mono); font-size: 9px; font-weight: 600; color: var(--ink-mute); letter-spacing: 0.06em; text-transform: uppercase; text-align: left; background: var(--bg-card-quiet); border-bottom: 1px solid var(--line-mid); white-space: nowrap; }
+.data-table td { padding: 8px 10px; font-family: var(--font-cn); font-size: 12px; color: var(--ink); border-bottom: 1px solid var(--line); white-space: nowrap; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table .num { font-family: var(--font-mono); font-size: 12px; text-align: right; }
+.data-table .num.big { font-family: var(--font-display); font-size: 14px; }
+.data-table .mono { font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft); }
+.pill { display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-mono); font-size: 9px; padding: 2px 6px; border-radius: 3px; letter-spacing: 0.05em; font-weight: 500; }
+.pill.commit { background: var(--steel-soft); color: var(--steel); border: 1px solid rgba(71,85,105,0.2); }
+.pill.struggle { background: var(--amber-soft); color: var(--amber); border: 1px solid var(--amber-mid); }
+.pill.delay { background: var(--crimson-soft); color: var(--crimson); border: 1px solid rgba(153,27,27,0.2); }
+.pill.new { background: var(--blue-soft); color: var(--blue); border: 1px solid var(--blue-mid); }
+.pill.done { background: var(--ink-green-soft); color: var(--ink-green); border: 1px solid var(--ink-green-mid); }
+.pill.stage { background: var(--bg-card-quiet); color: var(--ink-soft); border: 1px solid var(--line-strong); }
+.pill.win { background: var(--ink-green); color: #faf8f3; border: 1px solid var(--ink-green); }
+.pill.lose { background: var(--crimson); color: #faf8f3; border: 1px solid var(--crimson); }
+.pill.wait { background: var(--amber); color: #faf8f3; border: 1px solid var(--amber); }
+.pill.plan { background: var(--blue); color: #faf8f3; border: 1px solid var(--blue); }
+
+.diff-cell { display: inline-flex; align-items: center; gap: 4px; }
+.diff-cell .arrow { color: var(--ink-faint); font-family: var(--font-mono); font-size: 10px; }
+.cell-changed { background: rgba(180,83,9,0.04); }
+.risk-icon { color: var(--crimson); font-weight: 700; }
+
+/* Quarterly tri-cell（季度可达性） */
+.tri-cell { display: inline-flex; gap: 2px; }
+.tri-cell .month { font-family: var(--font-mono); font-size: 9px; padding: 1px 5px; border-radius: 3px; min-width: 28px; text-align: center; font-weight: 500; }
+.tri-cell .month.commit { background: var(--steel-soft); color: var(--steel); }
+.tri-cell .month.struggle { background: var(--amber-soft); color: var(--amber); }
+.tri-cell .month.empty { background: var(--bg-card-quiet); color: var(--ink-faint); }
+.tri-cell .month.done { background: var(--ink-green); color: #faf8f3; }
+
+/* Footer summary */
+.summary-bar { padding: 12px 16px; background: var(--bg-card-accent); border-top: 1px solid var(--line-strong); display: flex; gap: 24px; font-family: var(--font-mono); font-size: 11px; }
+.summary-bar .item { display: flex; flex-direction: column; gap: 2px; }
+.summary-bar .item .k { color: var(--ink-mute); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; }
+.summary-bar .item .v { font-family: var(--font-display); font-size: 18px; font-weight: 400; color: var(--ink); letter-spacing: -0.01em; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">业绩 <em>运营</em></div>
+    <div class="brand-sub">PERFORMANCE OPS</div>
+    <div class="nav-section">看板</div>
+    <a class="nav-item">驾驶舱</a>
+    <a class="nav-item">区域业绩</a>
+    <div class="nav-section">明细报表</div>
+    <a class="nav-item active">5 张明细</a>
+    <div class="nav-section">数据维护</div>
+    <a class="nav-item">商机管理</a>
+    <a class="nav-item">商机 Review</a>
+    <a class="nav-item">投标管理</a>
+    <a class="nav-item">售前活动登记</a>
+    <a class="nav-item">月度预测·签单</a>
+    <a class="nav-item">月度预测·回款</a>
+    <div class="nav-section">导入 / 配置</div>
+    <a class="nav-item">指标配置</a>
+  </aside>
+
+  <main class="main">
+    <div class="crumb">明细报表 <span class="sep">/</span> 五张明细</div>
+    <h1>明细 <em>报表</em></h1>
+    <div class="page-meta">5 张报表共用同一份商机源数据 · 不同筛选 / 字段切片 · 支持任意快照版本回看</div>
+
+    <!-- 5 报表 tabs（v3 修：可点击切换） -->
+    <div class="report-tabs">
+      <span class="report-tab active" data-tab="key-opp">2026 重点商机<span class="count">47</span></span>
+      <span class="report-tab" data-tab="bid-actual">投标明细<span class="count">8</span></span>
+      <span class="report-tab" data-tab="bid-forecast">预计投标明细<span class="count">10</span></span>
+      <span class="report-tab" data-tab="signing-forecast">预计签单明细<span class="count">42</span></span>
+      <span class="report-tab" data-tab="payment-forecast">预计回款明细<span class="count">56</span></span>
+    </div>
+
+    <!-- 报表数据源说明 -->
+    <div class="report-desc">
+      <span class="label">数据源</span>
+      <span class="source">商机信息表 WHERE <code>预计签约归档时间 LIKE '2026%'</code> AND <code>预计签单金额 ≥ 500 万</code> AND <code>商机状态 = 进行中</code> · 17 字段子集 · 实时聚合 + 快照对比</span>
+      <span class="snapshot-sel">📸 <select><option>当前·active</option><option>W17·5/3 freeze</option><option>W16·4/26 freeze</option><option>5月初·5/1 freeze</option></select></span>
+    </div>
+
+    <!-- 过滤栏 -->
+    <div class="filter-bar">
+      <div class="group">区域 <select><option>全部</option><option>央企</option><option>广东</option><option>山东</option><option>华东</option><option>华北</option><option>西部</option><option>服务</option></select></div>
+      <div class="group">商机阶段 <select><option>全部</option><option>S3-方案</option><option>S4-投标</option><option>中标未签单</option></select></div>
+      <div class="group">达成可能 <select><option>全部</option><option>承诺</option><option>争取</option><option>风险</option></select></div>
+      <div class="group">主推月 <select><option>全部</option><option>4 月</option><option>5 月</option><option>6 月</option></select></div>
+      <input class="search" placeholder="客户/项目名/合同号 搜索...">
+      <div class="stat">
+        合计金额 <strong class="green">¥ 4,128 万</strong> · 加权预测 <strong>¥ 2,890 万</strong>
+      </div>
+    </div>
+
+    <!-- 重点商机表（≥500 万阈值） -->
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width: 30px;">#</th>
+          <th>商机编号</th>
+          <th>商机名称</th>
+          <th>客户</th>
+          <th>HCM 区域</th>
+          <th>MU</th>
+          <th>售前</th>
+          <th>销售</th>
+          <th class="num">预计签单</th>
+          <th class="num">预计毛利<br/>(×80%)</th>
+          <th>商机阶段</th>
+          <th>主推月 + 状态</th>
+          <th>4 / 5 / 6 月可达</th>
+          <th>归档达成</th>
+          <th class="mono">预计归档</th>
+          <th>过程跟进</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="mono">1</td>
+          <td class="mono">OPP-2025-0123</td>
+          <td>中国中信集团总部 HCM 综合运维续约</td>
+          <td>中信集团</td>
+          <td>央企</td>
+          <td>战略客户</td>
+          <td>陈飞</td>
+          <td>张华</td>
+          <td class="num big">2,800</td>
+          <td class="num">2,240</td>
+          <td><span class="pill stage">中标未签单</span></td>
+          <td><span class="pill commit">5月·承诺</span></td>
+          <td><span class="tri-cell"><span class="month empty">—</span><span class="month commit">承</span><span class="month empty">—</span></span></td>
+          <td><span class="pill commit">承诺</span></td>
+          <td class="mono">2026-05-30</td>
+          <td>5/3 客户法务 OK · 5/15 用印</td>
+        </tr>
+        <tr>
+          <td class="mono">2</td>
+          <td class="mono">OPP-2025-0098</td>
+          <td>贵州磷化（集团）人力资源</td>
+          <td>贵州磷化</td>
+          <td>西部</td>
+          <td>贵州</td>
+          <td>陈飞</td>
+          <td>刘正</td>
+          <td class="num big">418</td>
+          <td class="num">334</td>
+          <td><span class="pill stage">S4-投标</span></td>
+          <td><span class="pill struggle">5月·争取</span></td>
+          <td><span class="tri-cell"><span class="month empty">—</span><span class="month struggle">争</span><span class="month struggle">争</span></span></td>
+          <td><span class="pill struggle">争取</span></td>
+          <td class="mono">2026-06-15</td>
+          <td><span class="risk-icon">⚠</span> 客户倾向用友 博弈中</td>
+        </tr>
+        <tr>
+          <td class="mono">3</td>
+          <td class="mono">OPP-2025-0188</td>
+          <td>南方航空人力升级</td>
+          <td>南方航空</td>
+          <td>广东</td>
+          <td>广东</td>
+          <td>李明</td>
+          <td>王浩</td>
+          <td class="num big">680</td>
+          <td class="num">544</td>
+          <td><span class="pill stage">S4-投标</span></td>
+          <td><span class="pill commit">4月·承诺</span></td>
+          <td><span class="tri-cell"><span class="month commit">承</span><span class="month empty">—</span><span class="month empty">—</span></span></td>
+          <td><span class="pill commit">承诺</span></td>
+          <td class="mono">2026-04-28</td>
+          <td>4/26 已中标 · 等签合同</td>
+        </tr>
+        <tr>
+          <td class="mono">4</td>
+          <td class="mono">OPP-2025-0210</td>
+          <td>湖北宏泰 HCM</td>
+          <td>湖北宏泰</td>
+          <td>华东</td>
+          <td>湖北</td>
+          <td>周明</td>
+          <td>李雷</td>
+          <td class="num big">580</td>
+          <td class="num">464</td>
+          <td><span class="pill stage">S4-投标</span></td>
+          <td><span class="pill struggle">6月·争取</span></td>
+          <td><span class="tri-cell"><span class="month empty">—</span><span class="month empty">—</span><span class="month struggle">争</span></span></td>
+          <td><span class="pill struggle">争取</span></td>
+          <td class="mono">2026-06-30</td>
+          <td>4/30 已投标 · 5/12 出结果</td>
+        </tr>
+        <tr>
+          <td class="mono">5</td>
+          <td class="mono">OPP-2025-0234</td>
+          <td>山东出版集团一期 HCM</td>
+          <td>山东出版集团</td>
+          <td>山东</td>
+          <td>山东</td>
+          <td>陈飞</td>
+          <td>王正</td>
+          <td class="num big">640</td>
+          <td class="num">512</td>
+          <td><span class="pill stage">S4-投标</span></td>
+          <td><span class="pill struggle">4月·争取</span></td>
+          <td><span class="tri-cell"><span class="month struggle">争</span><span class="month delay">延</span><span class="month empty">—</span></span></td>
+          <td><span class="pill struggle">争取</span></td>
+          <td class="mono">2026-04-25</td>
+          <td><span class="diff-cell">本周变化：<span class="pill new">新增</span><span class="arrow">→</span><span class="pill struggle">争取</span></span></td>
+        </tr>
+        <tr style="background: var(--bg-card-quiet);">
+          <td class="mono">6</td>
+          <td class="mono">OPP-2026-0011</td>
+          <td>中信华创信用 HCM</td>
+          <td>中信华创</td>
+          <td>央企</td>
+          <td>战略客户</td>
+          <td>张明</td>
+          <td>张华</td>
+          <td class="num big">1,920</td>
+          <td class="num">1,536</td>
+          <td><span class="pill stage">S3-方案</span></td>
+          <td><span class="pill commit">6月·承诺</span></td>
+          <td><span class="tri-cell"><span class="month empty">—</span><span class="month empty">—</span><span class="month commit">承</span></span></td>
+          <td><span class="pill commit">承诺</span></td>
+          <td class="mono">2026-06-25</td>
+          <td>5/2 方案二审通过</td>
+        </tr>
+        <tr>
+          <td class="mono">7</td>
+          <td class="mono">OPP-2026-0045</td>
+          <td>中建八局海外人力</td>
+          <td>中建八局</td>
+          <td>央企</td>
+          <td>大企业</td>
+          <td>陈飞</td>
+          <td>张华</td>
+          <td class="num big">510</td>
+          <td class="num">408</td>
+          <td><span class="pill stage">S4-投标</span></td>
+          <td><span class="pill commit">4月·承诺</span></td>
+          <td><span class="tri-cell"><span class="month commit">承</span><span class="month empty">—</span><span class="month empty">—</span></span></td>
+          <td><span class="pill commit">承诺</span></td>
+          <td class="mono">2026-04-28</td>
+          <td>4/29 客户已确认</td>
+        </tr>
+        <tr style="background: var(--bg-card-quiet);">
+          <td class="mono">8</td>
+          <td class="mono">OPP-2026-0067</td>
+          <td>华夏银行薪酬模块（北京）</td>
+          <td>华夏银行</td>
+          <td>华北</td>
+          <td>北京</td>
+          <td>陈飞</td>
+          <td>李雷</td>
+          <td class="num big">540</td>
+          <td class="num">432</td>
+          <td><span class="pill stage">S4-投标</span></td>
+          <td><span class="pill done">5月·已达成</span></td>
+          <td><span class="tri-cell"><span class="month empty">—</span><span class="month done">达</span><span class="month empty">—</span></span></td>
+          <td><span class="pill done">已达成</span></td>
+          <td class="mono">2026-05-03</td>
+          <td>5/3 实际签约 5,400 万</td>
+        </tr>
+        <tr>
+          <td colspan="16" style="text-align: center; padding: 14px; color: var(--ink-mute); font-family: var(--font-mono); font-size: 11px; background: var(--bg-card-quiet);">⌄ 还有 39 行 · 滚动加载</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 底部汇总条 -->
+    <div class="summary-bar" style="border-radius: 0 0 var(--r-md) var(--r-md); margin-top: -1px;">
+      <div class="item">
+        <div class="k">合计 47 项</div>
+        <div class="v">¥ 4,128 <span style="font-size: 13px; color: var(--ink-mute); font-family: var(--font-cn);">万</span></div>
+      </div>
+      <div class="item">
+        <div class="k">加权预测</div>
+        <div class="v" style="color: var(--ink-green);">¥ 2,890 <span style="font-size: 13px; color: var(--ink-mute); font-family: var(--font-cn);">万</span></div>
+      </div>
+      <div class="item">
+        <div class="k">4 月可达</div>
+        <div class="v">¥ 1,420 <span style="font-size: 13px; color: var(--ink-mute); font-family: var(--font-cn);">万</span></div>
+      </div>
+      <div class="item">
+        <div class="k">5 月可达</div>
+        <div class="v">¥ 980 <span style="font-size: 13px; color: var(--ink-mute); font-family: var(--font-cn);">万</span></div>
+      </div>
+      <div class="item">
+        <div class="k">6 月可达</div>
+        <div class="v">¥ 490 <span style="font-size: 13px; color: var(--ink-mute); font-family: var(--font-cn);">万</span></div>
+      </div>
+      <div class="item">
+        <div class="k">⚙ Q2 派生</div>
+        <div class="v" style="color: var(--blue);">¥ 2,890 <span style="font-size: 13px; color: var(--ink-mute); font-family: var(--font-cn);">万</span></div>
+      </div>
+      <div class="item" style="margin-left: auto;">
+        <div class="k">导出</div>
+        <div class="v" style="font-family: var(--font-cn); font-size: 12px;"><a style="color: var(--ink); cursor: pointer; text-decoration: underline;">Excel</a> · <a style="color: var(--ink); cursor: pointer; text-decoration: underline;">PDF</a></div>
+      </div>
+    </div>
+
+    <!-- 其它 4 张报表的列结构示意（折叠） -->
+    <div style="margin-top: 36px; padding: 18px; background: var(--bg-paper); border: 1px dashed var(--line-strong); border-radius: var(--r-md);">
+      <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px;">其余 4 张报表 · 列结构索引（切换 tab 后展示）</div>
+
+      <table style="width: 100%; font-family: var(--font-cn); font-size: 12px;">
+        <tr style="border-bottom: 1px solid var(--line);">
+          <td style="padding: 8px 4px; font-weight: 500; vertical-align: top; width: 140px;">📄 投标明细</td>
+          <td style="padding: 8px 4px; color: var(--ink-soft);">14 字段 · MU / 客户名称 / 客户经理 / 售前经理 / 投标金额 / 关键应用 / 参与厂商 / 投标日期 / 投标结果（已投/中标/丢标）/ 当前进展 / 概率 / 达成可能 / 风险标签 / 结果备注</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--line);">
+          <td style="padding: 8px 4px; font-weight: 500; vertical-align: top;">📄 预计投标明细</td>
+          <td style="padding: 8px 4px; color: var(--ink-soft);">同上 14 字段 + <code style="font-family: var(--font-mono); font-size: 11px; background: var(--bg-card-accent); padding: 1px 5px; border-radius: 3px;">WHERE 投标结果 = '待投'</code> AND 投标日期 ∈ 当前季度 · 增加 4/5/6 月可达性三连格</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--line);">
+          <td style="padding: 8px 4px; font-weight: 500; vertical-align: top;">📄 预计签单明细</td>
+          <td style="padding: 8px 4px; color: var(--ink-soft);">15 字段 · HCM区域 / MU / 商机编号 / 商机名称 / 售前 / 销售 / 预计签单金额 / 预计签单毛利 / 合同签约主体 / 预计签约归档时间 / <b>本周/上周/月初归档达成可能</b>（快照对比）/ 过程跟进 · 状态：承诺/争取/已达成/延期</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 4px; font-weight: 500; vertical-align: top;">📄 预计回款明细</td>
+          <td style="padding: 8px 4px; color: var(--ink-soft);">15 字段 · HCM区域 / 合同编号 / 项目名称 / 合同金额 / 回款类型（方案/首付/上线/初验/终验/尾款/服务/工作量）/ 回款条件达成状态（是/否/部分）/ 回款金额 / 回款收入 / 回款毛利 / 回款时间 / 本周/上周/月初达成可能 / 当前进展</td>
+        </tr>
+      </table>
+    </div>
+  </main>
+</div>
+
+<script>
+if (new URLSearchParams(location.search).get('embedded') === '1') {
+  const sb = document.querySelector('.sidebar'); if (sb) sb.style.display = 'none';
+  const app = document.querySelector('.app'); if (app) app.style.gridTemplateColumns = '1fr';
+}
+// v3 加：5 tabs 切换 — 仅切换 active class（视觉演示）+ 提示后续报表
+document.querySelectorAll('.report-tab[data-tab]').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.report-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const tn = tab.dataset.tab;
+    const tableHead = document.querySelector('.report-desc .source');
+    const titleMap = {
+      'key-opp': '商机信息表 WHERE 预计签约归档时间 LIKE \'2026%\' AND 预计签单金额 ≥ 500 万 AND 商机状态 = 进行中 · 17 字段子集',
+      'bid-actual': '投标管理表 WHERE 投标结果 IN (已投/中标/丢标/等结果) · 14 字段',
+      'bid-forecast': '投标管理表 WHERE 投标结果 = 待投 AND 投标日期 ∈ 当前季度 · 14 字段 + 4-5-6 月可达性',
+      'signing-forecast': '商机信息表 WHERE 商机阶段 = 中标未签单 · 15 字段（含本周/上周/月初快照对比）',
+      'payment-forecast': 'payment_data WHERE 状态 ≠ 已收 · 15 字段 + 8 类回款类型 + 周快照对比',
+    };
+    if (tableHead && titleMap[tn]) tableHead.textContent = titleMap[tn];
+    // 加一个临时的 toast 让用户知道"切换"是 demo 性质
+    let toast = document.getElementById('tab-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'tab-toast';
+      toast.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#faf8f3;padding:10px 18px;border-radius:8px;font-family:var(--font-cn);font-size:12px;box-shadow:0 4px 14px rgba(0,0,0,0.2);z-index:100;opacity:0;transition:opacity 0.2s;';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = `切换到 ${tab.textContent.trim()}（v1 仅展示数据源说明，完整 UI 见 v3 doc 计划）`;
+    toast.style.opacity = '1';
+    setTimeout(() => toast.style.opacity = '0', 2400);
+  });
+});
+</script>
+</body>
+</html>

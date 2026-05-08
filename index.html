@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>业绩运营系统 · v4 原型集合</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-stage: #ebe8df; --bg-paper: #faf8f3; --bg-card: #ffffff; --bg-card-quiet: #fcfbf7; --bg-card-accent: #f5f2e9;
+  --ink: #1c1f1e; --ink-soft: #44504a; --ink-mute: #8b928d; --ink-faint: #c8ccc6;
+  --ink-green: #1e5537; --ink-green-soft: rgba(30,85,55,0.08); --ink-green-mid: rgba(30,85,55,0.22);
+  --steel: #475569;
+  --amber: #b45309; --amber-soft: rgba(180,83,9,0.08);
+  --crimson: #991b1b;
+  --blue: #1d4ed8; --blue-soft: rgba(37,99,235,0.08);
+  --line: rgba(28,31,30,0.08); --line-mid: rgba(28,31,30,0.12); --line-strong: rgba(28,31,30,0.18);
+  --r-sm: 6px; --r-md: 10px; --r-lg: 14px;
+  --font-display: 'Instrument Serif', 'Noto Serif SC', Georgia, serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-sans: 'Manrope', 'PingFang SC', sans-serif;
+  --font-cn: 'Noto Serif SC', 'PingFang SC', serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { background: var(--bg-stage); color: var(--ink); font-family: var(--font-sans); font-size: 14px; overflow: hidden; }
+
+.shell { height: 100vh; display: grid; grid-template-rows: 56px 1fr; grid-template-columns: 280px 1fr; }
+.shell-header { grid-column: 1 / -1; background: var(--ink); color: #faf8f3; padding: 0 24px; display: flex; align-items: center; gap: 18px; border-bottom: 1px solid var(--line-strong); }
+.shell-header .brand { font-family: var(--font-display); font-size: 22px; font-weight: 400; }
+.shell-header .brand em { font-style: italic; color: #d4ae80; }
+.shell-header .tag { font-family: var(--font-mono); font-size: 10px; color: var(--ink-faint); letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.18); border-radius: 14px; }
+.shell-header .meta { margin-left: auto; font-family: var(--font-mono); font-size: 11px; color: var(--ink-faint); }
+.shell-header .meta strong { color: #faf8f3; }
+
+.shell-nav { grid-row: 2; background: var(--bg-paper); border-right: 1px solid var(--line); overflow-y: auto; padding: 18px 14px; }
+.module { margin-bottom: 18px; }
+.module-head { font-family: var(--font-display); font-size: 18px; font-weight: 400; padding: 8px 10px; line-height: 1.1; color: var(--ink); display: flex; align-items: baseline; gap: 8px; }
+.module-head em { font-style: italic; color: var(--ink-green); font-size: 22px; }
+.module-head .num { font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); letter-spacing: 0.06em; }
+.sub-section { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.14em; text-transform: uppercase; padding: 8px 10px 4px; margin-top: 4px; }
+.proto-link { display: block; padding: 6px 10px 6px 26px; font-family: var(--font-cn); font-size: 13px; color: var(--ink-soft); border-radius: 5px; cursor: pointer; text-decoration: none; transition: background 0.1s; position: relative; margin-bottom: 1px; }
+.proto-link:hover { background: var(--bg-card-accent); color: var(--ink); }
+.proto-link.active { background: var(--ink); color: #faf8f3; }
+.proto-link .num { position: absolute; left: 6px; top: 7px; font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); }
+.proto-link.active .num { color: #d4ae80; }
+.proto-link .badge { display: inline-block; font-family: var(--font-mono); font-size: 8px; padding: 1px 5px; border-radius: 3px; letter-spacing: 0.06em; margin-left: 4px; }
+.proto-link .badge.new { background: var(--blue-soft); color: var(--blue); border: 1px solid var(--blue); }
+.proto-link .badge.redo { background: var(--ink-green-soft); color: var(--ink-green); border: 1px solid var(--ink-green); }
+.proto-link .badge.legacy { background: var(--bg-card-quiet); color: var(--ink-mute); border: 1px solid var(--line-strong); }
+
+.shell-body { grid-row: 2; position: relative; background: var(--bg-stage); overflow: hidden; }
+.shell-body iframe { width: 100%; height: 100%; border: none; background: transparent; }
+
+.welcome { padding: 48px 64px; max-width: 880px; height: 100%; overflow-y: auto; background: var(--bg-stage); }
+.welcome h1 { font-family: var(--font-display); font-size: 52px; font-weight: 400; line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 12px; }
+.welcome h1 em { font-style: italic; color: var(--ink-green); }
+.welcome .lede { font-family: var(--font-cn); font-size: 16px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--line-strong); }
+.welcome h2 { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; color: var(--ink-mute); text-transform: uppercase; padding-top: 20px; margin: 20px 0 12px; border-top: 1px solid var(--line); }
+.welcome p { font-family: var(--font-cn); font-size: 14px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 12px; }
+.welcome p b { color: var(--ink); }
+.welcome p code { font-family: var(--font-mono); font-size: 12px; background: var(--bg-card-accent); padding: 1px 5px; border-radius: 3px; }
+
+.module-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px; }
+.mc { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 18px 20px; }
+.mc h3 { font-family: var(--font-display); font-size: 22px; font-weight: 400; margin-bottom: 4px; line-height: 1; }
+.mc h3 em { font-style: italic; color: var(--ink-green); }
+.mc .desc { font-family: var(--font-cn); font-size: 12px; color: var(--ink-mute); margin-bottom: 10px; }
+.mc ul { list-style: none; padding: 0; }
+.mc li { padding: 4px 0; font-family: var(--font-cn); font-size: 12px; color: var(--ink-soft); border-bottom: 1px dashed var(--line); cursor: pointer; }
+.mc li:last-child { border-bottom: none; }
+.mc li:hover { color: var(--ink-green); }
+.mc li .stat { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-left: 6px; padding: 1px 4px; background: var(--bg-card-quiet); border-radius: 3px; }
+.mc li .stat.new { background: var(--blue-soft); color: var(--blue); }
+.mc li .stat.redo { background: var(--ink-green-soft); color: var(--ink-green); }
+
+.changelog { background: var(--bg-card-accent); border: 1px solid var(--line-strong); border-radius: var(--r-md); padding: 14px 18px; margin-top: 14px; }
+.changelog .label { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+.changelog ul { list-style: none; padding: 0; font-family: var(--font-cn); font-size: 12px; color: var(--ink-soft); line-height: 1.8; }
+.changelog ul li { padding-left: 16px; position: relative; }
+.changelog ul li::before { content: "→"; position: absolute; left: 0; color: var(--ink-green); }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <header class="shell-header">
+    <div class="brand">业绩 <em>运营</em> · 原型 v4</div>
+    <span class="tag">2026-05-07 v6 细节迭代</span>
+    <span class="tag">4 大模块 · 17 页面（删低毛利栏）</span>
+    <div class="meta">
+      为 <strong>黄诗览</strong> · 基于你早上手稿 · v3 → v4
+    </div>
+  </header>
+
+  <nav class="shell-nav">
+
+    <div class="module">
+      <div class="module-head">
+        <span class="num">1.</span>
+        经营 <em>驾驶舱</em>
+      </div>
+      <a class="proto-link" data-target="welcome"><span class="num">·</span>📖 总览</a>
+      <a class="proto-link" data-target="40-overall-dashboard.html"><span class="num">1.1</span>整体业绩一览表<span class="badge redo">v4</span></a>
+      <a class="proto-link" data-target="05-region-overview.html"><span class="num">1.2</span>区域业绩一览表</a>
+    </div>
+
+    <div class="module">
+      <div class="module-head">
+        <span class="num">2.</span>
+        明细 <em>报表</em>
+      </div>
+      <a class="proto-link" data-target="41-key-opportunities.html"><span class="num">2.1</span>全年重点商机<span class="badge redo">v4</span></a>
+      <a class="proto-link" data-target="42-bid-detail.html"><span class="num">2.2</span>投标明细<span class="badge redo">v4</span></a>
+      <a class="proto-link" data-target="43-signing-detail.html"><span class="num">2.3</span>签单明细<span class="badge redo">v4</span></a>
+      <a class="proto-link" data-target="44-payment-detail.html"><span class="num">2.4</span>回款明细<span class="badge redo">v4</span></a>
+    </div>
+
+    <div class="module">
+      <div class="module-head">
+        <span class="num">3.</span>
+        业务 <em>功能</em>
+      </div>
+      <div class="sub-section">3.1 营销管理</div>
+      <a class="proto-link" data-target="45-customer-management.html"><span class="num">3.1.1</span>客户管理<span class="badge new">新</span></a>
+      <a class="proto-link" data-target="46-opportunity-mgmt-merged.html"><span class="num">3.1.2</span>商机管理（含 Review）<span class="badge redo">v4</span></a>
+      <a class="proto-link" data-target="56-campaign-management.html"><span class="num">3.1.3</span>营销战役管理<span class="badge new">新</span></a>
+      <div class="sub-section">3.2 交付管理</div>
+      <a class="proto-link" data-target="47-project-management.html"><span class="num">3.2.1</span>项目管理<span class="badge new">新</span></a>
+      <a class="proto-link" data-target="48-payment-milestones.html"><span class="num">3.2.2</span>回款里程碑<span class="badge new">新</span></a>
+    </div>
+
+    <div class="module">
+      <div class="module-head">
+        <span class="num">4.</span>
+        数据 <em>导入与维护</em>
+      </div>
+      <a class="proto-link" data-target="50-import-signing.html"><span class="num">4.1</span>签单明细导入<span class="badge new">新</span></a>
+      <a class="proto-link" data-target="51-import-payment.html"><span class="num">4.2</span>回款明细导入<span class="badge new">新</span></a>
+      <a class="proto-link" data-target="49-import-project.html"><span class="num">4.3</span>项目明细导入<span class="badge new">新</span></a>
+      <a class="proto-link" data-target="55-import-milestones.html"><span class="num">4.4</span>里程碑导入<span class="badge new">新</span></a>
+      <a class="proto-link" data-target="01-import-mapping-popup.html"><span class="num">4.5</span>项目对应表<span class="badge redo">v6</span></a>
+      <a class="proto-link" data-target="53-metric-config.html"><span class="num">4.6</span>指标与预测模型设置<span class="badge redo">v6</span></a>
+      <a class="proto-link" data-target="54-region-config.html"><span class="num">4.7</span>区域划分与权限控制<span class="badge redo">v6</span></a>
+    </div>
+
+    <div class="module">
+      <div class="module-head" style="font-size: 14px;">
+        附录 · 沿用
+      </div>
+      <a class="proto-link" data-target="00-design-tokens.html"><span class="num">·</span>🎨 设计 Tokens</a>
+      <a class="proto-link" data-target="11-mobile-additions.html"><span class="num">·</span>📱 移动端补充</a>
+      <a class="proto-link" data-target="10-partner-channel.html"><span class="num">·</span>🤝 渠道伙伴 (P2)</a>
+      <a class="proto-link" data-target="15-data-flow-diagram.html"><span class="num">·</span>📊 数据血缘</a>
+      <a class="proto-link" data-target="legacy-mobile-v4.html"><span class="num">·</span>📱 你的 V4 移动端</a>
+      <a class="proto-link" data-target="legacy-pc-plan2.html"><span class="num">·</span>💻 你的方案二 PC</a>
+    </div>
+
+  </nav>
+
+  <main class="shell-body">
+
+    <div class="welcome" id="welcome">
+      <h1>业绩 <em>运营系统</em><br>原型 v4 · 4 大模块重组</h1>
+      <p class="lede">基于你 5/7 早上的手稿，把原 16 个原型重新归位到 <b>4 大模块 17 个页面</b>。新建/重做的页面用 <span style="background: var(--blue-soft); color: var(--blue); padding: 1px 6px; border-radius: 3px; font-family: var(--font-mono); font-size: 11px;">新</span> 和 <span style="background: var(--ink-green-soft); color: var(--ink-green); padding: 1px 6px; border-radius: 3px; font-family: var(--font-mono); font-size: 11px;">v4</span> 标记。</p>
+
+      <h2>4 大模块速览</h2>
+      <div class="module-cards">
+
+        <div class="mc">
+          <h3>1. 经营 <em>驾驶舱</em></h3>
+          <div class="desc">董事长 / 区总 / PMO 三级视角</div>
+          <ul>
+            <li data-jump="40-overall-dashboard.html">1.1 整体业绩一览表 <span class="stat redo">v4</span></li>
+            <li data-jump="05-region-overview.html">1.2 区域业绩一览表 <span class="stat">沿用</span></li>
+          </ul>
+        </div>
+
+        <div class="mc">
+          <h3>2. 明细 <em>报表</em></h3>
+          <div class="desc">每张报表 = 汇总条 + 明细，含已发生 + 预测</div>
+          <ul>
+            <li data-jump="41-key-opportunities.html">2.1 全年重点商机 <span class="stat redo">v4</span></li>
+            <li data-jump="42-bid-detail.html">2.2 投标明细（5 数汇总）<span class="stat redo">v4</span></li>
+            <li data-jump="43-signing-detail.html">2.3 签单明细 <span class="stat redo">v4</span></li>
+            <li data-jump="44-payment-detail.html">2.4 回款明细 <span class="stat redo">v4</span></li>
+          </ul>
+        </div>
+
+        <div class="mc">
+          <h3>3. 业务 <em>功能</em></h3>
+          <div class="desc">营销管理 + 交付管理两条主链</div>
+          <ul>
+            <li data-jump="45-customer-management.html">3.1.1 客户管理 <span class="stat new">新</span></li>
+            <li data-jump="46-opportunity-mgmt-merged.html">3.1.2 商机管理（含 Review）<span class="stat redo">v4</span></li>
+            <li data-jump="56-campaign-management.html">3.1.3 营销战役管理 (嵌套父子战役)<span class="stat new">新</span></li>
+            <li data-jump="47-project-management.html">3.2.1 项目管理 <span class="stat new">新</span></li>
+            <li data-jump="48-payment-milestones.html">3.2.2 回款里程碑 <span class="stat new">新</span></li>
+          </ul>
+        </div>
+
+        <div class="mc">
+          <h3>4. 数据 <em>导入与维护</em></h3>
+          <div class="desc">7 项独立 · 日常运营 vs 年度配置</div>
+          <ul>
+            <li data-jump="50-import-signing.html">4.1 签单明细导入 <span class="stat new">新</span></li>
+            <li data-jump="51-import-payment.html">4.2 回款明细导入 <span class="stat new">新</span></li>
+            <li data-jump="49-import-project.html">4.3 项目明细导入 <span class="stat new">新</span></li>
+            <li data-jump="55-import-milestones.html">4.4 里程碑导入 <span class="stat new">新</span></li>
+            <li data-jump="01-import-mapping-popup.html">4.5 项目对应表（HCM 区域拆签单/收入）<span class="stat redo">v6</span></li>
+            <li data-jump="53-metric-config.html">4.6 指标与预测模型设置（4 目标 × 4 栏）<span class="stat redo">v6</span></li>
+            <li data-jump="54-region-config.html">4.7 区域划分与权限控制（5 角色）<span class="stat redo">v6</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <h2>v3 → v4 关键变化</h2>
+      <div class="changelog">
+        <div class="label">主要重组动作</div>
+        <ul>
+          <li><b>报表合并：</b>原"预计投标 / 预计签单 / 预计回款"3 张表 → 合并到对应 4 张明细报表里（含已发生 + 预测两组数据）</li>
+          <li><b>商机管理统一：</b>原"商机 Review (02)" + "商机管理 (14)" → 合并成单一"商机管理"页（含 Review 字段 + 月度滚动预测）</li>
+          <li><b>交付拆分：</b>原"项目 Review (12)" → 拆成"项目管理"+"回款里程碑" 2 个独立页</li>
+          <li><b>导入细化：</b>原"数据导入中心" → 拆成 7 个独立子页（4.1-4.7）</li>
+          <li><b>新增汇总条：</b>每张明细报表顶部加"已投/已丢/等结果/待投/待推动"5 数（投标）等汇总条</li>
+          <li><b>客户管理独立：</b>之前在商机里的客户基础信息 → 独立成"3.1.1 客户管理"页</li>
+        </ul>
+      </div>
+
+      <h2>v4 构建状态</h2>
+      <p>
+        <b>✅ 沿用 v3 的页面</b>：1.2 区域业绩 / 4.4 项目对应表 / 附录页面（设计 Tokens / 移动端补充 / 渠道伙伴 / 数据血缘）<br>
+        <b>🛠 v4 重做的页面</b>：1.1 整体业绩 / 2.1-2.4 四张明细报表 / 3.1.2 商机管理（合并）<br>
+        <b>⭐ v4 新增的页面</b>：3.1.1 客户管理 / 3.2.1 项目管理 / 3.2.2 回款里程碑 / 4.1-4.3 三个 OMS 导入 / 4.5-4.7 三个配置子页
+      </p>
+
+      <p><b>当前 v4 构建进度：导航重组完成 ✅ · 页面 10/17 完成（沿用 + 部分重做）· 剩 7 个新增页面正在持续生成中。</b></p>
+    </div>
+
+    <iframe id="proto-frame" style="display: none;"></iframe>
+
+  </main>
+</div>
+
+<script>
+(function(){
+  const links = document.querySelectorAll('.proto-link');
+  const iframe = document.getElementById('proto-frame');
+  const welcome = document.getElementById('welcome');
+
+  function showWelcome() {
+    welcome.style.display = 'block';
+    iframe.style.display = 'none';
+    links.forEach(l => l.classList.remove('active'));
+    document.querySelector('[data-target="welcome"]').classList.add('active');
+    location.hash = '';
+  }
+
+  function loadProto(target) {
+    if (target === 'welcome') { showWelcome(); return; }
+    welcome.style.display = 'none';
+    iframe.style.display = 'block';
+    iframe.src = target + (target.includes('?') ? '&' : '?') + 'embedded=1';
+    location.hash = target;
+    links.forEach(l => l.classList.remove('active'));
+    document.querySelector(`[data-target="${target}"]`)?.classList.add('active');
+  }
+
+  links.forEach(link => {
+    link.addEventListener('click', e => { e.preventDefault(); loadProto(link.dataset.target); });
+  });
+  document.querySelectorAll('[data-jump]').forEach(a => {
+    a.addEventListener('click', e => { e.preventDefault(); loadProto(a.dataset.jump); });
+  });
+
+  const initial = location.hash.slice(1);
+  if (initial && initial !== 'welcome') loadProto(initial); else showWelcome();
+})();
+</script>
+</body>
+</html>

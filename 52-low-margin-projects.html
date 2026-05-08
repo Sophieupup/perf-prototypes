@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><title>4.5 低毛利项目</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+</style></head><body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">业绩 <em>运营</em></div>
+    <div class="brand-sub">PERFORMANCE OPS · v4</div>
+    <div class="nav-section">4 数据导入与维护</div>
+    <a class="nav-item">4.1 项目明细导入</a>
+    <a class="nav-item">4.2 签单明细导入</a>
+    <a class="nav-item">4.3 回款明细导入</a>
+    <a class="nav-item">4.4 项目对应表</a>
+    <a class="nav-item active">4.5 低毛利项目</a>
+    <a class="nav-item">4.6 指标导入</a>
+    <a class="nav-item">4.7 区域划分</a>
+  </aside>
+
+  <main class="main">
+    <div class="crumb">数据导入与维护 <span class="sep">/</span> 低毛利项目</div>
+    <h1 class="page-title">4.5 低毛利 <em>项目</em></h1>
+    <div class="page-meta">命中此表的项目用例外毛利率（不走默认 80%）· 影响 2.4 回款明细 / 1.x 看板 的毛利计算</div>
+
+    <div class="kpi-row">
+      <div class="kpi-card warn"><div class="label">例外项数</div><div class="value">3</div><div class="delta">仍 active</div></div>
+      <div class="kpi-card"><div class="label">影响 YTD 金额</div><div class="value">¥ 2,892<span class="unit">万</span></div><div class="delta">12% 总回款</div></div>
+      <div class="kpi-card"><div class="label">默认毛利率</div><div class="value">80<span class="unit">%</span></div><div class="delta">系统默认（4.6 可调）</div></div>
+      <div class="kpi-card warn"><div class="label">例外平均毛利率</div><div class="value">52<span class="unit">%</span></div><div class="delta">vs 默认 80% · 损 ¥ 810 万</div></div>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn primary">+ 添加例外</button>
+      <button class="btn">📤 批量导入 Excel</button>
+      <button class="btn">📥 下载当前清单</button>
+      <div class="group">状态 <select><option>全部 (3)</option><option>active (3)</option><option>archived (0)</option></select></div>
+      <input class="search" placeholder="项目编号搜索...">
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width:28px;">#</th>
+          <th>项目编号</th>
+          <th>项目名称</th>
+          <th>客户</th>
+          <th class="num">自定义毛利率</th>
+          <th class="num">或直接金额（万）</th>
+          <th>原因</th>
+          <th>生效起</th>
+          <th>状态</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="mono">1</td>
+          <td class="mono">XS-LCTR-2025-0091</td>
+          <td>中信集团 HCM 综合运维</td>
+          <td>中信集团</td>
+          <td class="num"><b>45%</b></td>
+          <td class="num">—</td>
+          <td>大客户战略让利</td>
+          <td class="mono">2026-04-01</td>
+          <td><span class="pill done">active</span></td>
+          <td><a style="color: var(--blue); font-size: 11px;">编辑</a></td>
+        </tr>
+        <tr>
+          <td class="mono">2</td>
+          <td class="mono">FW-LCHY-2024-0725</td>
+          <td>江淮汽车人力二期运维</td>
+          <td>江淮汽车</td>
+          <td class="num">—</td>
+          <td class="num"><b>12.50</b></td>
+          <td>包年合同定额毛利</td>
+          <td class="mono">2026-01-01</td>
+          <td><span class="pill done">active</span></td>
+          <td><a style="color: var(--blue); font-size: 11px;">编辑</a></td>
+        </tr>
+        <tr>
+          <td class="mono">3</td>
+          <td class="mono">XS-LCTR-2025-0064</td>
+          <td>中国建筑第六工程局 HCM</td>
+          <td>中建六局</td>
+          <td class="num"><b>62%</b></td>
+          <td class="num">—</td>
+          <td>含外包成本 · 毛利率较低</td>
+          <td class="mono">2026-03-01</td>
+          <td><span class="pill done">active</span></td>
+          <td><a style="color: var(--blue); font-size: 11px;">编辑</a></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <div class="label">毛利计算规则</div>
+      <div class="text">
+        <b>默认</b>：回款毛利 = 回款收入 × 80%（4.6 指标导入 可调）<br>
+        <b>命中本表</b>：用<code style="font-family: var(--font-mono); background: var(--bg-card-accent); padding: 1px 4px;">custom_gp_ratio</code> 替代 80%；或用 <code style="font-family: var(--font-mono); background: var(--bg-card-accent); padding: 1px 4px;">custom_gp_amount</code> 直接固定金额（二选一）<br>
+        <b>UI 提示</b>：在 2.4 回款明细的毛利列附 ⚠ tooltip 标识"例外项目"
+      </div>
+    </div>
+  </main>
+</div>
+<script>if (new URLSearchParams(location.search).get('embedded') === '1') { document.querySelector('.sidebar').style.display = 'none'; document.querySelector('.app').style.gridTemplateColumns = '1fr'; }</script>
+</body></html>

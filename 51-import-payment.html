@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><title>4.3 回款明细导入</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.upload-zone { background: var(--bg-card); border: 2px dashed var(--line-strong); border-radius: var(--r-lg); padding: 40px; text-align: center; margin-bottom: 18px; }
+.upload-zone .icon { font-family: var(--font-display); font-size: 48px; color: var(--ink-mute); }
+.upload-zone .title { font-family: var(--font-cn); font-size: 18px; margin: 8px 0 4px; }
+.upload-zone .desc { font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); margin-bottom: 16px; }
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+.import-status { display: inline-flex; padding: 2px 8px; border-radius: 3px; font-family: var(--font-mono); font-size: 9px; font-weight: 500; }
+.import-status.success { background: var(--ink-green-soft); color: var(--ink-green); }
+</style></head><body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">业绩 <em>运营</em></div>
+    <div class="brand-sub">PERFORMANCE OPS · v4</div>
+    <div class="nav-section">4 数据导入与维护</div>
+    <a class="nav-item">4.1 签单明细导入</a>
+    <a class="nav-item active">4.2 回款明细导入</a>
+    <a class="nav-item">4.3 项目明细导入</a>
+    <a class="nav-item">4.4 里程碑导入</a>
+    <a class="nav-item">4.5 项目对应表</a>
+    <a class="nav-item">4.6 指标与预测模型设置</a>
+    <a class="nav-item">4.7 区域划分与权限控制</a>
+  </aside>
+
+  <main class="main">
+    <div class="crumb">数据导入与维护 <span class="sep">/</span> 回款明细导入</div>
+    <h1 class="page-title">4.3 回款明细 <em>导入</em></h1>
+    <div class="page-meta">2026 回款流水 · 27 字段 · OMS 财务模块 + 含销售收入/回款毛利字段</div>
+
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="label">YTD 回款流水</div><div class="value">94 笔</div><div class="delta">¥ 4,010 万</div></div>
+      <div class="kpi-card good"><div class="label">最近同步</div><div class="value">5/6 18:00</div><div class="delta">+3 笔 / +¥ 58 万</div></div>
+      <div class="kpi-card"><div class="label">YTD 销售收入</div><div class="value">¥ 3,870<span class="unit">万</span></div><div class="delta">扣代理分成等</div></div>
+      <div class="kpi-card"><div class="label">YTD 回款毛利</div><div class="value">¥ 2,424<span class="unit">万</span></div><div class="delta">命中低毛利 3 项</div></div>
+    </div>
+
+    <div class="upload-zone">
+      <div class="icon">⬆</div>
+      <div class="title">OMS API 同步 + Excel 备份</div>
+      <div class="desc">每天 18:00 自动同步 · 主键 单据编号 · 27 字段</div>
+      <button class="btn primary">📥 OMS API 立即同步</button>
+      <button class="btn">📤 上传 Excel</button>
+      <button class="btn">📋 下载模板</button>
+    </div>
+
+    <h3 style="font-family: var(--font-display); font-size: 22px; margin: 20px 0 12px;">最近同步历史</h3>
+    <table class="data-table">
+      <thead><tr><th>时间</th><th>状态</th><th class="num">新增</th><th class="num">总笔数</th><th class="num">总金额</th><th>用时</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">5/6 18:00</td><td><span class="import-status success">success</span></td><td class="num">+3</td><td class="num">94</td><td class="num">¥ 4,010 万</td><td>1.2s</td></tr>
+        <tr><td class="mono">5/5 18:00</td><td><span class="import-status success">success</span></td><td class="num">+1</td><td class="num">91</td><td class="num">¥ 3,952 万</td><td>0.9s</td></tr>
+        <tr><td class="mono">5/4 18:00</td><td><span class="import-status success">success</span></td><td class="num">+2</td><td class="num">90</td><td class="num">¥ 3,920 万</td><td>1.0s</td></tr>
+        <tr><td class="mono">5/3 18:00</td><td><span class="import-status success">success</span></td><td class="num">+5</td><td class="num">88</td><td class="num">¥ 3,840 万</td><td>1.3s</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-family: var(--font-display); font-size: 22px; margin: 20px 0 12px;">27 字段示意（部分）</h3>
+    <div style="background: var(--bg-paper); border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px 18px; font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft); line-height: 1.8;">
+      单据编号（主键）/ 合同归档号 / 合同名称 / 销售收入 / 回款毛利 / 净回款 / 回款日期 / 客户名称 /
+      回款属性 / 回款属性细分 / BU 一级二级 / MU 一级二级 / 回款年月日 / 渠道 / 产品 / 合同类型 / 产品线 /
+      回款状态 / 新签或历史 / 客户经理 / 项目编号 / 项目名称 ...
+    </div>
+  </main>
+</div>
+<script>if (new URLSearchParams(location.search).get('embedded') === '1') { document.querySelector('.sidebar').style.display = 'none'; document.querySelector('.app').style.gridTemplateColumns = '1fr'; }</script>
+</body></html>

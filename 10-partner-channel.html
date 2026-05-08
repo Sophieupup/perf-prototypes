@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>渠道伙伴 · Phase 1 简化版</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line-strong); margin-bottom: 18px; }
+.tab { padding: 10px 18px; font-family: var(--font-cn); font-size: 13px; color: var(--ink-mute); cursor: pointer; border-bottom: 2px solid transparent; }
+.tab.active { color: var(--ink); border-bottom-color: var(--ink); font-weight: 500; }
+.tab .badge { display: inline-block; font-family: var(--font-mono); font-size: 9px; padding: 1px 6px; border-radius: 8px; background: var(--bg-card-quiet); color: var(--ink-mute); margin-left: 6px; }
+.partner-tag { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; background: var(--blue-soft); color: var(--blue); border: 1px solid var(--blue-mid); border-radius: 12px; font-family: var(--font-mono); font-size: 10px; font-weight: 500; }
+.acquisition-tag { display: inline-block; padding: 2px 6px; font-family: var(--font-mono); font-size: 9px; border-radius: 3px; background: var(--bg-card-quiet); color: var(--ink-soft); border: 1px solid var(--line-strong); }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">业绩 <em>运营</em></div>
+    <div class="brand-sub">PERFORMANCE OPS</div>
+    <div class="nav-section">看板</div>
+    <a class="nav-item">驾驶舱</a>
+    <a class="nav-item">区域业绩</a>
+    <div class="nav-section">明细报表</div>
+    <a class="nav-item">5 张明细</a>
+    <div class="nav-section">数据维护</div>
+    <a class="nav-item">商机管理</a>
+    <a class="nav-item">商机 Review</a>
+    <a class="nav-item">投标管理</a>
+    <a class="nav-item">售前活动登记</a>
+    <a class="nav-item active">渠道伙伴</a>
+    <div class="nav-section">导入 / 配置</div>
+    <a class="nav-item">指标配置</a>
+  </aside>
+
+  <main class="main">
+    <div class="crumb">数据维护 <span class="sep">/</span> 渠道伙伴（Phase 1 简化）</div>
+    <h1 class="page-title">渠道 <em>伙伴</em></h1>
+    <div class="page-meta">Q13 决议：<b style="color: var(--ink);">5/20 仅做"伙伴单位主数据 + is_partner_channel 标签"</b>，完整伙伴客户/商机登记 UI 推到 Phase 2</div>
+
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="label">伙伴单位</div>
+        <div class="value">23</div>
+        <div class="delta">含 18 active · 5 archived</div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">渠道商机数</div>
+        <div class="value">14</div>
+        <div class="delta">占总商机 33%</div>
+      </div>
+      <div class="kpi-card good">
+        <div class="label">渠道签单 YTD</div>
+        <div class="value">¥ 980<span class="unit">万</span></div>
+        <div class="delta">占 YTD 22%</div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">渠道签单毛利率</div>
+        <div class="value">68<span class="unit">%</span></div>
+        <div class="delta">vs 直销 80% (差 12 点)</div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <span class="tab active">伙伴单位主数据 <span class="badge">23</span></span>
+      <span class="tab">渠道商机标签 <span class="badge">14</span></span>
+      <span class="tab" style="opacity: 0.5;">伙伴客户登记 <span class="badge">Phase 2</span></span>
+      <span class="tab" style="opacity: 0.5;">伙伴商机登记 <span class="badge">Phase 2</span></span>
+    </div>
+
+    <!-- Tab 1: 伙伴单位主数据 -->
+    <div class="toolbar">
+      <button class="btn primary">+ 添加伙伴单位</button>
+      <div class="group">状态 <select><option>全部 (23)</option><option>active (18)</option><option>archived (5)</option></select></div>
+      <div class="group">合作类型 <select><option>全部</option><option>SI (10)</option><option>分销 (8)</option><option>OEM (3)</option><option>其他 (2)</option></select></div>
+      <input class="search" placeholder="伙伴单位名 搜索...">
+      <button class="btn">从 Excel 导入</button>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width: 28px;">#</th>
+          <th>伙伴单位名</th>
+          <th>合作类型</th>
+          <th>主联系人</th>
+          <th>联系电话</th>
+          <th class="num">关联商机</th>
+          <th class="num">YTD 签单</th>
+          <th>状态</th>
+          <th>合作起</th>
+          <th style="width: 70px;">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="mono">1</td>
+          <td><div style="font-weight: 500;">深圳XX科技有限公司</div></td>
+          <td><span class="acquisition-tag">SI</span></td>
+          <td>张总</td>
+          <td class="mono">138-0000-1234</td>
+          <td class="num">3</td>
+          <td class="num">¥ 280 万</td>
+          <td><span class="pill done">active</span></td>
+          <td class="mono">2024-08</td>
+          <td><a style="color: var(--blue); font-size: 11px;">编辑</a></td>
+        </tr>
+        <tr>
+          <td class="mono">2</td>
+          <td><div style="font-weight: 500;">北京YY咨询</div></td>
+          <td><span class="acquisition-tag">分销</span></td>
+          <td>李经理</td>
+          <td class="mono">139-0000-5678</td>
+          <td class="num">2</td>
+          <td class="num">¥ 150 万</td>
+          <td><span class="pill done">active</span></td>
+          <td class="mono">2025-03</td>
+          <td><a style="color: var(--blue); font-size: 11px;">编辑</a></td>
+        </tr>
+        <tr>
+          <td class="mono">3</td>
+          <td><div style="font-weight: 500;">广州ZZ信息</div></td>
+          <td><span class="acquisition-tag">SI</span></td>
+          <td>王总</td>
+          <td class="mono">137-0000-9999</td>
+          <td class="num">1</td>
+          <td class="num">¥ 80 万</td>
+          <td><span class="pill done">active</span></td>
+          <td class="mono">2025-09</td>
+          <td><a style="color: var(--blue); font-size: 11px;">编辑</a></td>
+        </tr>
+        <tr style="opacity: 0.6;">
+          <td class="mono">4</td>
+          <td><div style="font-weight: 500;">某某OEM伙伴 (已停止合作)</div></td>
+          <td><span class="acquisition-tag">OEM</span></td>
+          <td>—</td>
+          <td class="mono">—</td>
+          <td class="num">0</td>
+          <td class="num">¥ 0 万</td>
+          <td><span class="pill stage">archived</span></td>
+          <td class="mono">2024-01</td>
+          <td><a style="color: var(--blue); font-size: 11px;">恢复</a></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Tab 2 概览（默认显示在下方） -->
+    <h2 style="font-family: var(--font-display); font-size: 22px; font-weight: 400; margin: 30px 0 12px;">渠道商机 · 标签视图（Phase 1）</h2>
+    <p style="font-family: var(--font-cn); font-size: 12px; color: var(--ink-soft); margin-bottom: 14px;">本视图是商机管理的子集 — 仅显示 <code style="font-family: var(--font-mono); background: var(--bg-card-accent); padding: 1px 5px; border-radius: 3px;">opportunity.is_partner_channel = true</code> 的商机 · 列表与商机管理一致 + 伙伴单位字段</p>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width: 28px;">#</th>
+          <th>商机名</th>
+          <th>客户</th>
+          <th>渠道</th>
+          <th>伙伴单位</th>
+          <th>获取途径</th>
+          <th class="num">预计签单</th>
+          <th>商机阶段</th>
+          <th>预计签单日期</th>
+          <th style="width: 70px;">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="mono">1</td>
+          <td><div style="font-weight: 500;">百果园数据中台扩容</div></td>
+          <td>百果园</td>
+          <td><span class="partner-tag">📡 渠道</span></td>
+          <td>深圳XX科技</td>
+          <td><span class="acquisition-tag">渠道开发</span></td>
+          <td class="num">¥ 17 万</td>
+          <td><span class="pill stage">已签单</span></td>
+          <td class="mono">2026-04-25</td>
+          <td><a style="color: var(--blue); font-size: 11px;">→ 详情</a></td>
+        </tr>
+        <tr>
+          <td class="mono">2</td>
+          <td><div style="font-weight: 500;">广州医药集团 HCM 选型</div></td>
+          <td>广州医药</td>
+          <td><span class="partner-tag">📡 渠道</span></td>
+          <td>广州ZZ信息</td>
+          <td><span class="acquisition-tag">客户介绍</span></td>
+          <td class="num">¥ 240 万</td>
+          <td><span class="pill stage">S2-确认商机</span></td>
+          <td class="mono">2026-08-15</td>
+          <td><a style="color: var(--blue); font-size: 11px;">→ 详情</a></td>
+        </tr>
+        <tr>
+          <td class="mono">3</td>
+          <td><div style="font-weight: 500;">某北方省银行 HCM</div></td>
+          <td>某省银行</td>
+          <td><span class="partner-tag">📡 渠道</span></td>
+          <td>北京YY咨询</td>
+          <td><span class="acquisition-tag">招投标</span></td>
+          <td class="num">¥ 380 万</td>
+          <td><span class="pill stage">S4-投标</span></td>
+          <td class="mono">2026-06-30</td>
+          <td><a style="color: var(--blue); font-size: 11px;">→ 详情</a></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <div class="label">Phase 1 vs Phase 2 (Q13 决议)</div>
+      <div class="text">
+        <b>Phase 1 (5/20 上线)</b>：伙伴单位主数据表 + 商机表加 <code>is_partner_channel</code> 布尔字段 + <code>partner_unit_id</code> FK + <code>acquisition_channel</code> 枚举。在商机管理页面通过这两字段筛选出"渠道商机视图"。<br>
+        <b>Phase 2 (5/20 后)</b>：完整的伙伴客户登记（14 字段）+ 伙伴商机登记表（17 字段）独立 UI · 含申请 / 审核 / 反馈流程
+      </div>
+    </div>
+
+    <div style="margin-top: 30px; padding: 16px 18px; background: var(--bg-paper); border-radius: var(--r-md); border: 1px dashed var(--line-strong);">
+      <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;">本页字段 → v3 design doc §4.4 渠道伙伴模块</div>
+      <div style="font-family: var(--font-cn); font-size: 12px; color: var(--ink-soft); line-height: 1.7;">
+        <b style="color: var(--ink);">伙伴单位主数据 (新建表 partner_unit)</b>：单位名 / 合作类型(SI/分销/OEM/其他) / 主联系人 / 电话 / 状态(active/archived) / 合作起 / 备注<br>
+        <b style="color: var(--ink);">商机表扩展字段</b>：is_partner_channel (bool) / partner_unit_id (FK) / acquisition_channel (渠道开发/客户介绍/招投标/直销/其他)<br>
+        <b style="color: var(--ink);">客户表扩展字段</b>：is_partner_origin (bool, 标记客户来源)
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+if (new URLSearchParams(location.search).get('embedded') === '1') {
+  const sb = document.querySelector('.sidebar'); if (sb) sb.style.display = 'none';
+  const app = document.querySelector('.app'); if (app) app.style.gridTemplateColumns = '1fr';
+}
+</script>
+</body>
+</html>

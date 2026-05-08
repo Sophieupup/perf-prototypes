@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><title>4.6 里程碑导入</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.upload-zone { background: var(--bg-card); border: 2px dashed var(--line-strong); border-radius: var(--r-lg); padding: 36px; text-align: center; margin-bottom: 18px; }
+.upload-zone .icon { font-family: var(--font-display); font-size: 48px; color: var(--ink-mute); }
+.upload-zone .title { font-family: var(--font-cn); font-size: 18px; margin: 8px 0 4px; }
+.upload-zone .desc { font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); margin-bottom: 16px; }
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+.import-status { display: inline-flex; padding: 2px 8px; border-radius: 3px; font-family: var(--font-mono); font-size: 9px; font-weight: 500; }
+.import-status.success { background: var(--ink-green-soft); color: var(--ink-green); }
+.import-status.partial { background: var(--amber-soft); color: var(--amber); }
+.field-tag { display: inline-block; padding: 1px 6px; font-family: var(--font-mono); font-size: 9px; background: var(--bg-card-quiet); color: var(--ink-soft); border: 1px solid var(--line); border-radius: 3px; margin: 2px; }
+.field-group-card { background: var(--bg-paper); border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px 18px; margin-bottom: 10px; }
+.field-group-card .title { font-family: var(--font-cn); font-size: 12px; font-weight: 600; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px dashed var(--line); display: flex; justify-content: space-between; }
+.field-group-card .title .count { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); }
+</style></head><body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">业绩 <em>运营</em></div>
+    <div class="brand-sub">PERFORMANCE OPS · v6</div>
+    <div class="nav-section">4 数据导入与维护</div>
+    <a class="nav-item">4.1 签单明细导入</a>
+    <a class="nav-item">4.2 回款明细导入</a>
+    <a class="nav-item">4.3 项目明细导入</a>
+    <a class="nav-item active">4.4 里程碑导入</a>
+    <a class="nav-item">4.5 项目对应表</a>
+    <a class="nav-item">4.6 指标与预测模型设置</a>
+    <a class="nav-item">4.7 区域划分与权限控制</a>
+  </aside>
+
+  <main class="main">
+    <div class="crumb">数据导入与维护 <span class="sep">/</span> 里程碑导入</div>
+    <h1 class="page-title">4.4 里程碑 <em>导入</em></h1>
+    <div class="page-meta">回款里程碑数据导入 · 46 字段 · 主键 项目编号 + 回款顺序号 · 沿用 AR 需求文档第 3.1.2 节</div>
+
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="label">里程碑节点总数</div><div class="value">542</div><div class="delta">在 156 项目里</div></div>
+      <div class="kpi-card good"><div class="label">最近导入</div><div class="value">5/6 18:00</div><div class="delta">+12 节点 / 2.3s</div></div>
+      <div class="kpi-card"><div class="label">YTD 已达成</div><div class="value">124</div><div class="delta">82% 达成率</div></div>
+      <div class="kpi-card warn"><div class="label">待确认（新增）</div><div class="value">3</div><div class="delta">⚠ 进入待确认页</div></div>
+    </div>
+
+    <div class="upload-zone">
+      <div class="icon">⬆</div>
+      <div class="title">上传里程碑数据 · 来源 OMS 财务模块</div>
+      <div class="desc">支持 .xlsx · 46 字段 · 每周一次 + 临时手动</div>
+      <button class="btn primary">📥 OMS API 立即同步</button>
+      <button class="btn">📤 上传 Excel</button>
+      <button class="btn">📋 下载模板</button>
+    </div>
+
+    <h3 style="font-family: var(--font-display); font-size: 22px; margin: 20px 0 12px;">导入规则</h3>
+    <div class="callout">
+      <div class="label">两种导入模式</div>
+      <div class="text">
+        <b>初始化导入</b>：直接导入，不做数据验证（首次接入）<br>
+        <b>更新导入</b>：根据「项目编号 + 回款顺序号」复合主键校验<br>
+        　• 已有数据：直接更新覆盖原数据<br>
+        　• 新增数据：写入<b>待确认页面</b>（避免误增），admin 确认后写入有效数据<br>
+        本规则与 AR 需求文档 §3.1.2 完全一致 · admin 确认后里程碑节点立即同步到 3.2.2 回款里程碑页
+      </div>
+    </div>
+
+    <h3 style="font-family: var(--font-display); font-size: 22px; margin: 20px 0 12px;">最近导入历史</h3>
+    <table class="data-table">
+      <thead><tr><th>时间</th><th>状态</th><th class="num">新增</th><th class="num">更新</th><th class="num">总节点</th><th>用时</th><th>触发</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">5/6 18:00</td><td><span class="import-status success">success</span></td><td class="num">+12</td><td class="num">28</td><td class="num">542</td><td>2.3s</td><td>auto</td></tr>
+        <tr><td class="mono">5/3 18:00</td><td><span class="import-status partial">⚠ 3 待确认</span></td><td class="num">+3</td><td class="num">15</td><td class="num">530</td><td>1.8s</td><td>auto</td></tr>
+        <tr><td class="mono">4/30 14:22</td><td><span class="import-status success">success</span></td><td class="num">+24</td><td class="num">32</td><td class="num">527</td><td>3.2s</td><td>黄诗览</td></tr>
+        <tr><td class="mono">4/26 18:00</td><td><span class="import-status success">success</span></td><td class="num">+8</td><td class="num">12</td><td class="num">503</td><td>1.5s</td><td>auto</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-family: var(--font-display); font-size: 22px; margin: 24px 0 12px;">46 字段分组</h3>
+
+    <div class="field-group-card">
+      <div class="title"><span>① 项目关联（10 字段）</span><span class="count">来自项目表自动带出</span></div>
+      <span class="field-tag">项目编号*</span>
+      <span class="field-tag">项目名称</span>
+      <span class="field-tag">合同编号</span>
+      <span class="field-tag">合同金额</span>
+      <span class="field-tag">客户名称</span>
+      <span class="field-tag">客户经理</span>
+      <span class="field-tag">项目经理</span>
+      <span class="field-tag">开发经理</span>
+      <span class="field-tag">总项/项目/子项</span>
+      <span class="field-tag">项目状态</span>
+    </div>
+
+    <div class="field-group-card">
+      <div class="title"><span>② 里程碑核心（5 字段）</span><span class="count">主键 + 时间节点</span></div>
+      <span class="field-tag">里程碑编号</span>
+      <span class="field-tag">里程碑</span>
+      <span class="field-tag">里程碑基准达成日期</span>
+      <span class="field-tag">回款顺序号*</span>
+      <span class="field-tag">实际完工度</span>
+    </div>
+
+    <div class="field-group-card">
+      <div class="title"><span>③ 回款核心（10 字段）</span><span class="count">金额 + 时间</span></div>
+      <span class="field-tag">回款类型</span>
+      <span class="field-tag">CRM回款类型</span>
+      <span class="field-tag">回款条件</span>
+      <span class="field-tag">计划回款金额</span>
+      <span class="field-tag">计划达成日期</span>
+      <span class="field-tag">回款条件达成状态</span>
+      <span class="field-tag">回款条件实际达成日期</span>
+      <span class="field-tag">实际回款金额</span>
+      <span class="field-tag">预计回款金额</span>
+      <span class="field-tag">合同约定回款日期</span>
+    </div>
+
+    <div class="field-group-card">
+      <div class="title"><span>④ 应收 / 发票（8 字段）</span><span class="count">财务流程</span></div>
+      <span class="field-tag">应收达成</span>
+      <span class="field-tag">应收金额</span>
+      <span class="field-tag">回款交付物是否确认</span>
+      <span class="field-tag">回款预测</span>
+      <span class="field-tag">实际回款日期</span>
+      <span class="field-tag">计划回款日期</span>
+      <span class="field-tag">客户发票类型</span>
+      <span class="field-tag">回款计划ID</span>
+    </div>
+
+    <div class="field-group-card">
+      <div class="title"><span>⑤ 产品线 / 回款阶段（6 字段）</span><span class="count">分类标签</span></div>
+      <span class="field-tag">集团产品线</span>
+      <span class="field-tag">回款阶段</span>
+      <span class="field-tag">回款承诺</span>
+      <span class="field-tag">回款可能</span>
+      <span class="field-tag">计划支付第三方金额</span>
+      <span class="field-tag">外包类型</span>
+    </div>
+
+    <div class="field-group-card">
+      <div class="title"><span>⑥ 其它字段（7 字段）</span><span class="count">补充信息</span></div>
+      <span class="field-tag">合同金额</span>
+      <span class="field-tag">合同类型</span>
+      <span class="field-tag">外包金额</span>
+      <span class="field-tag">代理商</span>
+      <span class="field-tag">代理分成</span>
+      <span class="field-tag">备注</span>
+      <span class="field-tag">更新时间</span>
+    </div>
+
+    <div class="callout">
+      <div class="label">字段去向</div>
+      <div class="text">
+        本表里程碑数据是 <a style="color: var(--blue); cursor: pointer;">3.2.2 回款里程碑页</a> 的源头 · 在 3.2.2 做 Review / 矫正 / 派工 · 实际回款金额到位后会反向影响 <a style="color: var(--blue); cursor: pointer;">2.4 回款明细</a> 报表
+      </div>
+    </div>
+  </main>
+</div>
+<script>if (new URLSearchParams(location.search).get('embedded') === '1') { document.querySelector('.sidebar').style.display = 'none'; document.querySelector('.app').style.gridTemplateColumns = '1fr'; }</script>
+</body></html>

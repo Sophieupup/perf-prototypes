@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>3.2.1 项目管理</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 18px; }
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line-strong); margin-bottom: 14px; }
+.tab { padding: 10px 18px; font-family: var(--font-cn); font-size: 13px; color: var(--ink-mute); cursor: pointer; border-bottom: 2px solid transparent; }
+.tab.active { color: var(--ink); border-bottom-color: var(--ink); font-weight: 500; }
+.tab .count { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-left: 4px; }
+.status-pill { display: inline-block; padding: 2px 8px; font-family: var(--font-mono); font-size: 9px; border-radius: 3px; font-weight: 500; }
+.status-running { background: var(--blue-soft); color: var(--blue); border: 1px solid var(--blue-mid); }
+.status-acceptance { background: var(--amber-soft); color: var(--amber); border: 1px solid var(--amber-mid); }
+.status-completed { background: var(--ink-green-soft); color: var(--ink-green); border: 1px solid var(--ink-green-mid); }
+.status-overdue { background: var(--crimson-soft); color: var(--crimson); border: 1px solid rgba(153,27,27,0.2); }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">业绩 <em>运营</em></div>
+    <div class="brand-sub">PERFORMANCE OPS · v4</div>
+    <div class="nav-section">3 业务功能</div>
+    <a class="nav-item">3.1.1 客户管理</a>
+    <a class="nav-item">3.1.2 商机管理</a>
+    <a class="nav-item">3.1.3 营销战役管理</a>
+    <a class="nav-item active">3.2.1 项目管理</a>
+    <a class="nav-item">3.2.2 回款里程碑</a>
+  </aside>
+
+  <main class="main">
+    <div class="crumb">业务功能 <span class="sep">/</span> 交付管理 <span class="sep">/</span> 项目管理</div>
+    <h1 class="page-title">3.2.1 项目 <em>管理</em></h1>
+    <div class="page-meta">在建/已结项目主表 · 33 字段（沿用 AR/里程碑文档第 3.2.1 节）· 156 在建项目</div>
+
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="label">在建项目</div><div class="value">156</div><div class="delta">含 2026 新签 + 2025 历史</div></div>
+      <div class="kpi-card"><div class="label">运行中</div><div class="value" style="color: var(--blue);">98</div><div class="delta">正常推进</div></div>
+      <div class="kpi-card warn"><div class="label">验收中</div><div class="value">42</div><div class="delta">含 12 已逾期</div></div>
+      <div class="kpi-card good"><div class="label">本月新签</div><div class="value">5</div><div class="delta">¥ 1,820 万</div></div>
+      <div class="kpi-card bad"><div class="label">逾期项目</div><div class="value">12</div><div class="delta">⚠ 需重点关注</div></div>
+    </div>
+
+    <div class="tabs">
+      <span class="tab active">项目台账（在建）<span class="count">156</span></span>
+      <span class="tab">基本信息（导入版）<span class="count">156</span></span>
+      <span class="tab">已结项目<span class="count">+340</span></span>
+      <span class="tab">逾期/风险<span class="count">12</span></span>
+    </div>
+
+    <div class="toolbar">
+      <div class="group">区域 <select><option>全部</option></select></div>
+      <div class="group">项目状态 <select><option>全部</option><option>运行中</option><option>验收中</option><option>已结</option></select></div>
+      <div class="group">交付状态 <select><option>全部</option></select></div>
+      <div class="group">项目经理 <select><option>全部</option></select></div>
+      <input class="search" placeholder="项目名/合同号 搜索...">
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width: 28px;">#</th>
+          <th>项目名称</th>
+          <th>项目编号</th>
+          <th>客户</th>
+          <th>区域 / MU / DU</th>
+          <th>项目经理</th>
+          <th>开发经理</th>
+          <th>项目状态</th>
+          <th>交付状态</th>
+          <th class="num">合同额</th>
+          <th>启动日期</th>
+          <th>预计验收</th>
+          <th>实际验收</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="mono">1</td>
+          <td>中信集团 HCM 综合运维</td>
+          <td class="mono">P-2025-0091</td>
+          <td>中信集团</td>
+          <td>央企 · 战略客户 · 央企交付</td>
+          <td>李明</td>
+          <td>张工</td>
+          <td><span class="status-pill status-running">运行中</span></td>
+          <td>正常推进</td>
+          <td class="num">2,800</td>
+          <td class="mono">2025-09-01</td>
+          <td class="mono">2026-08-31</td>
+          <td class="mono">—</td>
+        </tr>
+        <tr>
+          <td class="mono">2</td>
+          <td>南方航空人力升级</td>
+          <td class="mono">P-2026-0188</td>
+          <td>南方航空</td>
+          <td>广东 · 广东 · 广东交付</td>
+          <td>王浩</td>
+          <td>李工</td>
+          <td><span class="status-pill status-running">运行中</span></td>
+          <td>需求阶段</td>
+          <td class="num">680</td>
+          <td class="mono">2026-04-30</td>
+          <td class="mono">2026-12-31</td>
+          <td class="mono">—</td>
+        </tr>
+        <tr>
+          <td class="mono">3</td>
+          <td>百果园数据中台</td>
+          <td class="mono">P-2026-0098</td>
+          <td>百果园</td>
+          <td>广东 · 广东 · 广东交付</td>
+          <td>李雷</td>
+          <td>赵工</td>
+          <td><span class="status-pill status-acceptance">验收中</span></td>
+          <td>UAT 测试</td>
+          <td class="num">17</td>
+          <td class="mono">2026-02-15</td>
+          <td class="mono">2026-05-15</td>
+          <td class="mono">5/8 预计</td>
+        </tr>
+        <tr style="background: var(--crimson-soft);">
+          <td class="mono">4</td>
+          <td>安徽昊源化工 ERP 升级</td>
+          <td class="mono">P-2024-0179</td>
+          <td>安徽昊源</td>
+          <td>华东 · 安徽 · 华东交付</td>
+          <td>陈飞</td>
+          <td>王工</td>
+          <td><span class="status-pill status-overdue">⚠ 逾期</span></td>
+          <td>终验已矫正 2 次</td>
+          <td class="num">240</td>
+          <td class="mono">2024-11-01</td>
+          <td class="mono">2026-04-30 → 6/15</td>
+          <td class="mono">—</td>
+        </tr>
+        <tr>
+          <td class="mono">5</td>
+          <td>华夏银行薪酬模块</td>
+          <td class="mono">P-2026-0067</td>
+          <td>华夏银行</td>
+          <td>华北 · 北京 · 华北交付</td>
+          <td>李雷</td>
+          <td>赵工</td>
+          <td><span class="status-pill status-running">运行中</span></td>
+          <td>启动准备</td>
+          <td class="num">540</td>
+          <td class="mono">2026-05-10 预计</td>
+          <td class="mono">2026-09-30</td>
+          <td class="mono">—</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <div class="label">本页字段映射</div>
+      <div class="text">
+        本页 = AR/里程碑文档第 3.2.1 节"项目基本信息台账"。完整 33 字段含：项目类型/类别细分/项目编号(必填唯一)/项目名称(必填)/交付状态/项目状态/签约状态/最终用户/签单客户/项目经理/MU/BU/区域/项目阶段/合同类型/合同编号/合同额/项目合同净额/累计回款/剩余合同款/回款毛利/启动日期/基准验收/预计验收/实际验收/工期/人天/绩效/客户标签...<br>
+        <b>权限</b>：全员可查看 · PMO/区总/交付经理可编辑"实际项目经理"
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+if (new URLSearchParams(location.search).get('embedded') === '1') {
+  const sb = document.querySelector('.sidebar'); if (sb) sb.style.display = 'none';
+  const app = document.querySelector('.app'); if (app) app.style.gridTemplateColumns = '1fr';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>售前活动登记 · 售前周五填</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+.activity-type-tag { display: inline-block; padding: 2px 8px; font-family: var(--font-mono); font-size: 10px; border-radius: 3px; font-weight: 500; }
+.tag-survey { background: var(--blue-soft); color: var(--blue); border: 1px solid var(--blue-mid); }
+.tag-demo { background: var(--ink-green-soft); color: var(--ink-green); border: 1px solid var(--ink-green-mid); }
+.tag-poc { background: var(--amber-soft); color: var(--amber); border: 1px solid var(--amber-mid); }
+.tag-other { background: var(--bg-card-quiet); color: var(--ink-soft); border: 1px solid var(--line-strong); }
+.region-rank-list { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 16px; }
+.region-rank-list h3 { font-family: var(--font-cn); font-size: 13px; font-weight: 500; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.rank-row { display: grid; grid-template-columns: 28px 1fr 60px 50px; gap: 8px; padding: 6px 0; align-items: center; font-size: 12px; }
+.rank-row .rank { font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); text-align: center; }
+.rank-row .name { font-family: var(--font-cn); }
+.rank-row .count { font-family: var(--font-display); font-size: 16px; font-style: italic; text-align: right; color: var(--ink); }
+.rank-row .delta { font-family: var(--font-mono); font-size: 10px; text-align: right; }
+.rank-row .delta.pos { color: var(--ink-green); }
+.rank-row .delta.neg { color: var(--crimson); }
+.split-2 { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">业绩 <em>运营</em></div>
+    <div class="brand-sub">PERFORMANCE OPS</div>
+    <div class="nav-section">看板</div>
+    <a class="nav-item">驾驶舱</a>
+    <a class="nav-item">区域业绩</a>
+    <div class="nav-section">明细报表</div>
+    <a class="nav-item">5 张明细</a>
+    <div class="nav-section">数据维护</div>
+    <a class="nav-item">商机管理</a>
+    <a class="nav-item">商机 Review</a>
+    <a class="nav-item">投标管理</a>
+    <a class="nav-item active">售前活动登记</a>
+    <a class="nav-item">月度预测·签单</a>
+    <a class="nav-item">月度预测·回款</a>
+    <div class="nav-section">导入 / 配置</div>
+    <a class="nav-item">指标配置</a>
+  </aside>
+
+  <main class="main">
+    <div class="crumb">数据维护 <span class="sep">/</span> 售前活动登记</div>
+    <h1 class="page-title">售前 <em>活动</em> · 登记</h1>
+    <div class="page-meta">售前每周五填报本周活动 · 用于看板"售前活动"卡 + 区域排名</div>
+
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="label">本周活动数</div>
+        <div class="value">12</div>
+        <div class="delta">+2 vs 上周</div>
+      </div>
+      <div class="kpi-card good">
+        <div class="label">YTD 累计</div>
+        <div class="value">187</div>
+        <div class="delta">+12 本周</div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">商机转化率</div>
+        <div class="value">28<span class="unit">%</span></div>
+        <div class="delta">52/187 → 转商机</div>
+      </div>
+      <div class="kpi-card warn">
+        <div class="label">售前总人数</div>
+        <div class="value">14</div>
+        <div class="delta">人均 0.86 / 周（< 1 警戒线）</div>
+      </div>
+    </div>
+
+    <div class="split-2">
+
+      <!-- 主表 -->
+      <div>
+        <div class="toolbar">
+          <button class="btn primary">+ 登记本周活动</button>
+          <div class="group">活动类型 <select><option>全部</option><option>需求调研</option><option>方案演示</option><option>POC</option><option>其他</option></select></div>
+          <div class="group">区域 <select><option>全部</option><option>央企</option><option>广东</option><option>山东</option></select></div>
+          <input class="search" placeholder="客户/项目搜索...">
+          <div class="stat">本周 <strong>12</strong> 项</div>
+        </div>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width: 28px;">#</th>
+              <th>活动类型</th>
+              <th>客户/项目</th>
+              <th>支持区域/MU</th>
+              <th>发生日期</th>
+              <th>参与人员（多选）</th>
+              <th>关联商机</th>
+              <th style="width: 50px;">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="mono">1</td>
+              <td><span class="activity-type-tag tag-poc">POC</span></td>
+              <td>
+                <div style="font-weight: 500;">山东出版集团一期</div>
+                <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">OPP-2026-0234</div>
+              </td>
+              <td>山东 · 山东</td>
+              <td class="mono">2026-05-02</td>
+              <td>陈飞 · 张明 · 王正</td>
+              <td><a style="color: var(--blue); cursor: pointer; font-size: 11px;">→ 商机</a></td>
+              <td><a style="font-size: 11px; color: var(--blue);">编辑</a></td>
+            </tr>
+            <tr>
+              <td class="mono">2</td>
+              <td><span class="activity-type-tag tag-demo">方案演示</span></td>
+              <td>
+                <div style="font-weight: 500;">华夏银行薪酬模块</div>
+                <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">OPP-2026-0067</div>
+              </td>
+              <td>华北 · 北京</td>
+              <td class="mono">2026-05-03</td>
+              <td>陈飞 · 李明</td>
+              <td><a style="color: var(--blue); cursor: pointer; font-size: 11px;">→ 商机</a></td>
+              <td><a style="font-size: 11px; color: var(--blue);">编辑</a></td>
+            </tr>
+            <tr>
+              <td class="mono">3</td>
+              <td><span class="activity-type-tag tag-survey">需求调研</span></td>
+              <td>
+                <div style="font-weight: 500;">广州医药集团 HCM 选型</div>
+                <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">未关联（早期接触）</div>
+              </td>
+              <td>广东 · 广东</td>
+              <td class="mono">2026-05-04</td>
+              <td>李明 · 周明</td>
+              <td><a style="color: var(--ink-mute); cursor: pointer; font-size: 11px;">+ 关联</a></td>
+              <td><a style="font-size: 11px; color: var(--blue);">编辑</a></td>
+            </tr>
+            <tr>
+              <td class="mono">4</td>
+              <td><span class="activity-type-tag tag-poc">POC</span></td>
+              <td>
+                <div style="font-weight: 500;">中信华创信用</div>
+                <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">OPP-2026-0011</div>
+              </td>
+              <td>战略客户 · 央企</td>
+              <td class="mono">2026-05-05</td>
+              <td>张明 · 陈飞</td>
+              <td><a style="color: var(--blue); cursor: pointer; font-size: 11px;">→ 商机</a></td>
+              <td><a style="font-size: 11px; color: var(--blue);">编辑</a></td>
+            </tr>
+            <tr>
+              <td class="mono">5</td>
+              <td><span class="activity-type-tag tag-demo">方案演示</span></td>
+              <td>
+                <div style="font-weight: 500;">青岛海尔 HCM</div>
+                <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">OPP-2026-0345</div>
+              </td>
+              <td>山东 · 山东</td>
+              <td class="mono">2026-05-05</td>
+              <td>陈飞</td>
+              <td><a style="color: var(--blue); cursor: pointer; font-size: 11px;">→ 商机</a></td>
+              <td><a style="font-size: 11px; color: var(--blue);">编辑</a></td>
+            </tr>
+            <tr>
+              <td class="mono">6</td>
+              <td><span class="activity-type-tag tag-other">其他</span></td>
+              <td>
+                <div style="font-weight: 500;">行业沙龙·央企 HCM 数字化</div>
+                <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">无具体客户</div>
+              </td>
+              <td>战略客户 · 央企</td>
+              <td class="mono">2026-05-06</td>
+              <td>张明 · 陈飞 · 李明</td>
+              <td>—</td>
+              <td><a style="font-size: 11px; color: var(--blue);">编辑</a></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <div class="label">⚙ 4 种活动类型</div>
+          <div class="text">
+            <span class="activity-type-tag tag-survey">需求调研</span>客户初次拜访 / 调研需求 ·
+            <span class="activity-type-tag tag-demo">方案演示</span>给客户演示我方方案 ·
+            <span class="activity-type-tag tag-poc">POC</span>客户验证 / 概念验证 ·
+            <span class="activity-type-tag tag-other">其他</span>沙龙 / 培训 / 其它<br>
+            活动 → 商机的转化率是<b>售前质量</b>的核心指标（YTD 28%，行业 30-40%，仍有空间）
+          </div>
+        </div>
+      </div>
+
+      <!-- 区域排名 -->
+      <div class="region-rank-list">
+        <h3>📊 售前活动 · 区域排名 · 本周</h3>
+        <div class="rank-row">
+          <span class="rank">1</span>
+          <span class="name">山东</span>
+          <span class="count">5</span>
+          <span class="delta pos">+2</span>
+        </div>
+        <div class="rank-row">
+          <span class="rank">2</span>
+          <span class="name">广东</span>
+          <span class="count">3</span>
+          <span class="delta pos">+1</span>
+        </div>
+        <div class="rank-row">
+          <span class="rank">3</span>
+          <span class="name">央企</span>
+          <span class="count">2</span>
+          <span class="delta">0</span>
+        </div>
+        <div class="rank-row">
+          <span class="rank">4</span>
+          <span class="name">华北</span>
+          <span class="count">1</span>
+          <span class="delta neg">-2</span>
+        </div>
+        <div class="rank-row">
+          <span class="rank">5</span>
+          <span class="name">华东</span>
+          <span class="count">1</span>
+          <span class="delta">0</span>
+        </div>
+        <div class="rank-row">
+          <span class="rank">6</span>
+          <span class="name">西部</span>
+          <span class="count">0</span>
+          <span class="delta neg">-1</span>
+        </div>
+        <div class="rank-row">
+          <span class="rank">7</span>
+          <span class="name">服务</span>
+          <span class="count">0</span>
+          <span class="delta">0</span>
+        </div>
+
+        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">
+          ⚠ 西部 0 项已 2 周 · 建议提醒区总
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 30px; padding: 16px 18px; background: var(--bg-paper); border-radius: var(--r-md); border: 1px dashed var(--line-strong);">
+      <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;">本页字段 → v3 design doc §6.3.4 售前活动登记</div>
+      <div style="font-family: var(--font-cn); font-size: 12px; color: var(--ink-soft); line-height: 1.7;">
+        <b style="color: var(--ink);">5 个字段</b>：活动类型（4 选）/ 客户/项目（自由 + 关联 OPP）/ 发生日期 / 参与人员（多选） / 支持的区域/MU<br>
+        <b style="color: var(--ink);">驱动</b>：移动端 V4 + PC 方案二 看板"售前活动"卡（3 数字 + 区域排名）· 看板的"YTD 187 / 转化率 28%"实时来自此表
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+if (new URLSearchParams(location.search).get('embedded') === '1') {
+  const sb = document.querySelector('.sidebar'); if (sb) sb.style.display = 'none';
+  const app = document.querySelector('.app'); if (app) app.style.gridTemplateColumns = '1fr';
+}
+</script>
+</body>
+</html>

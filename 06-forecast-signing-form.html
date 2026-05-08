@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>月度预测·签单填报 · 销售周五前填</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.deadline-banner { background: linear-gradient(90deg, var(--amber-soft), transparent); border: 1px solid var(--amber-mid); border-radius: var(--r-md); padding: 14px 18px; margin-bottom: 16px; display: flex; align-items: center; gap: 14px; }
+.deadline-banner .icon { width: 40px; height: 40px; background: var(--amber); color: #faf8f3; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 20px; font-style: italic; }
+.deadline-banner .text { flex: 1; }
+.deadline-banner .t1 { font-family: var(--font-cn); font-size: 14px; font-weight: 500; color: var(--ink); }
+.deadline-banner .t1 b { color: var(--amber); }
+.deadline-banner .t2 { font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); margin-top: 2px; }
+
+.kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 18px; }
+
+.month-tabs { display: flex; gap: 0; background: var(--bg-paper); border-radius: var(--r-md); border: 1px solid var(--line); margin-bottom: 14px; padding: 4px; }
+.month-tab { flex: 1; padding: 10px 14px; font-family: var(--font-cn); font-size: 13px; color: var(--ink-soft); cursor: pointer; border-radius: 6px; text-align: center; }
+.month-tab.active { background: var(--ink); color: #faf8f3; }
+.month-tab .num { font-family: var(--font-display); font-size: 18px; line-height: 1; font-style: italic; margin-right: 6px; }
+.month-tab.active .num { color: #d4ae80; }
+.month-tab .meta { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.06em; margin-top: 2px; }
+.month-tab.active .meta { color: var(--ink-faint); }
+
+.row-add { padding: 10px 12px; background: var(--bg-card-accent); border: 1px dashed var(--line-strong); border-radius: var(--r-sm); margin-top: 8px; text-align: center; cursor: pointer; font-family: var(--font-cn); font-size: 12px; color: var(--ink-soft); }
+.row-add:hover { background: var(--bg-card-quiet); color: var(--ink); }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">业绩 <em>运营</em></div>
+    <div class="brand-sub">PERFORMANCE OPS</div>
+    <div class="nav-section">看板</div>
+    <a class="nav-item">驾驶舱</a>
+    <a class="nav-item">区域业绩</a>
+    <div class="nav-section">明细报表</div>
+    <a class="nav-item">5 张明细</a>
+    <div class="nav-section">数据维护</div>
+    <a class="nav-item">商机管理</a>
+    <a class="nav-item">商机 Review</a>
+    <a class="nav-item">投标管理</a>
+    <a class="nav-item">售前活动登记</a>
+    <a class="nav-item active">月度预测·签单</a>
+    <a class="nav-item">月度预测·回款</a>
+    <div class="nav-section">导入 / 配置</div>
+    <a class="nav-item">指标配置</a>
+  </aside>
+
+  <main class="main">
+    <div class="crumb">数据维护 <span class="sep">/</span> 月度预测·签单填报</div>
+    <h1 class="page-title">月度预测 · <em>签单</em> · 销售填报</h1>
+    <div class="page-meta">每周五 17:00 前必填 · 当前角色 销售 · 王正 · 山东区 4 个商机</div>
+
+    <!-- 截止时间 banner -->
+    <div class="deadline-banner">
+      <div class="icon">⏰</div>
+      <div class="text">
+        <div class="t1">本周填报截止：<b>2026-05-08（周五）17:00</b> · 还有 <b>2 天 03 小时 12 分</b></div>
+        <div class="t2">超时未填会发企微提醒 · 18:00 系统自动 freeze 周快照后无法修改</div>
+      </div>
+      <button class="btn primary">📋 一键复制上周填报</button>
+    </div>
+
+    <!-- 我的填报进度 -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="label">我的商机</div>
+        <div class="value">4</div>
+        <div class="delta">本周 active 进行中</div>
+      </div>
+      <div class="kpi-card good">
+        <div class="label">已完成填报</div>
+        <div class="value">3 / 4</div>
+        <div class="delta">75% 进度</div>
+      </div>
+      <div class="kpi-card warn">
+        <div class="label">待填报</div>
+        <div class="value">1</div>
+        <div class="delta">还差 1 项</div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">本周累计预测金额</div>
+        <div class="value">¥ 248<span class="unit">万</span></div>
+        <div class="delta">承诺 ¥ 192 万 · 争取 ¥ 56 万</div>
+      </div>
+      <div class="kpi-card good">
+        <div class="label">月度加权（70%/20%）</div>
+        <div class="value">¥ 145<span class="unit">万</span></div>
+        <div class="delta">vs 上周 +24 万</div>
+      </div>
+    </div>
+
+    <!-- 月份 tabs · v2 修：4-5-6 月 + Q2 派生（与 02 商机 Review 季度滚动一致） -->
+    <div class="month-tabs">
+      <div class="month-tab">
+        <span class="num">4</span>月（已结）
+        <div class="meta">3 项 done · ¥ 142 万</div>
+      </div>
+      <div class="month-tab active">
+        <span class="num">5</span>月（本月主推）
+        <div class="meta">2 项 · ¥ 156 万</div>
+      </div>
+      <div class="month-tab">
+        <span class="num">6</span>月（下月）
+        <div class="meta">1 项 · ¥ 92 万</div>
+      </div>
+      <div class="month-tab">
+        Q2 <div class="meta">系统派生</div>
+      </div>
+    </div>
+
+    <!-- 工具栏 -->
+    <div class="toolbar">
+      <div class="group">视图 <select><option>本月主推 (2)</option><option>含备选 (3)</option><option>全部</option></select></div>
+      <div class="group">状态 <select><option>全部</option><option>承诺</option><option>争取</option><option>延期</option></select></div>
+      <div class="group">已填 <select><option>全部</option><option>已完成</option><option>未填</option></select></div>
+      <input class="search" placeholder="商机名/合同号 搜索...">
+      <div class="stat">本月汇总 <strong>¥ 156 万</strong> · 加权 <strong>¥ 109 万</strong></div>
+    </div>
+
+    <!-- 主表 -->
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width: 28px;">#</th>
+          <th>商机/项目名称</th>
+          <th>客户</th>
+          <th>MU/区域</th>
+          <th class="num">预计签单金额</th>
+          <th>合同签约主体</th>
+          <th>本周状态 ⭐</th>
+          <th>4-5-6 月可达</th>
+          <th>当前进展（4-6 字浓缩 + 详述）</th>
+          <th style="width: 90px;">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- 已完成填报 -->
+        <tr>
+          <td class="mono">1</td>
+          <td>
+            <div style="font-weight: 500;">山东出版集团一期 HCM</div>
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">OPP-2026-0234 · S4-投标</div>
+          </td>
+          <td>山东出版集团</td>
+          <td>山东 · 山东</td>
+          <td class="num"><input class="cell" value="64" style="text-align: right;"> 万</td>
+          <td><select class="cell"><option>浪潮海岳云技术</option></select></td>
+          <td>
+            <select class="cell"><option>承诺 commit</option><option>争取 struggle</option><option>延期 delay</option><option>新增 new</option></select>
+          </td>
+          <td><span class="tri-cell">
+            <span class="month empty" title="4 月空">—</span>
+            <span class="month commit primary" title="5 月主推 commit">⭐承</span>
+            <span class="month empty" title="6 月空">—</span>
+          </span></td>
+          <td><textarea class="cell" rows="2" style="font-family: var(--font-cn); font-size: 11px; line-height: 1.4;">推动客户法务 5/15 用印 · 投标已完成等签合同 · 销售管理部已批二轮折扣方案</textarea></td>
+          <td>
+            <span class="pill done">已填 5/3</span>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="mono">2</td>
+          <td>
+            <div style="font-weight: 500;">中信和业投资 HCM 服务续约</div>
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">OPP-2025-0091 · 已签单</div>
+          </td>
+          <td>中信和业</td>
+          <td>战略 · 央企</td>
+          <td class="num"><input class="cell" value="92" style="text-align: right;"> 万</td>
+          <td><select class="cell"><option>浪潮海岳云技术</option></select></td>
+          <td>
+            <select class="cell" style="background: var(--ink-green-soft); color: var(--ink-green); border-color: var(--ink-green); font-weight: 600;"><option>承诺 commit</option></select>
+          </td>
+          <td><span class="tri-cell">
+            <span class="month empty">—</span>
+            <span class="month commit primary">⭐承</span>
+            <span class="month empty">—</span>
+          </span></td>
+          <td><textarea class="cell" rows="2" style="font-family: var(--font-cn); font-size: 11px; line-height: 1.4;">合同已盖 · 5/12 走完用印 · 5/20 前归档</textarea></td>
+          <td>
+            <span class="pill done">已填 5/2</span>
+          </td>
+        </tr>
+
+        <!-- 待填报（突出标记） -->
+        <tr style="background: var(--crimson-soft);">
+          <td class="mono">3</td>
+          <td>
+            <div style="font-weight: 500; color: var(--crimson);">⚠ 山东工商银行薪酬升级</div>
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">OPP-2026-0301 · S3-方案</div>
+          </td>
+          <td>山东工商银行</td>
+          <td>山东 · 山东</td>
+          <td class="num"><input class="cell" value="" placeholder="必填" style="text-align: right; border: 1px solid var(--crimson); background: var(--bg-card);"> 万</td>
+          <td><select class="cell" style="border: 1px solid var(--crimson);"><option>— 选择 —</option><option>浪潮海岳云技术</option></select></td>
+          <td>
+            <select class="cell" style="border: 1px solid var(--crimson); background: var(--bg-card);"><option>— 选择 —</option><option>承诺 commit</option><option>争取 struggle</option><option>延期 delay</option><option>新增 new</option></select>
+          </td>
+          <td><span class="tri-cell">
+            <span class="month empty">—</span>
+            <span class="month empty">—</span>
+            <span class="month empty">—</span>
+          </span></td>
+          <td><textarea class="cell" rows="2" placeholder="必填 · 50-200 字 · 4-6 字浓缩 + 详述" style="font-family: var(--font-cn); font-size: 11px; line-height: 1.4; border: 1px solid var(--crimson); background: var(--bg-card);"></textarea></td>
+          <td>
+            <span class="pill" style="background: var(--crimson-soft); color: var(--crimson); border: 1px solid var(--crimson);">⚠ 待填</span>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="mono">4</td>
+          <td>
+            <div style="font-weight: 500;">青岛海尔 HCM 升级</div>
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">OPP-2026-0345 · S4-投标</div>
+          </td>
+          <td>青岛海尔</td>
+          <td>山东 · 山东</td>
+          <td class="num"><input class="cell" value="92" style="text-align: right;"> 万</td>
+          <td><select class="cell"><option>浪潮海岳云技术</option></select></td>
+          <td>
+            <select class="cell" style="background: var(--amber-soft); color: var(--amber); border-color: var(--amber); font-weight: 600;"><option>争取 struggle</option></select>
+          </td>
+          <td><span class="tri-cell">
+            <span class="month empty">—</span>
+            <span class="month struggle primary">⭐争</span>
+            <span class="month delay">延</span>
+          </span></td>
+          <td><textarea class="cell" rows="2" style="font-family: var(--font-cn); font-size: 11px; line-height: 1.4;">投标后竞对压价 · 客户内部还在讨论 · 6 月有可能延期</textarea></td>
+          <td>
+            <span class="pill done">已填 5/3</span>
+          </td>
+        </tr>
+
+        <!-- 添加新行 -->
+        <tr><td colspan="10" style="padding: 0;">
+          <div class="row-add">+ 添加新商机到本月预测（如本周新出现）</div>
+        </td></tr>
+      </tbody>
+    </table>
+
+    <!-- 提示卡 -->
+    <div class="callout">
+      <div class="label">⚙ 月度预测加权公式（系统自动）</div>
+      <div class="text">
+        本月预测 = Σ 当月承诺 × <b>70%</b> + Σ 当月争取 × <b>20%</b> + Σ 当月已达成 × <b>100%</b><br>
+        本周已填的 4 项当中 3 项已确认本月主推 → 本月预测 = 64×0.7 + 92×0.7 + 92×0.2 = <b>¥ 127.6 万</b><br>
+        填完缺失的「山东工商银行薪酬升级」后系统会刷新 · <b>请在本周五 17:00 前完成</b>
+      </div>
+    </div>
+
+    <!-- Sticky bar -->
+    <div class="sticky-bar">
+      <div class="info">
+        <div class="t1">本周填报进度 · 3 / 4 已完成</div>
+        <div class="t2">还有 <b style="color: var(--crimson);">1 项必填</b> · 5/8 (周五) 17:00 截止 · 还有 2 天 03 小时</div>
+      </div>
+      <button class="btn ghost">仅保存草稿</button>
+      <button class="btn">导出我的填报 Excel</button>
+      <button class="btn primary">提交本周（4 项）</button>
+    </div>
+
+    <!-- 底部说明：填报字段映射回 v3 doc -->
+    <div style="margin-top: 30px; padding: 16px 18px; background: var(--bg-paper); border-radius: var(--r-md); border: 1px dashed var(--line-strong);">
+      <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;">本页字段 → v3 design doc §6.3.1 月度预测·签单</div>
+      <div style="font-family: var(--font-cn); font-size: 12px; color: var(--ink-soft); line-height: 1.7;">
+        <b style="color: var(--ink);">7 个手填字段</b>：项目名称（自由输入）/ 预计签单金额（≥0）/ 本周状态（承诺/争取/延期/新增/风险 5 选 1）/ 预计签单月份（即"主推月"）/ 当前进展说明（50-200 字）/ 所属 MU/区域（下拉，OMS 同步）/ 合同签约主体（下拉）<br>
+        <b style="color: var(--ink);">系统自动填</b>：商机编号 / 商机阶段（来自商机表）/ 上周状态（来自上周快照）/ 月度加权预测金额 / 4-5-6 月可达性矩阵
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+if (new URLSearchParams(location.search).get('embedded') === '1') {
+  const sb = document.querySelector('.sidebar'); if (sb) sb.style.display = 'none';
+  const app = document.querySelector('.app'); if (app) app.style.gridTemplateColumns = '1fr';
+}
+</script>
+</body>
+</html>

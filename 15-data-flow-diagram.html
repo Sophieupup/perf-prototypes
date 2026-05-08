@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>数据流转图 · 整体血缘</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.flow-stage { background: var(--bg-paper); border: 1px solid var(--line); border-radius: var(--r-md); padding: 18px; margin-bottom: 14px; }
+.flow-stage h2 { font-family: var(--font-display); font-size: 22px; font-weight: 400; margin-bottom: 4px; }
+.flow-stage h2 em { font-style: italic; color: var(--ink-green); }
+.flow-stage .desc { font-family: var(--font-cn); font-size: 12px; color: var(--ink-soft); margin-bottom: 14px; line-height: 1.6; }
+
+.layer-grid { display: grid; gap: 8px; }
+.layer-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.layer-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+.layer-grid.cols-5 { grid-template-columns: repeat(5, 1fr); }
+
+.box { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 10px 12px; }
+.box.api { border-left: 3px solid var(--ink-green); }
+.box.excel { border-left: 3px solid var(--blue); }
+.box.manual { border-left: 3px solid var(--amber); }
+.box.derived { border-left: 3px solid var(--steel); }
+.box.report { border-left: 3px solid var(--crimson); }
+.box .name { font-family: var(--font-cn); font-size: 12px; font-weight: 500; }
+.box .meta { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 3px; letter-spacing: 0.04em; }
+.box .freq { font-family: var(--font-mono); font-size: 9px; color: var(--ink-soft); margin-top: 3px; padding: 1px 5px; background: var(--bg-card-quiet); border-radius: 3px; display: inline-block; }
+
+.arrow-down { text-align: center; padding: 6px 0; color: var(--ink-faint); font-family: var(--font-mono); font-size: 14px; }
+
+.full-svg-wrap { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 18px; box-shadow: var(--shadow-card); margin-bottom: 18px; overflow-x: auto; }
+
+.legend-row { display: flex; gap: 16px; padding: 12px 16px; background: var(--bg-paper); border: 1px solid var(--line); border-radius: var(--r-md); margin-bottom: 14px; flex-wrap: wrap; }
+.legend-row .item { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); }
+.legend-row .swatch { width: 14px; height: 14px; border-radius: 3px; border: 1px solid var(--line-strong); }
+.legend-row .swatch.api-c { border-left: 3px solid var(--ink-green); }
+.legend-row .swatch.excel-c { border-left: 3px solid var(--blue); }
+.legend-row .swatch.manual-c { border-left: 3px solid var(--amber); }
+.legend-row .swatch.derived-c { border-left: 3px solid var(--steel); }
+.legend-row .swatch.report-c { border-left: 3px solid var(--crimson); }
+
+.formula-block { background: var(--bg-card-accent); border: 1px solid var(--line-strong); border-radius: var(--r-md); padding: 14px 18px; margin-top: 12px; }
+.formula-block .label { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+.formula-block code { font-family: var(--font-mono); font-size: 12px; background: var(--bg-card); padding: 6px 10px; border-radius: 3px; display: block; color: var(--ink); border: 1px solid var(--line); margin-bottom: 6px; line-height: 1.7; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">业绩 <em>运营</em></div>
+    <div class="brand-sub">PERFORMANCE OPS</div>
+    <div class="nav-section">系统总览</div>
+    <a class="nav-item active">📊 数据流转图</a>
+    <div class="nav-section">看板</div>
+    <a class="nav-item">驾驶舱</a>
+    <a class="nav-item">区域业绩</a>
+    <div class="nav-section">明细报表</div>
+    <a class="nav-item">5 张明细</a>
+    <div class="nav-section">数据维护</div>
+    <a class="nav-item">商机管理</a>
+    <a class="nav-item">商机 Review</a>
+    <a class="nav-item">项目 Review</a>
+    <a class="nav-item">投标管理</a>
+    <a class="nav-item">月度预测·签单</a>
+    <a class="nav-item">月度预测·回款</a>
+    <a class="nav-item">售前活动登记</a>
+    <div class="nav-section">导入 / 配置</div>
+    <a class="nav-item">数据导入中心</a>
+    <a class="nav-item">指标配置</a>
+  </aside>
+
+  <main class="main">
+    <div class="crumb">系统总览 <span class="sep">/</span> 数据流转图</div>
+    <h1 class="page-title">数据 <em>流转</em> · 全系统血缘</h1>
+    <div class="page-meta">"流量表" · 哪个数据从哪来 / 怎么算 / 流到哪 · 6 层 · 18+ 数据节点 · 一图看完</div>
+
+    <!-- Legend -->
+    <div class="legend-row">
+      <div class="item"><span class="swatch api-c"></span>API 自动（OMS / HCM 接口）</div>
+      <div class="item"><span class="swatch excel-c"></span>Excel 上传（双轮 / 批量）</div>
+      <div class="item"><span class="swatch manual-c"></span>手工填报（销售/商务/售前）</div>
+      <div class="item"><span class="swatch derived-c"></span>系统派生（公式 / 聚合）</div>
+      <div class="item"><span class="swatch report-c"></span>报表 / 看板</div>
+      <div class="item">▼ 表示数据流向（自上而下）</div>
+    </div>
+
+    <!-- Layer 1: 数据来源 -->
+    <div class="flow-stage">
+      <h2>Layer 1 · 数据 <em>来源</em></h2>
+      <p class="desc">3 类来源：API 自动（系统对接）+ Excel 上传（业务方维护）+ 手工填报（每周五）</p>
+
+      <div class="layer-grid cols-3">
+        <div class="box api">
+          <div class="name">OMS 合同 / 财务模块</div>
+          <div class="meta">公司既有 · 内部系统</div>
+          <div class="freq">每天 18:00 自动</div>
+        </div>
+        <div class="box api">
+          <div class="name">HCM 商机系统</div>
+          <div class="meta">公司既有 · 商机源头</div>
+          <div class="freq">每天 09:00 + 18:00 双拉</div>
+        </div>
+        <div class="box manual">
+          <div class="name">业务方 Excel + 手工填报</div>
+          <div class="meta">销售 / 商务 / 售前 / admin</div>
+          <div class="freq">每周五 17:00 前必填</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow-down">▼ 经过 数据导入中心 落库 ▼</div>
+
+    <!-- Layer 2: 落库 -->
+    <div class="flow-stage">
+      <h2>Layer 2 · 数据 <em>落库</em> · 12 张原始表</h2>
+      <p class="desc">每条 raw 数据按主键 upsert，重复导入幂等。每张 OMS API 表对应一份明细 + 一份周快照 freeze 历史</p>
+
+      <div class="layer-grid cols-4" style="margin-bottom: 10px;">
+        <div class="box api">
+          <div class="name">signing_data 签单明细</div>
+          <div class="meta">28 字段 · 主键合同编号</div>
+          <div class="freq">OMS API 增量</div>
+        </div>
+        <div class="box api">
+          <div class="name">payment_data 回款明细</div>
+          <div class="meta">27 字段 · 主键单据编号</div>
+          <div class="freq">OMS API 增量</div>
+        </div>
+        <div class="box api">
+          <div class="name">opportunity 商机表</div>
+          <div class="meta">37 字段 · 主键 opp_no</div>
+          <div class="freq">HCM API 同步</div>
+        </div>
+        <div class="box api">
+          <div class="name">customer_data 客户表</div>
+          <div class="meta">4 字段（基本）+ 38 字段（商机）</div>
+          <div class="freq">HCM API 同步</div>
+        </div>
+      </div>
+
+      <div class="layer-grid cols-4" style="margin-bottom: 10px;">
+        <div class="box excel">
+          <div class="name">project_region_mapping</div>
+          <div class="meta">17 字段 · 主键合同编号</div>
+          <div class="freq">Excel 双轮上传</div>
+        </div>
+        <div class="box excel">
+          <div class="name">low_margin_exception</div>
+          <div class="meta">8 字段 · 主键 project_id</div>
+          <div class="freq">admin 配置</div>
+        </div>
+        <div class="box excel">
+          <div class="name">partner_unit 伙伴单位</div>
+          <div class="meta">7 字段 · Phase 1 简化</div>
+          <div class="freq">手工录入</div>
+        </div>
+        <div class="box excel">
+          <div class="name">metric_config 指标配置</div>
+          <div class="meta">年度目标 / 权重 / 锁定状态</div>
+          <div class="freq">admin 调整</div>
+        </div>
+      </div>
+
+      <div class="layer-grid cols-4">
+        <div class="box manual">
+          <div class="name">forecast_signing_monthly</div>
+          <div class="meta">月度预测·签单 · 7 字段</div>
+          <div class="freq">销售周五填</div>
+        </div>
+        <div class="box manual">
+          <div class="name">forecast_payment_monthly</div>
+          <div class="meta">月度预测·回款 · 8 字段</div>
+          <div class="freq">商务周五填</div>
+        </div>
+        <div class="box manual">
+          <div class="name">bid 投标管理</div>
+          <div class="meta">14 字段 · 含风险标签</div>
+          <div class="freq">销售立项时 + 状态变更</div>
+        </div>
+        <div class="box manual">
+          <div class="name">presales_activity 售前活动</div>
+          <div class="meta">5 字段 · 含参与人员多选</div>
+          <div class="freq">售前活动后</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow-down">▼ 横切支撑能力（每天 18:00 串联） ▼</div>
+
+    <!-- Layer 3: 横切支撑 -->
+    <div class="flow-stage">
+      <h2>Layer 3 · 横切 <em>支撑</em> · 4 个引擎</h2>
+      <p class="desc">每天 18:00 自动触发 4 步：拉数 → 对账 → 自动补录 → freeze 快照（仅周五）</p>
+
+      <div class="layer-grid cols-4">
+        <div class="box derived">
+          <div class="name">⚙ region_mapping 区域映射</div>
+          <div class="meta">BU/MU → 7 HCM 区域</div>
+          <div class="freq">每次签单/回款数据落库时关联</div>
+        </div>
+        <div class="box derived">
+          <div class="name">⚙ forecast_reconciliation 预测对账</div>
+          <div class="meta">实际 vs 预测 自动剔除</div>
+          <div class="freq">每天 18:00:30</div>
+        </div>
+        <div class="box derived">
+          <div class="name">⚙ pm_review_auto_import 自动补录</div>
+          <div class="meta">"是否签单首付款=false" 触发</div>
+          <div class="freq">每天 18:01</div>
+        </div>
+        <div class="box derived">
+          <div class="name">📸 weekly_snapshot 周快照</div>
+          <div class="meta">JSONB freeze 全表数据</div>
+          <div class="freq">每周五 18:02 (admin 可锁/解)</div>
+        </div>
+      </div>
+
+      <div class="formula-block">
+        <div class="label">⚙ 4 个核心计算公式（指标配置可调）</div>
+        <code><b>① 月度预测</b> = 当月承诺 × <span style="color: var(--ink-green); font-weight: 600;">70%</span> + 当月争取 × <span style="color: var(--amber); font-weight: 600;">20%</span> + 当月已达成 × <span style="color: var(--blue); font-weight: 600;">100%</span></code>
+        <code><b>② 季度预测</b> = (早期月承诺 + 早期月已达成) + (末月承诺 + 末月争取 + 末月已达成)　<i style="color: var(--ink-mute);">// 早期月 struggle 不算（防被后期月 commit 重复计入）</i></code>
+        <code><b>③ 单条毛利</b> = 签单/回款金额 × <span style="color: var(--ink-green); font-weight: 600;">80%</span>　<i style="color: var(--ink-mute);">// 命中 low_margin_exception 用例外值</i></code>
+        <code><b>④ 综合评分</b> = 签单毛利达成率 × <span style="color: var(--ink-green); font-weight: 600;">30%</span> + 回款收入达成率 × <span style="color: var(--steel); font-weight: 600;">20%</span> + 回款毛利达成率 × <span style="color: var(--blue); font-weight: 600;">50%</span></code>
+      </div>
+    </div>
+
+    <div class="arrow-down">▼ 派生表（实时计算 + 快照对比） ▼</div>
+
+    <!-- Layer 4: 派生 -->
+    <div class="flow-stage">
+      <h2>Layer 4 · 派生 <em>聚合</em> · 物化视图</h2>
+      <p class="desc">基于 Layer 2 + Layer 3 公式实时计算 · 看板/报表直接读这一层 · 不需要重复 join</p>
+
+      <div class="layer-grid cols-3">
+        <div class="box derived">
+          <div class="name">monthly_aggregate 月度汇总</div>
+          <div class="meta">区域×月份×指标 · 含加权预测</div>
+          <div class="freq">实时 + 快照</div>
+        </div>
+        <div class="box derived">
+          <div class="name">quarterly_aggregate 季度派生</div>
+          <div class="meta">早期月 commit + 末月 commit&amp;struggle</div>
+          <div class="freq">实时计算</div>
+        </div>
+        <div class="box derived">
+          <div class="name">opportunity_funnel 商机水库</div>
+          <div class="meta">S1-S4 + 周/月变动</div>
+          <div class="freq">每天</div>
+        </div>
+        <div class="box derived">
+          <div class="name">overall_score 综合评分</div>
+          <div class="meta">30/20/50 加权 · 区域/全公司</div>
+          <div class="freq">实时</div>
+        </div>
+        <div class="box derived">
+          <div class="name">variance_analysis 变动归因</div>
+          <div class="meta">本周 vs 上周 vs 月初</div>
+          <div class="freq">每周快照后</div>
+        </div>
+        <div class="box derived">
+          <div class="name">presales_efficiency 售前转化</div>
+          <div class="meta">活动数 → 商机数 → 签单率</div>
+          <div class="freq">每天</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow-down">▼ 最终输出 ▼</div>
+
+    <!-- Layer 5: 报表/看板 -->
+    <div class="flow-stage">
+      <h2>Layer 5 · 报表 + <em>看板</em></h2>
+      <p class="desc">最终用户看到的 5 张明细报表 + 区域业绩一览表 + 移动端 V4 + PC 方案二</p>
+
+      <div class="layer-grid cols-5">
+        <div class="box report">
+          <div class="name">2026 重点商机明细</div>
+          <div class="meta">≥ 500 万阈值 · 16 字段</div>
+          <div class="freq">实时</div>
+        </div>
+        <div class="box report">
+          <div class="name">投标 / 预计投标</div>
+          <div class="meta">14 字段 · 风险标签 ⚠</div>
+          <div class="freq">实时</div>
+        </div>
+        <div class="box report">
+          <div class="name">预计签单明细</div>
+          <div class="meta">15 字段 · 周/月快照对比</div>
+          <div class="freq">每周快照</div>
+        </div>
+        <div class="box report">
+          <div class="name">预计回款明细</div>
+          <div class="meta">15 字段 · 8 类回款类型</div>
+          <div class="freq">每周快照</div>
+        </div>
+        <div class="box report">
+          <div class="name">区域业绩一览表</div>
+          <div class="meta">FY2026 · 110 列宽表</div>
+          <div class="freq">实时 + 月初快照</div>
+        </div>
+      </div>
+
+      <div class="layer-grid cols-3" style="margin-top: 10px;">
+        <div class="box report">
+          <div class="name">📱 移动端 V4 业绩周报</div>
+          <div class="meta">8 模块 · 企业微信 H5</div>
+          <div class="freq">实时（每天 18:01 后）</div>
+        </div>
+        <div class="box report">
+          <div class="name">💻 PC 经营驾驶舱 方案二</div>
+          <div class="meta">8 模块 · 12 列 Grid</div>
+          <div class="freq">实时</div>
+        </div>
+        <div class="box report">
+          <div class="name">📤 一键导出 PPT (Phase 2)</div>
+          <div class="meta">替代手工拼周报</div>
+          <div class="freq">按需</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 数据回流 -->
+    <div class="flow-stage" style="border-left: 3px solid var(--blue);">
+      <h2>↻ 数据 <em>回流</em> · 反向校正</h2>
+      <p class="desc">看板/报表上的"⚠ 异常 / 矫正项"会反向回流到 Layer 2 的填报表，提醒销售/商务下周 review 时重点处理</p>
+
+      <div class="layer-grid cols-3">
+        <div class="box derived">
+          <div class="name">⚠ 高风险投标 → 投标管理</div>
+          <div class="meta">看板风险卡 → 销售下周必谈</div>
+        </div>
+        <div class="box derived">
+          <div class="name">⚠ 项目 Review 自动补录 → 项目 Review</div>
+          <div class="meta">系统识别漏导项 → PMO 待处理</div>
+        </div>
+        <div class="box derived">
+          <div class="name">⚠ 区域达成低 → 月度预测·签单</div>
+          <div class="meta">区域达成 < 70% → 区总待跟进</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="label">💡 设计原则</div>
+      <div class="text">
+        <b>1. 单一信源 (Single Source of Truth)</b>：每个数据有且仅有一个 source（API / Excel / 手工），不重复维护<br>
+        <b>2. 派生即缓存</b>：Layer 4 派生表是物化视图，每次 update 用最新公式重算，避免 join 成本<br>
+        <b>3. 快照不可变</b>：每个周快照 freeze 后只读，历史数据可任意时间回看（即便公式后续调整）<br>
+        <b>4. 失败不阻塞</b>：API 拉取失败 30 秒重试，重试 3 次后报警但不影响其他数据流<br>
+        <b>5. 公式可调</b>：4 个核心公式都通过 metric_config 表可调，admin 改公式自动触发派生层重算
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+if (new URLSearchParams(location.search).get('embedded') === '1') {
+  const sb = document.querySelector('.sidebar'); if (sb) sb.style.display = 'none';
+  const app = document.querySelector('.app'); if (app) app.style.gridTemplateColumns = '1fr';
+}
+</script>
+</body>
+</html>

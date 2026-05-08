@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>3.1.2 商机管理 · 含 Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.kpi-row { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; margin-bottom: 14px; }
+.stage-card { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 10px; box-shadow: var(--shadow-card); cursor: pointer; }
+.stage-card.active { background: var(--ink); color: #faf8f3; border-color: var(--ink); }
+.stage-card .name { font-family: var(--font-cn); font-size: 11px; color: var(--ink-soft); }
+.stage-card.active .name { color: var(--ink-faint); }
+.stage-card .num { font-family: var(--font-display); font-size: 22px; line-height: 1; }
+.stage-card .amt { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px; }
+.stage-card.active .amt { color: var(--ink-faint); }
+
+.split { display: grid; grid-template-columns: 1.5fr 1fr; gap: 14px; }
+.detail-pane { background: var(--bg-paper); border: 1px solid var(--line); border-radius: var(--r-md); padding: 16px; height: fit-content; box-shadow: var(--shadow-card); }
+.detail-head { padding-bottom: 12px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+.detail-head .opp-no { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); }
+.detail-head h3 { font-family: var(--font-display); font-size: 22px; font-weight: 400; margin: 4px 0; line-height: 1.15; }
+.detail-head .info { font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft); }
+
+.section-block { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 12px 14px; margin-bottom: 10px; }
+.section-block.review { border: 2px solid var(--ink-green); }
+.section-block .title { font-family: var(--font-cn); font-size: 12px; font-weight: 600; margin-bottom: 8px; color: var(--ink); padding-bottom: 6px; border-bottom: 1px dashed var(--line); display: flex; justify-content: space-between; align-items: center; }
+.section-block .title em { font-style: italic; color: var(--ink-green); font-family: var(--font-display); font-size: 13px; }
+.section-block .title .badge-ts { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); font-weight: 400; letter-spacing: 0.04em; }
+.kv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; }
+.kv { padding: 4px 0; }
+.kv .k { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.06em; text-transform: uppercase; }
+.kv .v { font-family: var(--font-cn); font-size: 12px; margin-top: 2px; }
+.kv .v.num { font-family: var(--font-display); font-size: 16px; }
+.kv input.cell, .kv select.cell, .kv textarea.cell { width: 100%; padding: 5px 8px; font-family: var(--font-cn); font-size: 12px; border: 1px solid var(--line-mid); border-radius: 4px; background: var(--bg-card); }
+
+.month-mini-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 6px; }
+.month-mini { padding: 6px 8px; background: var(--bg-card-quiet); border: 1px solid var(--line-mid); border-radius: 4px; text-align: center; }
+.month-mini.primary { background: var(--ink-green-soft); border: 2px solid var(--ink-green); }
+.month-mini .m { font-family: var(--font-display); font-size: 13px; font-style: italic; color: var(--ink); }
+.month-mini.primary .m { color: var(--ink-green); }
+.month-mini .s { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px; }
+
+.toggle-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--bg-card); border: 2px solid var(--ink-green); border-radius: var(--r-md); margin-bottom: 10px; }
+.toggle-card .text .t1 { font-family: var(--font-cn); font-size: 12px; font-weight: 500; }
+.toggle-card .text .t2 { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px; }
+.switch-mini { position: relative; width: 36px; height: 20px; background: var(--ink-faint); border-radius: 10px; flex-shrink: 0; }
+.switch-mini::before { content: ""; position: absolute; left: 2px; top: 2px; width: 16px; height: 16px; background: var(--bg-card); border-radius: 50%; }
+
+.row { padding: 10px 12px; border-bottom: 1px solid var(--line); cursor: pointer; }
+.row.selected { background: var(--ink-green-soft); border-left: 3px solid var(--ink-green); padding-left: 9px; }
+.row .r1 { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+.row .name { font-family: var(--font-cn); font-size: 13px; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row .amt { font-family: var(--font-display); font-size: 16px; }
+.row .r2 { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; color: var(--ink-mute); font-family: var(--font-mono); }
+
+.review-dots { display: inline-flex; gap: 3px; }
+.review-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--line-strong); }
+.review-dot.done { background: var(--ink-green); }
+.review-dot.warn { background: var(--amber); }
+.review-dot.empty { background: var(--bg-card); border: 1px solid var(--line-strong); }
+
+/* 战役 chip */
+.row .r3 { display: flex; gap: 4px; margin-top: 5px; flex-wrap: wrap; }
+.camp-chip { display: inline-flex; align-items: center; padding: 1px 7px; font-family: var(--font-mono); font-size: 9px; border-radius: 10px; letter-spacing: 0.04em; }
+.camp-chip.parent { background: var(--ink-green-soft); color: var(--ink-green); border: 1px solid var(--ink-green-mid); font-weight: 600; }
+.camp-chip.sub { background: var(--blue-soft); color: var(--blue); border: 1px solid var(--blue-mid); }
+.camp-chip.none { background: var(--bg-card-quiet); color: var(--ink-mute); border: 1px dashed var(--line-strong); font-style: italic; }
+
+/* 详情面板战役区 */
+.campaign-panel { background: var(--bg-card); border: 1px solid var(--ink-green-mid); border-radius: var(--r-md); padding: 12px 14px; margin-bottom: 10px; }
+.campaign-panel .title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px dashed var(--line); }
+.campaign-panel .title-row .title { font-family: var(--font-cn); font-size: 12px; font-weight: 600; }
+.campaign-panel .title-row .title em { font-style: italic; color: var(--ink-green); font-family: var(--font-display); font-size: 13px; }
+.campaign-panel .parent-row { display: grid; grid-template-columns: 90px 1fr 24px; gap: 10px; align-items: center; padding: 8px 0; }
+.campaign-panel .parent-row .label-k { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.06em; text-transform: uppercase; }
+.campaign-panel .parent-row select { padding: 5px 8px; font-family: var(--font-cn); font-size: 12px; border: 1px solid var(--line-mid); border-radius: 4px; background: var(--bg-card); width: 100%; }
+.campaign-panel .sub-tags-row { padding: 6px 0; }
+.campaign-panel .sub-tag-list { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.campaign-panel .sub-tag-active { display: inline-flex; align-items: center; padding: 2px 8px; font-family: var(--font-mono); font-size: 10px; border-radius: 12px; background: var(--blue-soft); color: var(--blue); border: 1px solid var(--blue-mid); cursor: pointer; gap: 4px; }
+.campaign-panel .sub-tag-active .x { color: var(--ink-mute); font-weight: 600; cursor: pointer; }
+.campaign-panel .sub-tag-add { display: inline-flex; align-items: center; padding: 2px 8px; font-family: var(--font-mono); font-size: 10px; border-radius: 12px; background: var(--bg-card-quiet); color: var(--ink-mute); border: 1px dashed var(--line-strong); cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">业绩 <em>运营</em></div>
+    <div class="brand-sub">PERFORMANCE OPS · v4</div>
+    <div class="nav-section">2 明细报表</div>
+    <a class="nav-item">2.1 全年重点商机</a>
+    <a class="nav-item">2.2 投标明细</a>
+    <a class="nav-item">2.3 签单明细</a>
+    <a class="nav-item">2.4 回款明细</a>
+    <div class="nav-section">3 业务功能</div>
+    <a class="nav-item">3.1.1 客户管理</a>
+    <a class="nav-item active">3.1.2 商机管理</a>
+    <a class="nav-item">3.1.3 营销战役管理</a>
+    <a class="nav-item">3.2.1 项目管理</a>
+    <a class="nav-item">3.2.2 回款里程碑</a>
+  </aside>
+
+  <main class="main">
+    <div class="crumb">业务功能 <span class="sep">/</span> 营销管理 <span class="sep">/</span> 商机管理</div>
+    <h1 class="page-title">3.1.2 商机 <em>管理</em>（含 Review）</h1>
+    <div class="page-meta">商机主数据 + 周度 Review + 月度滚动预测 + 营销战役关联 · 142 商机 · HCM API 同步 + 销售本地维护 · 数据源驱动 2.x 所有明细报表</div>
+
+    <!-- 8 阶段水库 -->
+    <div class="kpi-row">
+      <div class="stage-card"><div class="name">S1 发现</div><div class="num">38</div><div class="amt">¥ 5,200</div></div>
+      <div class="stage-card"><div class="name">S2 确认</div><div class="num">29</div><div class="amt">¥ 4,800</div></div>
+      <div class="stage-card"><div class="name">S3 方案</div><div class="num">22</div><div class="amt">¥ 4,200</div></div>
+      <div class="stage-card active"><div class="name">S4 投标</div><div class="num">18</div><div class="amt">¥ 2,978</div></div>
+      <div class="stage-card"><div class="name">中标未签单</div><div class="num">12</div><div class="amt">¥ 4,820</div></div>
+      <div class="stage-card"><div class="name">已签单</div><div class="num">62</div><div class="amt">¥ 4,360</div></div>
+      <div class="stage-card"><div class="name">丢标</div><div class="num">15</div><div class="amt">¥ 1,400</div></div>
+      <div class="stage-card"><div class="name">弃标</div><div class="num">8</div><div class="amt">¥ 600</div></div>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn primary">+ 新增商机</button>
+      <div class="group">区域 <select><option>全部</option></select></div>
+      <div class="group">阶段 <select><option>S4-投标 (18)</option></select></div>
+      <div class="group">达成 <select><option>全部</option><option>承诺</option><option>争取</option><option>风险</option></select></div>
+      <div class="group">主推月 <select><option>全部</option><option>5</option><option>6</option></select></div>
+      <div class="group">本周 Review <select><option>全部</option><option>已 review</option><option>待 review</option></select></div>
+      <div class="group">战役 <select><option>全部</option><option>2026 央企战役</option><option>2026 区域薪酬战役</option><option>2026 区域银行战役</option><option>2026 AI Copilot 战役</option><option>2026 钢铁行业战役</option><option>未归战役</option></select></div>
+      <input class="search" placeholder="商机名/客户/编号 搜索...">
+    </div>
+
+    <div class="split">
+
+      <!-- 左：商机列表 -->
+      <div style="background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); box-shadow: var(--shadow-card); overflow: hidden;">
+        <div class="row selected">
+          <div class="r1">
+            <div class="name">山东出版集团一期 HCM</div>
+            <div class="amt">64 万</div>
+          </div>
+          <div class="r2">
+            <span>OPP-2026-0234 · S4-投标 · 山东 · 王正</span>
+            <span class="review-dots" title="bid/sign/pay/risk/首付款">
+              <span class="review-dot done"></span><span class="review-dot done"></span><span class="review-dot done"></span><span class="review-dot done"></span><span class="review-dot empty"></span>
+            </span>
+          </div>
+          <div class="r3">
+            <span class="camp-chip parent">2026 区域薪酬战役</span>
+            <span class="camp-chip sub">山东薪酬子战役</span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="r1">
+            <div class="name">中信集团 HCM 综合运维</div>
+            <div class="amt">2,800 万</div>
+          </div>
+          <div class="r2">
+            <span>OPP-2025-0123 · 中标未签单 · 央企</span>
+            <span class="review-dots">
+              <span class="review-dot done"></span><span class="review-dot done"></span><span class="review-dot done"></span><span class="review-dot done"></span><span class="review-dot done"></span>
+            </span>
+          </div>
+          <div class="r3">
+            <span class="camp-chip parent">2026 央企战役</span>
+            <span class="camp-chip sub">央企薪酬</span>
+            <span class="camp-chip sub">央企集团内复制</span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="r1">
+            <div class="name">贵州磷化人力资源</div>
+            <div class="amt">418 万</div>
+          </div>
+          <div class="r2">
+            <span>OPP-2025-0098 · S4-投标 · 西部</span>
+            <span class="review-dots">
+              <span class="review-dot done"></span><span class="review-dot empty"></span><span class="review-dot empty"></span><span class="review-dot warn"></span><span class="review-dot empty"></span>
+            </span>
+          </div>
+          <div class="r3">
+            <span class="camp-chip none">未归战役</span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="r1">
+            <div class="name">湖北宏泰 HCM</div>
+            <div class="amt">580 万</div>
+          </div>
+          <div class="r2">
+            <span>OPP-2025-0210 · S4-投标 · 华东</span>
+            <span class="review-dots">
+              <span class="review-dot done"></span><span class="review-dot empty"></span><span class="review-dot empty"></span><span class="review-dot done"></span><span class="review-dot empty"></span>
+            </span>
+          </div>
+          <div class="r3">
+            <span class="camp-chip parent">2026 央企战役</span>
+            <span class="camp-chip sub">央企信创替换</span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="r1">
+            <div class="name">华夏银行薪酬模块</div>
+            <div class="amt">540 万</div>
+          </div>
+          <div class="r2">
+            <span>OPP-2026-0067 · 已签单 · 华北</span>
+            <span class="review-dots">
+              <span class="review-dot done"></span><span class="review-dot done"></span><span class="review-dot done"></span><span class="review-dot done"></span><span class="review-dot done"></span>
+            </span>
+          </div>
+          <div class="r3">
+            <span class="camp-chip parent">2026 央企战役</span>
+            <span class="camp-chip sub">央企薪酬</span>
+            <span class="camp-chip sub">+ 区域银行</span>
+          </div>
+        </div>
+        <div style="text-align: center; padding: 10px; color: var(--ink-mute); font-family: var(--font-mono); font-size: 10px; background: var(--bg-card-quiet);">
+          ⌄ 还有 137 行 · 滚动加载
+        </div>
+      </div>
+
+      <!-- 右：商机详情（含 Review） -->
+      <div class="detail-pane">
+        <div class="detail-head">
+          <div class="opp-no">OPP-2026-0234 · 唯一商机编号</div>
+          <h3>山东出版集团一期 HCM</h3>
+          <div class="info">商机阶段 S4-投标 · 进行中 · 创建于 2026-04-15</div>
+        </div>
+
+        <!-- 商机基础字段（精简版，37 字段中的关键 12 个） -->
+        <div class="section-block">
+          <div class="title"><span>① 商机基础信息</span><span class="badge-ts">来自 HCM API</span></div>
+          <div class="kv-grid">
+            <div class="kv"><div class="k">客户</div><div class="v">山东出版集团总部</div></div>
+            <div class="kv"><div class="k">HCM 区域 / MU</div><div class="v">山东 / 山东</div></div>
+            <div class="kv"><div class="k">售前 / 商务</div><div class="v">陈飞 / 王正</div></div>
+            <div class="kv"><div class="k">商机预算 / 预计签单</div><div class="v num">¥ 80 / ¥ 64 万</div></div>
+            <div class="kv"><div class="k">实际签单 <span style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); font-weight: 400;">(签单后反写)</span></div><div class="v num" style="color: var(--ink-mute);">— <span style="font-family: var(--font-mono); font-size: 9px;">未签</span></div></div>
+            <div class="kv"><div class="k">签单毛利 <span style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); font-weight: 400;">默认 = 签单 × 80% · 可覆盖</span></div><div class="v" style="display: flex; align-items: center; gap: 6px;"><input class="cell" value="51.2" style="width: 80px; text-align: right; font-family: var(--font-display); font-size: 16px; color: var(--ink-green); padding: 4px 8px; border: 1px solid var(--line-mid); border-radius: 4px; background: var(--bg-card);"> <span style="font-family: var(--font-cn); font-size: 11px;">万</span> <span style="font-family: var(--font-mono); font-size: 9px; color: var(--blue); cursor: pointer;" title="按 预计签单 × 默认毛利率 重新计算">↻ 重算</span></div></div>
+            <div class="kv"><div class="k">预计投标 / 签单 / 归档</div><div class="v">4/25 / 5/15 / 5/20</div></div>
+          </div>
+        </div>
+
+        <!-- 关联营销战役（v7 新增） -->
+        <div class="campaign-panel">
+          <div class="title-row">
+            <div class="title">关联 <em>营销战役</em></div>
+            <span class="badge-ts" style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute);">1 父 + N 子 · 来自 3.1.3</span>
+          </div>
+          <div class="parent-row">
+            <span class="label-k">父战役</span>
+            <select>
+              <option>2026 区域薪酬战役 ✓</option>
+              <option>2026 央企战役</option>
+              <option>2026 区域银行战役</option>
+              <option>2026 AI Copilot 战役</option>
+              <option>2026 钢铁行业战役</option>
+              <option>未归战役</option>
+            </select>
+            <span style="color: var(--ink-mute); font-family: var(--font-mono); font-size: 14px; cursor: pointer;">×</span>
+          </div>
+          <div class="sub-tags-row">
+            <span class="label-k">子战役（已选 1，可多选）</span>
+            <div class="sub-tag-list">
+              <span class="sub-tag-active">山东薪酬子战役 <span class="x">×</span></span>
+              <span class="sub-tag-add">+ 河南薪酬子战役</span>
+              <span class="sub-tag-add">+ 北京薪酬子战役</span>
+              <span class="sub-tag-add">+ 广东薪酬子战役</span>
+              <span class="sub-tag-add">+ 重庆薪酬子战役</span>
+            </div>
+          </div>
+          <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 8px; padding-top: 6px; border-top: 1px dashed var(--line);">
+            ⓘ 切换父战役会清空所有子战役标记 · 子战役只能从父战役下选 · 改动写入 3.1.3 战役维度报表实时刷新
+          </div>
+        </div>
+
+        <!-- 月度滚动预测（Review 核心） -->
+        <div class="section-block review">
+          <div class="title"><span>② 月度 <em>滚动预测</em></span><span class="badge-ts">本周 Review · 王正 5/3</span></div>
+          <div class="month-mini-grid">
+            <div class="month-mini"><div class="m">4</div><div class="s">—</div></div>
+            <div class="month-mini primary"><div class="m">⭐ 5</div><div class="s">承诺 64</div></div>
+            <div class="month-mini"><div class="m">6</div><div class="s">—</div></div>
+          </div>
+          <div style="margin-top: 8px; padding: 6px 8px; background: var(--bg-card-quiet); border-radius: 4px; font-family: var(--font-mono); font-size: 10px;">
+            <span style="color: var(--ink-green); font-weight: 600;">5 月预测 +44.8 万</span> (64 × 0.7) ·
+            <span style="color: var(--blue);">Q2 派生 +44.8</span>
+          </div>
+        </div>
+
+        <!-- 是否签单首付款 -->
+        <div class="toggle-card">
+          <div class="text" style="flex: 1;">
+            <div class="t1">是否已收签单首付款？</div>
+            <div class="t2">驱动 3.2.2 回款里程碑自动补录</div>
+          </div>
+          <div class="switch-mini"></div>
+        </div>
+
+        <!-- 4 个 Review 字段 -->
+        <div class="section-block review">
+          <div class="title"><span>③ <em>Review</em> · 投标 / 签单 / 付款 / 风险</span><span class="badge-ts">5/3 王正</span></div>
+          <div class="kv">
+            <div class="k">投标进展 (bid_status)</div>
+            <textarea class="cell" rows="2">4/28 投标已交 · 5/2 客户内部复盘 · 5/7 出结果</textarea>
+          </div>
+          <div class="kv" style="margin-top: 8px;">
+            <div class="k">签单进展 (signing_status)</div>
+            <textarea class="cell" rows="2">5/15 前签约 · 用印 5/12</textarea>
+          </div>
+          <div class="kv" style="margin-top: 8px;">
+            <div class="k">付款进展 (payment_status)</div>
+            <textarea class="cell" rows="2">30 天内首付款 19.2 万 · 6 月底完成</textarea>
+          </div>
+          <div class="kv" style="margin-top: 8px;">
+            <div class="k">风险与对策（4-6 字浓缩 + 详述）</div>
+            <input class="cell" value="金额劣势" style="margin-bottom: 4px;">
+            <textarea class="cell" rows="2">价格高 7 分 · 通过陈飞高级实施背书拉回议价</textarea>
+          </div>
+        </div>
+
+        <!-- 首付款相关 (Q6 字段所在) -->
+        <div class="section-block">
+          <div class="title"><span>④ 首付款</span><span class="badge-ts">影响 3.2.2 自动补录</span></div>
+          <div class="kv-grid">
+            <div class="kv"><div class="k">首付款类型</div><div class="v"><select class="cell"><option>签单首付款</option><option>非签单首付款</option></select></div></div>
+            <div class="kv"><div class="k">首付款比例</div><div class="v"><input class="cell" value="30" style="text-align: right;"> %</div></div>
+            <div class="kv"><div class="k">首付款金额</div><div class="v num">¥ 19.2 万</div></div>
+            <div class="kv"><div class="k">首付款时间</div><div class="v">2026-06-15</div></div>
+          </div>
+        </div>
+
+        <!-- 过程跟进历史 -->
+        <div class="section-block">
+          <div class="title"><span>⑤ 过程跟进 · 历史保留</span><span class="badge-ts">不可删 · 时间排序</span></div>
+          <div style="font-family: var(--font-cn); font-size: 11px; color: var(--ink-soft); line-height: 1.7;">
+            <div>5/3 王正 · 客户法务确认合同主体已 OK，5/15 用印</div>
+            <div>5/2 陈飞 · 投标技术分 92/100 · 价格比北森高 7 分</div>
+            <div>4/28 王正 · 投标已交</div>
+            <div>4/15 王正 · 商机立项 · 客户预算 80 万</div>
+          </div>
+          <div style="margin-top: 8px;">
+            <textarea class="cell" rows="2" placeholder="新增跟进记录...（保存后系统自动添加时间戳和用户名）" style="width: 100%; font-family: var(--font-cn); font-size: 12px;"></textarea>
+          </div>
+        </div>
+
+        <!-- 操作 -->
+        <div style="display: flex; gap: 8px; padding-top: 12px; border-top: 1px solid var(--line);">
+          <button class="btn ghost">取消</button>
+          <button class="btn">保存草稿</button>
+          <button class="btn primary">保存 + 完成本周 Review</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="label">💡 v4 合并说明</div>
+      <div class="text">
+        本页是 v3 中 <code style="font-family: var(--font-mono); background: var(--bg-card-accent); padding: 1px 5px;">02 商机 Review</code> + <code style="font-family: var(--font-mono); background: var(--bg-card-accent); padding: 1px 5px;">14 商机管理</code> 的合并版。<br>
+        <b>商机基础字段（37 个）</b> · 在每个商机详情页里折叠展示<br>
+        <b>本周 Review 字段</b> · 投标/签单/付款/风险 4 个 textarea + 是否签单首付款 toggle + 月度滚动预测<br>
+        <b>派生到</b>：2.1 重点商机（≥500 万阈值）/ 2.2 投标明细 / 2.3 签单明细（预测部分）
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+if (new URLSearchParams(location.search).get('embedded') === '1') {
+  const sb = document.querySelector('.sidebar'); if (sb) sb.style.display = 'none';
+  const app = document.querySelector('.app'); if (app) app.style.gridTemplateColumns = '1fr';
+}
+</script>
+</body>
+</html>

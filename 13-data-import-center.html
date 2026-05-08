@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>数据导入中心 · OMS+HCM+Excel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.import-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+.import-card { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 18px; box-shadow: var(--shadow-card); }
+.import-card.api { border-left: 4px solid var(--ink-green); }
+.import-card.excel { border-left: 4px solid var(--blue); }
+.import-card .head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+.import-card h3 { font-family: var(--font-display); font-size: 22px; font-weight: 400; line-height: 1.1; }
+.import-card h3 em { font-style: italic; color: var(--ink-green); }
+.import-card .source-tag { font-family: var(--font-mono); font-size: 9px; padding: 3px 8px; border-radius: 12px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 500; }
+.import-card .source-tag.api { background: var(--ink-green-soft); color: var(--ink-green); border: 1px solid var(--ink-green-mid); }
+.import-card .source-tag.excel { background: var(--blue-soft); color: var(--blue); border: 1px solid var(--blue-mid); }
+.import-card .desc { font-family: var(--font-cn); font-size: 12px; color: var(--ink-soft); margin-bottom: 12px; line-height: 1.6; }
+.import-card .desc code { font-family: var(--font-mono); font-size: 11px; background: var(--bg-card-accent); padding: 1px 5px; border-radius: 3px; }
+.import-card .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px 12px; background: var(--bg-card-quiet); border-radius: 5px; margin-bottom: 12px; }
+.import-card .stat-row .stat .k { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase; }
+.import-card .stat-row .stat .v { font-family: var(--font-display); font-size: 18px; font-weight: 400; line-height: 1; }
+.import-card .last-event { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); padding: 8px 12px; background: var(--bg-card-quiet); border-left: 2px solid var(--line-strong); border-radius: 0 5px 5px 0; margin-bottom: 12px; }
+.import-card .last-event b { color: var(--ink-green); font-family: var(--font-mono); font-weight: 500; }
+.import-card .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.history-table { width: 100%; background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); border-collapse: separate; border-spacing: 0; }
+.history-table th { padding: 9px 10px; font-family: var(--font-mono); font-size: 9px; font-weight: 600; color: var(--ink-mute); letter-spacing: 0.06em; text-transform: uppercase; text-align: left; background: var(--bg-card-quiet); border-bottom: 1px solid var(--line-mid); }
+.history-table td { padding: 8px 10px; font-family: var(--font-cn); font-size: 12px; border-bottom: 1px solid var(--line); }
+.history-table tr:last-child td { border-bottom: none; }
+.import-status { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 3px; font-family: var(--font-mono); font-size: 9px; font-weight: 500; }
+.import-status.success { background: var(--ink-green-soft); color: var(--ink-green); }
+.import-status.partial { background: var(--amber-soft); color: var(--amber); }
+.import-status.failed { background: var(--crimson-soft); color: var(--crimson); }
+.import-status.running { background: var(--blue-soft); color: var(--blue); }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">业绩 <em>运营</em></div>
+    <div class="brand-sub">PERFORMANCE OPS</div>
+    <div class="nav-section">看板</div>
+    <a class="nav-item">驾驶舱</a>
+    <a class="nav-item">区域业绩</a>
+    <div class="nav-section">数据维护</div>
+    <a class="nav-item">商机管理</a>
+    <a class="nav-item">商机 Review</a>
+    <a class="nav-item">项目 Review</a>
+    <div class="nav-section">导入 / 配置</div>
+    <a class="nav-item active">数据导入中心</a>
+    <a class="nav-item">指标配置</a>
+  </aside>
+
+  <main class="main">
+    <div class="crumb">导入配置 <span class="sep">/</span> 数据导入中心</div>
+    <h1 class="page-title">数据 <em>导入</em> · 中心</h1>
+    <div class="page-meta">3 个数据来源 · 6 个数据流 · 每天 18:00 自动 + 临时手动</div>
+
+    <!-- 6 个数据流卡片 -->
+    <div class="import-grid">
+
+      <!-- 1. OMS 签单 -->
+      <div class="import-card api">
+        <div class="head">
+          <div>
+            <h3>签单 <em>明细</em></h3>
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">28 字段 · OMS API 直取</div>
+          </div>
+          <span class="source-tag api">OMS API</span>
+        </div>
+        <p class="desc">2026 年签单流水 · 来源 <code>OMS 合同模块</code> · 每天 18:00 拉取增量 · 落表 <code>signing_data</code></p>
+        <div class="stat-row">
+          <div class="stat"><div class="k">YTD 流水</div><div class="v">62 条</div></div>
+          <div class="stat"><div class="k">YTD 金额</div><div class="v">¥ 4,360 万</div></div>
+        </div>
+        <div class="last-event">最近：<b>5/6 18:00 success</b> · +1 条 / +¥27 万 · 用时 0.8s</div>
+        <div class="actions">
+          <button class="btn primary">立即拉取</button>
+          <button class="btn ghost">查看日志</button>
+        </div>
+      </div>
+
+      <!-- 2. OMS 回款 -->
+      <div class="import-card api">
+        <div class="head">
+          <div>
+            <h3>回款 <em>明细</em></h3>
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">27 字段 · OMS API 直取</div>
+          </div>
+          <span class="source-tag api">OMS API</span>
+        </div>
+        <p class="desc">2026 年回款流水 · 来源 <code>OMS 财务模块</code> · 含销售收入 / 回款毛利 · 每天 18:00</p>
+        <div class="stat-row">
+          <div class="stat"><div class="k">YTD 流水</div><div class="v">94 条</div></div>
+          <div class="stat"><div class="k">YTD 金额</div><div class="v">¥ 4,010 万</div></div>
+        </div>
+        <div class="last-event">最近：<b>5/6 18:00 success</b> · +3 条 / +¥58 万 · 用时 1.2s</div>
+        <div class="actions">
+          <button class="btn primary">立即拉取</button>
+          <button class="btn ghost">查看日志</button>
+        </div>
+      </div>
+
+      <!-- 3. HCM 商机水库 -->
+      <div class="import-card api">
+        <div class="head">
+          <div>
+            <h3>商机 <em>水库</em></h3>
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">37 字段 · HCM API</div>
+          </div>
+          <span class="source-tag api">HCM API</span>
+        </div>
+        <p class="desc">商机阶段 S1-S4 全量 · 来源 <code>HCM 商机系统</code> · 每天 09:00 + 18:00 双拉<br>+ 周度 / 月度对比快照</p>
+        <div class="stat-row">
+          <div class="stat"><div class="k">在跟商机</div><div class="v">142</div></div>
+          <div class="stat"><div class="k">总金额</div><div class="v">¥ 23,400 万</div></div>
+        </div>
+        <div class="last-event">最近：<b>5/6 18:00 success</b> · 142 条 (+3 新增 / -1 弃标) · 用时 2.1s</div>
+        <div class="actions">
+          <button class="btn primary">立即拉取</button>
+          <button class="btn ghost">查看日志</button>
+        </div>
+      </div>
+
+      <!-- 4. 项目对应表 (Excel) -->
+      <div class="import-card excel">
+        <div class="head">
+          <div>
+            <h3>项目 <em>对应表</em></h3>
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">17 字段 · 双轮 Excel 上传</div>
+          </div>
+          <span class="source-tag excel">Excel 手动</span>
+        </div>
+        <p class="desc">合同编号 → 区域 / MU / 4 类标签（服务/生态/SAAS/海外复计）· 双轮导入差集弹窗 · 销售管理部维护</p>
+        <div class="stat-row">
+          <div class="stat"><div class="k">现归属</div><div class="v">2,847</div></div>
+          <div class="stat"><div class="k">最近差集</div><div class="v">8</div></div>
+        </div>
+        <div class="last-event">最近：<b>4/30 14:22 success</b> · +14 行 / 无差集 · 销售管理部 黄诗览</div>
+        <div class="actions">
+          <button class="btn primary">📤 上传 Excel</button>
+          <button class="btn ghost">下载模板</button>
+        </div>
+      </div>
+
+      <!-- 5. 客户基本信息 (Excel/手工) -->
+      <div class="import-card excel">
+        <div class="head">
+          <div>
+            <h3>客户 <em>基本信息</em></h3>
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">4 字段 · 手工 / Excel</div>
+          </div>
+          <span class="source-tag excel">手工 + Excel</span>
+        </div>
+        <p class="desc">客户名 / MU / 企业性质 / 行业类别 · 来源：HCM API 同步 + 销售手工补</p>
+        <div class="stat-row">
+          <div class="stat"><div class="k">客户总数</div><div class="v">487</div></div>
+          <div class="stat"><div class="k">本周新增</div><div class="v">3</div></div>
+        </div>
+        <div class="last-event">最近：<b>5/6 09:30 success</b> · +1 客户 (山东工商银行) · 王正</div>
+        <div class="actions">
+          <button class="btn primary">+ 新增客户</button>
+          <button class="btn ghost">批量导入</button>
+        </div>
+      </div>
+
+      <!-- 6. 低毛利异常清单 (配置) -->
+      <div class="import-card excel">
+        <div class="head">
+          <div>
+            <h3>低毛利 <em>异常</em></h3>
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">8 字段 · admin 维护</div>
+          </div>
+          <span class="source-tag excel">手工 + Excel</span>
+        </div>
+        <p class="desc">命中此表的项目用例外毛利率（不走默认 80%）· 详见<code>指标配置 → 低毛利异常</code></p>
+        <div class="stat-row">
+          <div class="stat"><div class="k">例外项</div><div class="v">3</div></div>
+          <div class="stat"><div class="k">影响金额</div><div class="v">¥ 2,892 万</div></div>
+        </div>
+        <div class="last-event">最近：<b>5/4 11:05 success</b> · +1 项 (中国建筑第六工程局)</div>
+        <div class="actions">
+          <button class="btn primary">→ 指标配置</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 全局总览 + 数据流转图（mini） -->
+    <div style="background: var(--bg-paper); border: 1px solid var(--line); border-radius: var(--r-md); padding: 18px 22px; margin-bottom: 18px;">
+      <h3 style="font-family: var(--font-display); font-size: 22px; font-weight: 400; margin-bottom: 12px;">每日 18:00 自动同步流程 · <em style="font-style: italic; color: var(--ink-green);">串联</em></h3>
+      <p style="font-family: var(--font-cn); font-size: 12px; color: var(--ink-soft); margin-bottom: 16px;">每天 18:00 系统串联完成 4 步 · 与周五快照同时间但保证顺序</p>
+
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+        <div style="background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px;">
+          <div style="font-family: var(--font-display); font-size: 18px; font-style: italic; color: var(--ink); margin-bottom: 6px;">Step 1 · 18:00:00</div>
+          <div style="font-family: var(--font-cn); font-size: 13px; font-weight: 500; margin-bottom: 4px;">拉 OMS 实际数据</div>
+          <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">签单 + 回款 增量同步 · 用时 ~2s</div>
+        </div>
+        <div style="background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px;">
+          <div style="font-family: var(--font-display); font-size: 18px; font-style: italic; color: var(--ink); margin-bottom: 6px;">Step 2 · 18:00:30</div>
+          <div style="font-family: var(--font-cn); font-size: 13px; font-weight: 500; margin-bottom: 4px;">预测对账</div>
+          <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">实际 vs 预测匹配 · 剔除已达成项</div>
+        </div>
+        <div style="background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px;">
+          <div style="font-family: var(--font-display); font-size: 18px; font-style: italic; color: var(--ink); margin-bottom: 6px;">Step 3 · 18:01:00</div>
+          <div style="font-family: var(--font-cn); font-size: 13px; font-weight: 500; margin-bottom: 4px;">项目 Review 自动补录</div>
+          <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">是否签单首付款=false 的合同</div>
+        </div>
+        <div style="background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px;">
+          <div style="font-family: var(--font-display); font-size: 18px; font-style: italic; color: var(--ink); margin-bottom: 6px;">Step 4 · 18:02:00 (周五)</div>
+          <div style="font-family: var(--font-cn); font-size: 13px; font-weight: 500; margin-bottom: 4px;">freeze 周快照</div>
+          <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">仅周五执行 · 锁定状态下用默认</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 导入历史 -->
+    <h3 style="font-family: var(--font-display); font-size: 22px; font-weight: 400; margin-bottom: 12px;">最近 <em style="font-style: italic; color: var(--ink-green);">10</em> 次导入</h3>
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th style="width: 28px;">#</th>
+          <th>时间</th>
+          <th>类型</th>
+          <th>来源</th>
+          <th>状态</th>
+          <th class="num">变动行数</th>
+          <th class="num">变动金额</th>
+          <th class="num">用时</th>
+          <th>触发人</th>
+          <th>详情</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="mono">1</td>
+          <td class="mono">2026-05-06 18:00:01</td>
+          <td>OMS 签单</td>
+          <td>API 自动</td>
+          <td><span class="import-status success">✓ success</span></td>
+          <td class="num">+1 条</td>
+          <td class="num">+¥ 27 万</td>
+          <td class="num">0.8s</td>
+          <td>系统</td>
+          <td><a style="color: var(--blue); cursor: pointer; font-size: 11px;">日志</a></td>
+        </tr>
+        <tr>
+          <td class="mono">2</td>
+          <td class="mono">2026-05-06 18:00:02</td>
+          <td>OMS 回款</td>
+          <td>API 自动</td>
+          <td><span class="import-status success">✓ success</span></td>
+          <td class="num">+3 条</td>
+          <td class="num">+¥ 58 万</td>
+          <td class="num">1.2s</td>
+          <td>系统</td>
+          <td><a style="color: var(--blue); cursor: pointer; font-size: 11px;">日志</a></td>
+        </tr>
+        <tr>
+          <td class="mono">3</td>
+          <td class="mono">2026-05-06 18:00:30</td>
+          <td>预测对账</td>
+          <td>系统派生</td>
+          <td><span class="import-status success">✓ success</span></td>
+          <td class="num">剔除 4 项预测</td>
+          <td class="num">-¥ 85 万</td>
+          <td class="num">0.5s</td>
+          <td>系统</td>
+          <td><a style="color: var(--blue); cursor: pointer; font-size: 11px;">日志</a></td>
+        </tr>
+        <tr>
+          <td class="mono">4</td>
+          <td class="mono">2026-05-06 18:01:00</td>
+          <td>pm_reviews 自动补录</td>
+          <td>系统派生</td>
+          <td><span class="import-status partial">⚠ +2 行待 review</span></td>
+          <td class="num">+2 条</td>
+          <td class="num">¥ 245 万</td>
+          <td class="num">0.3s</td>
+          <td>系统</td>
+          <td><a style="color: var(--blue); cursor: pointer; font-size: 11px;">日志</a></td>
+        </tr>
+        <tr>
+          <td class="mono">5</td>
+          <td class="mono">2026-05-06 09:30:11</td>
+          <td>HCM 商机</td>
+          <td>API 自动 (上午批)</td>
+          <td><span class="import-status success">✓ success</span></td>
+          <td class="num">+3 / -1</td>
+          <td class="num">+¥ 480 万</td>
+          <td class="num">2.1s</td>
+          <td>系统</td>
+          <td><a style="color: var(--blue); cursor: pointer; font-size: 11px;">日志</a></td>
+        </tr>
+        <tr>
+          <td class="mono">6</td>
+          <td class="mono">2026-05-04 11:05:34</td>
+          <td>低毛利异常</td>
+          <td>手工添加</td>
+          <td><span class="import-status success">✓ success</span></td>
+          <td class="num">+1 项</td>
+          <td class="num">影响 ¥ 1,135 万</td>
+          <td class="num">—</td>
+          <td>黄诗览</td>
+          <td><a style="color: var(--blue); cursor: pointer; font-size: 11px;">日志</a></td>
+        </tr>
+        <tr>
+          <td class="mono">7</td>
+          <td class="mono">2026-04-30 14:22:18</td>
+          <td>项目对应表</td>
+          <td>Excel 上传</td>
+          <td><span class="import-status partial">⚠ 8 差集已补</span></td>
+          <td class="num">+22 行 (含 8 差集)</td>
+          <td class="num">¥ 412 万</td>
+          <td class="num">3.8s</td>
+          <td>黄诗览</td>
+          <td><a style="color: var(--blue); cursor: pointer; font-size: 11px;">日志</a></td>
+        </tr>
+        <tr>
+          <td class="mono">8</td>
+          <td class="mono">2026-04-30 09:15:02</td>
+          <td>OMS 回款</td>
+          <td>API 失败重试</td>
+          <td><span class="import-status failed">✗ network timeout</span></td>
+          <td class="num">—</td>
+          <td class="num">—</td>
+          <td class="num">30s</td>
+          <td>系统</td>
+          <td><a style="color: var(--crimson); cursor: pointer; font-size: 11px;">详情</a></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <div class="label">💡 一致性原则</div>
+      <div class="text">
+        所有 API 拉取走 <code style="font-family: var(--font-mono); background: var(--bg-card-accent); padding: 1px 4px;">upsert by 主键</code>（签单：合同编号 / 回款：单据编号 / 商机：商机编号）。<br>
+        所有 Excel 上传走 <code style="font-family: var(--font-mono); background: var(--bg-card-accent); padding: 1px 4px;">差集预览 + 内联补全</code>（项目对应表）或 <code style="font-family: var(--font-mono); background: var(--bg-card-accent); padding: 1px 4px;">行级 dry-run</code>（其它）。失败时单行错误不中断整批。
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+if (new URLSearchParams(location.search).get('embedded') === '1') {
+  const sb = document.querySelector('.sidebar'); if (sb) sb.style.display = 'none';
+  const app = document.querySelector('.app'); if (app) app.style.gridTemplateColumns = '1fr';
+}
+</script>
+</body>
+</html>

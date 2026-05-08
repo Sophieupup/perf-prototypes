@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><title>4.1 项目明细导入</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.upload-zone { background: var(--bg-card); border: 2px dashed var(--line-strong); border-radius: var(--r-lg); padding: 40px; text-align: center; margin-bottom: 18px; }
+.upload-zone .icon { font-family: var(--font-display); font-size: 48px; color: var(--ink-mute); }
+.upload-zone .title { font-family: var(--font-cn); font-size: 18px; margin: 8px 0 4px; }
+.upload-zone .desc { font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); margin-bottom: 16px; }
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+.import-status { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 3px; font-family: var(--font-mono); font-size: 9px; font-weight: 500; }
+.import-status.success { background: var(--ink-green-soft); color: var(--ink-green); }
+.import-status.partial { background: var(--amber-soft); color: var(--amber); }
+.import-status.failed { background: var(--crimson-soft); color: var(--crimson); }
+</style></head><body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">业绩 <em>运营</em></div>
+    <div class="brand-sub">PERFORMANCE OPS · v6</div>
+    <div class="nav-section">4 数据导入与维护</div>
+    <a class="nav-item">4.1 签单明细导入</a>
+    <a class="nav-item">4.2 回款明细导入</a>
+    <a class="nav-item active">4.3 项目明细导入</a>
+    <a class="nav-item">4.4 里程碑导入</a>
+    <a class="nav-item">4.5 项目对应表</a>
+    <a class="nav-item">4.6 指标与预测模型设置</a>
+    <a class="nav-item">4.7 区域划分与权限控制</a>
+  </aside>
+
+  <main class="main">
+    <div class="crumb">数据导入与维护 <span class="sep">/</span> 项目明细导入</div>
+    <h1 class="page-title">4.1 项目明细 <em>导入</em></h1>
+    <div class="page-meta">项目主数据导入 · 33 字段（基本信息）+ 周度更新 · 来源 OMS API + Excel 补充</div>
+
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="label">项目总数</div><div class="value">156</div><div class="delta">在建 + 历史</div></div>
+      <div class="kpi-card good"><div class="label">本月新签</div><div class="value">5</div><div class="delta">¥ 1,820 万</div></div>
+      <div class="kpi-card"><div class="label">最近 OMS 同步</div><div class="value">5/6 18:00</div><div class="delta">+5 项目 · 用时 1.8s</div></div>
+      <div class="kpi-card warn"><div class="label">待 admin 处理</div><div class="value">2</div><div class="delta">字段冲突</div></div>
+    </div>
+
+    <div class="upload-zone">
+      <div class="icon">⬆</div>
+      <div class="title">拖入 Excel 文件 或 <a style="color: var(--blue); cursor: pointer;">点击选择</a></div>
+      <div class="desc">支持 .xlsx · 项目基本信息表（33 字段）· OMS 导出格式</div>
+      <button class="btn primary">📥 OMS API 立即同步</button>
+      <button class="btn">📋 下载模板</button>
+    </div>
+
+    <h3 style="font-family: var(--font-display); font-size: 22px; margin: 20px 0 12px;">最近导入历史</h3>
+    <table class="data-table">
+      <thead><tr><th style="width:28px;">#</th><th>时间</th><th>来源</th><th>状态</th><th class="num">变动行数</th><th>触发人</th><th>详情</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">1</td><td class="mono">2026-05-06 18:00</td><td>OMS API 自动</td><td><span class="import-status success">✓ success</span></td><td class="num">+5 / 修改 12</td><td>系统</td><td><a style="color: var(--blue); font-size: 11px;">日志</a></td></tr>
+        <tr><td class="mono">2</td><td class="mono">2026-05-04 09:30</td><td>Excel 上传</td><td><span class="import-status success">✓ success</span></td><td class="num">+8 / 修改 0</td><td>黄诗览</td><td><a style="color: var(--blue); font-size: 11px;">日志</a></td></tr>
+        <tr><td class="mono">3</td><td class="mono">2026-05-03 18:00</td><td>OMS API 自动</td><td><span class="import-status partial">⚠ 2 项字段冲突</span></td><td class="num">+3 / 修改 8 / 跳过 2</td><td>系统</td><td><a style="color: var(--amber); font-size: 11px;">查看冲突</a></td></tr>
+        <tr><td class="mono">4</td><td class="mono">2026-05-02 18:00</td><td>OMS API 自动</td><td><span class="import-status success">✓ success</span></td><td class="num">+0 / 修改 5</td><td>系统</td><td><a style="color: var(--blue); font-size: 11px;">日志</a></td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <div class="label">导入规则</div>
+      <div class="text">
+        <b>主键</b>：项目编号（必填唯一）<br>
+        <b>初始化导入</b>：直接导入，不验证 · <b>更新导入</b>：根据项目编号比对，已有则覆盖、新增则插入<br>
+        <b>OMS API 同步</b>：每天 18:00 自动 · 增量拉取（modified_since）· 失败 30 秒重试 3 次<br>
+        <b>Excel 补充</b>：admin 手工上传，覆盖 OMS API 数据（用于个别字段修正）
+      </div>
+    </div>
+  </main>
+</div>
+<script>if (new URLSearchParams(location.search).get('embedded') === '1') { document.querySelector('.sidebar').style.display = 'none'; document.querySelector('.app').style.gridTemplateColumns = '1fr'; }</script>
+</body></html>

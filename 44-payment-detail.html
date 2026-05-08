@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>2.4 回款明细 · 已发生+预测</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.summary-section { background: var(--bg-paper); border: 1px solid var(--line); border-radius: var(--r-md); padding: 18px 22px; margin-bottom: 16px; }
+.summary-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.summary-head h2 { font-family: var(--font-display); font-size: 24px; font-weight: 400; }
+.summary-head h2 em { font-style: italic; color: var(--ink-green); }
+.summary-head .lbl { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase; }
+.kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.kpi-card-x { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px 16px; box-shadow: var(--shadow-card); }
+.kpi-card-x.win { border-left: 3px solid var(--ink-green); }
+.kpi-card-x.commit { border-left: 3px solid var(--steel); }
+.kpi-card-x.struggle { border-left: 3px solid var(--amber); }
+.kpi-card-x.delay { border-left: 3px solid var(--crimson); }
+.kpi-card-x .label { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+.kpi-card-x .value { font-family: var(--font-display); font-size: 30px; font-weight: 400; line-height: 1; }
+.kpi-card-x .value .unit { font-family: var(--font-cn); font-size: 12px; color: var(--ink-mute); margin-left: 4px; }
+.kpi-card-x .delta { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-top: 4px; }
+.kpi-card-x.win .value { color: var(--ink-green); }
+.kpi-card-x.commit .value { color: var(--steel); }
+.kpi-card-x.struggle .value { color: var(--amber); }
+.kpi-card-x.delay .value { color: var(--crimson); }
+.kpi-mini { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding-top: 14px; border-top: 1px dashed var(--line); margin-top: 14px; }
+.kpi-mini .item { padding: 10px 12px; background: var(--bg-card-quiet); border-radius: 5px; }
+.kpi-mini .item .k { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase; }
+.kpi-mini .item .v { font-family: var(--font-display); font-size: 22px; line-height: 1; margin-top: 4px; }
+
+.payment-type-tag { font-family: var(--font-mono); font-size: 9px; padding: 2px 6px; border-radius: 3px; background: var(--bg-card-quiet); color: var(--ink-soft); border: 1px solid var(--line); }
+
+.toolbar-2 { background: var(--bg-paper); border: 1px solid var(--line); border-radius: var(--r-md); padding: 10px 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+.toolbar-2 select, .toolbar-2 input { padding: 5px 10px; font-family: var(--font-cn); font-size: 12px; border: 1px solid var(--line-mid); border-radius: 4px; background: var(--bg-card); }
+.toolbar-2 input.search { width: 240px; padding: 6px 12px; }
+.toolbar-2 .group { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); }
+.split-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--line-strong); margin-bottom: 14px; }
+.split-tab { padding: 10px 18px; font-family: var(--font-cn); font-size: 13px; color: var(--ink-mute); cursor: pointer; border-bottom: 2px solid transparent; }
+.split-tab.active { color: var(--ink); border-bottom-color: var(--ink); font-weight: 500; }
+.split-tab .count { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-left: 4px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">业绩 <em>运营</em></div>
+    <div class="brand-sub">PERFORMANCE OPS · v4</div>
+    <div class="nav-section">1 经营驾驶舱</div>
+    <a class="nav-item">1.1 整体业绩</a>
+    <a class="nav-item">1.2 区域业绩</a>
+    <div class="nav-section">2 明细报表</div>
+    <a class="nav-item">2.1 全年重点商机</a>
+    <a class="nav-item">2.2 投标明细</a>
+    <a class="nav-item">2.3 签单明细</a>
+    <a class="nav-item active">2.4 回款明细</a>
+    <div class="nav-section">3 业务功能</div>
+    <a class="nav-item">3.1.1 客户管理</a>
+    <a class="nav-item">3.1.2 商机管理</a>
+    <a class="nav-item">3.2.1 项目管理</a>
+    <a class="nav-item">3.2.2 回款里程碑</a>
+  </aside>
+
+  <main class="main">
+    <div class="crumb">明细报表 <span class="sep">/</span> 回款明细</div>
+    <h1 class="page-title">2.4 回款 <em>明细</em></h1>
+    <div class="page-meta">已发生（OMS 实际回款）+ 当季预测（项目 + 商机的回款里程碑）合并 · 含 8 类回款类型</div>
+
+    <!-- 上半：5 数 + 衍生 -->
+    <div class="summary-section">
+      <div class="summary-head">
+        <h2>汇总 <em>数据</em></h2>
+        <span class="lbl">SUMMARY · 5 状态</span>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi-card-x win">
+          <div class="label">已回款 (Done)</div>
+          <div class="value">94<span class="unit">笔</span></div>
+          <div class="delta">¥ 4,010 万 · YTD</div>
+        </div>
+        <div class="kpi-card-x commit">
+          <div class="label">承诺 (Commit)</div>
+          <div class="value">28</div>
+          <div class="delta">¥ 1,420 万 · 本季承诺</div>
+        </div>
+        <div class="kpi-card-x struggle">
+          <div class="label">争取 (Struggle)</div>
+          <div class="value">42</div>
+          <div class="delta">¥ 1,860 万 · 本季争取</div>
+        </div>
+        <div class="kpi-card-x" style="border-left: 3px solid var(--blue);">
+          <div class="label">未到期</div>
+          <div class="value" style="color: var(--blue);">156</div>
+          <div class="delta">¥ 8,400 万 · 后续季度</div>
+        </div>
+        <div class="kpi-card-x delay">
+          <div class="label">逾期 / 延期</div>
+          <div class="value">12</div>
+          <div class="delta">¥ 234 万 · 30+ 天 ⚠</div>
+        </div>
+      </div>
+
+      <div class="kpi-mini">
+        <div class="item">
+          <div class="k">YTD 回款实际</div>
+          <div class="v">¥ 4,010 万</div>
+        </div>
+        <div class="item">
+          <div class="k">回款收入 YTD</div>
+          <div class="v">¥ 3,870 万</div>
+        </div>
+        <div class="item">
+          <div class="k">回款毛利 YTD (×80%)</div>
+          <div class="v" style="color: var(--ink-green);">¥ 2,424 万</div>
+        </div>
+        <div class="item">
+          <div class="k">本季加权预测</div>
+          <div class="v" style="color: var(--ink-green);">¥ 1,366 万</div>
+        </div>
+      </div>
+
+      <!-- 8 类回款类型分布 -->
+      <div style="margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line);">
+        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px;">8 类回款类型分布（YTD）</div>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; font-family: var(--font-mono); font-size: 11px;">
+          <div><span class="payment-type-tag">方案款</span> ¥ 320 万 · 12 笔</div>
+          <div><span class="payment-type-tag">首付款</span> ¥ 1,180 万 · 28 笔</div>
+          <div><span class="payment-type-tag">上线款</span> ¥ 680 万 · 18 笔</div>
+          <div><span class="payment-type-tag">初验款</span> ¥ 540 万 · 14 笔</div>
+          <div><span class="payment-type-tag">终验款</span> ¥ 420 万 · 8 笔</div>
+          <div><span class="payment-type-tag">尾款</span> ¥ 180 万 · 5 笔</div>
+          <div><span class="payment-type-tag">服务费</span> ¥ 590 万 · 7 笔（月度）</div>
+          <div><span class="payment-type-tag">工作量结算</span> ¥ 100 万 · 2 笔</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 明细表 -->
+    <div class="summary-section" style="background: var(--bg-card); padding: 0;">
+      <div class="summary-head" style="padding: 16px 20px 12px;">
+        <h2>明细 <em>列表</em></h2>
+        <span class="lbl">DETAIL · 已发生 + 预测合并</span>
+      </div>
+
+      <div class="split-tabs" style="margin: 0 16px; border-bottom-color: var(--line);">
+        <span class="split-tab active">全部 <span class="count">332</span></span>
+        <span class="split-tab">已回款（已发生）<span class="count">94</span></span>
+        <span class="split-tab">本季预测 <span class="count">82</span></span>
+        <span class="split-tab">未到期 <span class="count">156</span></span>
+      </div>
+
+      <div class="toolbar-2" style="margin: 0 16px 14px; border-radius: 0;">
+        <div class="group">区域 <select><option>全部</option></select></div>
+        <div class="group">回款类型 <select><option>全部</option><option>首付款</option><option>上线款</option><option>初验款</option><option>终验款</option><option>尾款</option><option>方案款</option><option>服务费</option><option>工作量结算</option></select></div>
+        <div class="group">回款月 <select><option>全部</option></select></div>
+        <div class="group">条件达成 <select><option>全部</option><option>是</option><option>否</option><option>部分</option></select></div>
+        <input class="search" placeholder="项目/合同号/单据 搜索...">
+      </div>
+
+      <table class="data-table" style="border: none; border-radius: 0; box-shadow: none;">
+        <thead>
+          <tr>
+            <th style="width: 28px;">#</th>
+            <th>合同 / 项目</th>
+            <th>合同编号</th>
+            <th>客户</th>
+            <th>区域</th>
+            <th>回款类型</th>
+            <th class="num">回款金额</th>
+            <th class="num">回款收入</th>
+            <th class="num">回款毛利</th>
+            <th>条件达成</th>
+            <th>状态</th>
+            <th>预计/实际回款</th>
+            <th>当前进展</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background: var(--ink-green-soft);">
+            <td class="mono">1</td>
+            <td>中信海洋直升机</td>
+            <td class="mono">XS-LCTR-2024-0234</td>
+            <td>中信海洋</td>
+            <td>央企</td>
+            <td><span class="payment-type-tag">初验款</span></td>
+            <td class="num"><b>59</b></td>
+            <td class="num">56</td>
+            <td class="num">45</td>
+            <td><span class="pill done">是</span></td>
+            <td><span class="pill done">已回款</span></td>
+            <td class="mono">4/15 实际</td>
+            <td>4/15 到账</td>
+          </tr>
+          <tr style="background: var(--ink-green-soft);">
+            <td class="mono">2</td>
+            <td>长城证券数智薪酬</td>
+            <td class="mono">XS-LCHY-2024-0234</td>
+            <td>长城证券</td>
+            <td>华北</td>
+            <td><span class="payment-type-tag">终验款</span></td>
+            <td class="num"><b>30</b></td>
+            <td class="num">28</td>
+            <td class="num">22</td>
+            <td><span class="pill done">是</span></td>
+            <td><span class="pill done">已回款</span></td>
+            <td class="mono">4/10 实际</td>
+            <td>4/10 到账</td>
+          </tr>
+          <tr>
+            <td class="mono">3</td>
+            <td>华夏银行薪酬模块</td>
+            <td class="mono">XS-LCTR-2026-0067</td>
+            <td>华夏银行</td>
+            <td>华北</td>
+            <td><span class="payment-type-tag">首付款</span></td>
+            <td class="num"><b>27</b></td>
+            <td class="num">25</td>
+            <td class="num">20</td>
+            <td><span class="pill done">是</span></td>
+            <td><span class="pill commit">承诺</span></td>
+            <td class="mono">5/12 预计</td>
+            <td>发票已开 · 客户走付款</td>
+          </tr>
+          <tr>
+            <td class="mono">4</td>
+            <td>中信集团 HCM 综合运维 5月</td>
+            <td class="mono">XS-LCTR-2025-0091</td>
+            <td>中信集团</td>
+            <td>央企</td>
+            <td><span class="payment-type-tag">服务费</span></td>
+            <td class="num"><b>45</b></td>
+            <td class="num">42</td>
+            <td class="num" style="color: var(--amber);">20.3</td>
+            <td><span class="pill commit">是</span></td>
+            <td><span class="pill commit">承诺</span></td>
+            <td class="mono">5/31 预计</td>
+            <td>月度服务交付确认中 ⚠ 低毛利项目 (45%)</td>
+          </tr>
+          <tr>
+            <td class="mono">5</td>
+            <td>百果园数据中台</td>
+            <td class="mono">XS-LCTR-2026-0098</td>
+            <td>百果园</td>
+            <td>广东</td>
+            <td><span class="payment-type-tag">上线款</span></td>
+            <td class="num"><b>17</b></td>
+            <td class="num">16</td>
+            <td class="num">13</td>
+            <td><span class="pill done">是</span></td>
+            <td><span class="pill commit">承诺</span></td>
+            <td class="mono">5/8 预计</td>
+            <td>付款已发起</td>
+          </tr>
+          <tr>
+            <td class="mono">6</td>
+            <td>中信和业 HCM 服务</td>
+            <td class="mono">XS-LCTR-2025-0091</td>
+            <td>中信和业</td>
+            <td>央企</td>
+            <td><span class="payment-type-tag">初验款</span></td>
+            <td class="num"><b>80</b></td>
+            <td class="num">76</td>
+            <td class="num">61</td>
+            <td><span class="payment-type-tag" style="background: var(--amber-soft); color: var(--amber);">部分</span></td>
+            <td><span class="pill struggle">争取</span></td>
+            <td class="mono">5/22 预计</td>
+            <td>初验单 5/8 提交 · 走签字 7-10 天</td>
+          </tr>
+          <tr style="opacity: 0.7;">
+            <td class="mono">7</td>
+            <td>中电信 AI 科技</td>
+            <td class="mono">—</td>
+            <td>中电信 AI</td>
+            <td>华东</td>
+            <td><span class="payment-type-tag">尾款</span></td>
+            <td class="num">32</td>
+            <td class="num">30</td>
+            <td class="num">24</td>
+            <td><span class="pill" style="background: var(--crimson-soft); color: var(--crimson); border: 1px solid var(--crimson);">否</span></td>
+            <td><span class="pill delay">延期</span></td>
+            <td class="mono">推 6 月</td>
+            <td>预算未到位</td>
+          </tr>
+          <tr style="background: var(--bg-card-quiet);">
+            <td colspan="13" style="text-align: center; padding: 14px; color: var(--ink-mute); font-family: var(--font-mono); font-size: 11px;">⌄ 还有 325 行 · 含未到期 156 项 · 滚动加载</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <div class="label">💡 数据来源</div>
+      <div class="text">
+        <b>已回款行</b>：来源 OMS 财务模块（4.3 回款明细导入），实时同步 · 实际金额为准<br>
+        <b>预测行</b>：来源 3.2.2 回款里程碑（每个里程碑节点对应一笔预计回款）<br>
+        <b>未到期行</b>：合同已签但回款日期还在未来季度，仅展示不参与本季汇总<br>
+        <b>毛利计算</b>：默认 = 回款收入 × 80% · 命中 4.5 低毛利项目清单则用例外值（如中信集团 45%）
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+if (new URLSearchParams(location.search).get('embedded') === '1') {
+  const sb = document.querySelector('.sidebar'); if (sb) sb.style.display = 'none';
+  const app = document.querySelector('.app'); if (app) app.style.gridTemplateColumns = '1fr';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Performance Management · 设计系统 Tokens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* 底色系统 — 米白纸张三层 */
+  --bg-stage: #ebe8df;
+  --bg-paper: #faf8f3;
+  --bg-card: #ffffff;
+  --bg-card-quiet: #fcfbf7;
+  --bg-card-accent: #f5f2e9;
+
+  /* 文字系统 */
+  --ink: #1c1f1e;
+  --ink-soft: #44504a;
+  --ink-mute: #8b928d;
+  --ink-faint: #c8ccc6;
+
+  /* 五色状态系统 */
+  --ink-green: #1e5537;       /* done · 已达成/好转 */
+  --ink-green-soft: rgba(30, 85, 55, 0.08);
+  --ink-green-mid: rgba(30, 85, 55, 0.22);
+  --steel: #475569;           /* commit · 承诺 */
+  --steel-soft: rgba(71, 85, 105, 0.08);
+  --amber: #b45309;           /* struggle · 争取 */
+  --amber-soft: rgba(180, 83, 9, 0.08);
+  --amber-mid: rgba(180, 83, 9, 0.22);
+  --crimson: #991b1b;         /* delay · 延期/风险 */
+  --crimson-soft: rgba(153, 27, 27, 0.08);
+  --blue: #1d4ed8;            /* new · 新增 */
+  --blue-soft: rgba(37, 99, 235, 0.08);
+  --blue-mid: rgba(37, 99, 235, 0.22);
+
+  /* 线条 */
+  --line: rgba(28,31,30,0.08);
+  --line-mid: rgba(28,31,30,0.12);
+  --line-strong: rgba(28,31,30,0.18);
+
+  /* 圆角 */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+
+  /* 阴影 */
+  --shadow-card: 0 1px 0 rgba(28,31,30,.02), 0 2px 6px rgba(28,31,30,.04);
+
+  /* 字体栈 */
+  --font-display: 'Instrument Serif', 'Noto Serif SC', Georgia, serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+  --font-sans: 'Manrope', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-cn: 'Noto Serif SC', 'PingFang SC', serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg-stage);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+body { padding: 40px; }
+.section { background: var(--bg-paper); padding: 32px; border-radius: var(--r-lg); margin-bottom: 24px; }
+h1 { font-family: var(--font-display); font-weight: 400; font-size: 42px; letter-spacing: -0.02em; margin-bottom: 6px; }
+h1 em { font-style: italic; color: var(--ink-green); }
+h2 { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.16em; color: var(--ink-mute); text-transform: uppercase; margin-bottom: 14px; padding-top: 18px; border-top: 1px solid var(--line); }
+.lede { font-size: 14px; color: var(--ink-soft); margin-bottom: 28px; max-width: 720px; }
+.swatch-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.swatch { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px; }
+.swatch .chip { width: 100%; height: 60px; border-radius: var(--r-sm); margin-bottom: 10px; }
+.swatch .name { font-family: var(--font-cn); font-size: 12px; color: var(--ink); font-weight: 500; }
+.swatch .hex { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-top: 2px; }
+.swatch .use { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.08em; margin-top: 4px; text-transform: uppercase; }
+.bg-stage-chip { background: var(--bg-stage); }
+.bg-paper-chip { background: var(--bg-paper); }
+.bg-card-chip { background: var(--bg-card); border: 1px solid var(--line); }
+.ink-chip { background: var(--ink); }
+.ink-soft-chip { background: var(--ink-soft); }
+.ink-mute-chip { background: var(--ink-mute); }
+.ink-faint-chip { background: var(--ink-faint); }
+.ink-green-chip { background: var(--ink-green); }
+.steel-chip { background: var(--steel); }
+.amber-chip { background: var(--amber); }
+.crimson-chip { background: var(--crimson); }
+.blue-chip { background: var(--blue); }
+
+.font-demo { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 18px 20px; margin-bottom: 8px; }
+.font-demo .label { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+
+.status-pill-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.pill { display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-mono); font-size: 10px; padding: 3px 10px; border-radius: 4px; letter-spacing: 0.05em; font-weight: 500; }
+.pill.commit { background: var(--steel-soft); color: var(--steel); border: 1px solid rgba(71,85,105,0.2); }
+.pill.struggle { background: var(--amber-soft); color: var(--amber); border: 1px solid var(--amber-mid); }
+.pill.delay { background: var(--crimson-soft); color: var(--crimson); border: 1px solid rgba(153,27,27,0.2); }
+.pill.new { background: var(--blue-soft); color: var(--blue); border: 1px solid var(--blue-mid); }
+.pill.done { background: var(--ink-green-soft); color: var(--ink-green); border: 1px solid var(--ink-green-mid); }
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+</style>
+</head>
+<body>
+
+<h1>Performance Management <em>· Design Tokens</em></h1>
+<p class="lede">本仓库所有 11 个新页面原型严格沿用此设计系统：编辑视觉气质 + 米白纸张底色 + 五色状态机 + 衬线/等宽双字体。如需调整，请改这一份再回写到各原型。</p>
+
+<div class="section">
+<h2>底色三层 · Backgrounds</h2>
+<div class="swatch-grid">
+  <div class="swatch"><div class="chip bg-stage-chip"></div><div class="name">Stage 外底</div><div class="hex">#ebe8df</div><div class="use">page bg</div></div>
+  <div class="swatch"><div class="chip bg-paper-chip"></div><div class="name">Paper 纸色</div><div class="hex">#faf8f3</div><div class="use">section bg</div></div>
+  <div class="swatch"><div class="chip bg-card-chip"></div><div class="name">Card 卡片</div><div class="hex">#ffffff</div><div class="use">card bg</div></div>
+</div>
+</div>
+
+<div class="section">
+<h2>文字四阶 · Ink</h2>
+<div class="swatch-grid">
+  <div class="swatch"><div class="chip ink-chip"></div><div class="name">主墨色</div><div class="hex">#1c1f1e</div><div class="use">--ink</div></div>
+  <div class="swatch"><div class="chip ink-soft-chip"></div><div class="name">次墨</div><div class="hex">#44504a</div><div class="use">--ink-soft</div></div>
+  <div class="swatch"><div class="chip ink-mute-chip"></div><div class="name">弱化</div><div class="hex">#8b928d</div><div class="use">--ink-mute</div></div>
+  <div class="swatch"><div class="chip ink-faint-chip"></div><div class="name">极弱</div><div class="hex">#c8ccc6</div><div class="use">--ink-faint</div></div>
+</div>
+</div>
+
+<div class="section">
+<h2>状态五色 · Status Colors</h2>
+<div class="swatch-grid">
+  <div class="swatch"><div class="chip ink-green-chip"></div><div class="name">已达成 done</div><div class="hex">#1e5537</div><div class="use">墨绿 · success</div></div>
+  <div class="swatch"><div class="chip steel-chip"></div><div class="name">承诺 commit</div><div class="hex">#475569</div><div class="use">钢蓝 · 70% weight</div></div>
+  <div class="swatch"><div class="chip amber-chip"></div><div class="name">争取 struggle</div><div class="hex">#b45309</div><div class="use">琥珀 · 20% weight</div></div>
+  <div class="swatch"><div class="chip crimson-chip"></div><div class="name">延期 delay</div><div class="hex">#991b1b</div><div class="use">绛红 · risk</div></div>
+  <div class="swatch"><div class="chip blue-chip"></div><div class="name">新增 new</div><div class="hex">#1d4ed8</div><div class="use">靛蓝 · entered</div></div>
+</div>
+
+<h2>状态徽章示例 · Pills</h2>
+<div class="status-pill-row">
+  <span class="pill done">已达成</span>
+  <span class="pill commit">承诺</span>
+  <span class="pill struggle">争取</span>
+  <span class="pill delay">延期</span>
+  <span class="pill new">新增</span>
+</div>
+</div>
+
+<div class="section">
+<h2>字体栈 · Typography</h2>
+
+<div class="font-demo">
+  <div class="label">font-display · Instrument Serif</div>
+  <div style="font-family: var(--font-display); font-size: 36px; line-height: 1;">¥ 4,366 / 7,140 万</div>
+  <div style="font-family: var(--font-display); font-style: italic; font-size: 22px; color: var(--ink-green);">61% 达成 · YTD</div>
+</div>
+
+<div class="font-demo">
+  <div class="label">font-mono · JetBrains Mono</div>
+  <div style="font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;">UPDATED 4/16 17:00 · W16</div>
+  <div style="font-family: var(--font-mono); font-size: 14px; font-weight: 500;">+ 2.55% (vs last week)</div>
+</div>
+
+<div class="font-demo">
+  <div class="label">font-cn · Noto Serif SC（中文标题）</div>
+  <div style="font-family: var(--font-cn); font-size: 18px; font-weight: 500;">业绩三联 · YTD</div>
+  <div style="font-family: var(--font-cn); font-size: 13px; color: var(--ink-soft);">签单 · 收入 · 毛利</div>
+</div>
+
+<div class="font-demo">
+  <div class="label">font-sans · Manrope（中文正文）</div>
+  <div style="font-family: var(--font-sans); font-size: 13px; color: var(--ink-soft);">珠江城市服务 80 万 · 金额协商中 · 承诺 → 争取</div>
+</div>
+</div>
+
+<div class="section">
+<h2>圆角 · 阴影 · 间距</h2>
+<div class="grid-2">
+  <div style="background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 12px; box-shadow: var(--shadow-card);">
+    <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">--r-sm 6px · subtle card</div>
+  </div>
+  <div style="background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 12px; box-shadow: var(--shadow-card);">
+    <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">--r-md 10px · default card</div>
+  </div>
+  <div style="background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 12px; box-shadow: var(--shadow-card);">
+    <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">--r-lg 14px · prominent card</div>
+  </div>
+</div>
+</div>
+
+<div class="section">
+<h2>气质定位 · 一句话</h2>
+<p style="font-family: var(--font-cn); font-size: 16px; color: var(--ink); line-height: 1.7;">
+移动端：editorial 金融晨报风 — 董事长手机里的精致感<br>
+PC 端：Bloomberg 终端风 — 业务团队办公桌的密集专业感<br>
+共同点：米白底色 + 墨绿 accent + 克制的装饰
+</p>
+</div>
+
+</body>
+</html>

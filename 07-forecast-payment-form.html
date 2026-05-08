@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>月度预测·回款填报 · 商务周五前填</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.deadline-banner { background: linear-gradient(90deg, var(--amber-soft), transparent); border: 1px solid var(--amber-mid); border-radius: var(--r-md); padding: 14px 18px; margin-bottom: 16px; display: flex; align-items: center; gap: 14px; }
+.deadline-banner .icon { width: 40px; height: 40px; background: var(--amber); color: #faf8f3; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 20px; font-style: italic; }
+.deadline-banner .text { flex: 1; }
+.deadline-banner .t1 { font-family: var(--font-cn); font-size: 14px; font-weight: 500; }
+.deadline-banner .t1 b { color: var(--amber); }
+.deadline-banner .t2 { font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); margin-top: 2px; }
+.kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 18px; }
+.month-tabs { display: flex; gap: 0; background: var(--bg-paper); border-radius: var(--r-md); border: 1px solid var(--line); margin-bottom: 14px; padding: 4px; }
+.month-tab { flex: 1; padding: 10px 14px; font-family: var(--font-cn); font-size: 13px; color: var(--ink-soft); cursor: pointer; border-radius: 6px; text-align: center; }
+.month-tab.active { background: var(--ink); color: #faf8f3; }
+.month-tab .num { font-family: var(--font-display); font-size: 18px; font-style: italic; margin-right: 6px; }
+.month-tab.active .num { color: #d4ae80; }
+.month-tab .meta { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px; }
+.month-tab.active .meta { color: var(--ink-faint); }
+.row-add { padding: 10px; background: var(--bg-card-accent); border: 1px dashed var(--line-strong); border-radius: var(--r-sm); text-align: center; cursor: pointer; font-family: var(--font-cn); font-size: 12px; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">业绩 <em>运营</em></div>
+    <div class="brand-sub">PERFORMANCE OPS</div>
+    <div class="nav-section">看板</div>
+    <a class="nav-item">驾驶舱</a>
+    <a class="nav-item">区域业绩</a>
+    <div class="nav-section">明细报表</div>
+    <a class="nav-item">5 张明细</a>
+    <div class="nav-section">数据维护</div>
+    <a class="nav-item">商机管理</a>
+    <a class="nav-item">商机 Review</a>
+    <a class="nav-item">投标管理</a>
+    <a class="nav-item">售前活动登记</a>
+    <a class="nav-item">月度预测·签单</a>
+    <a class="nav-item active">月度预测·回款</a>
+    <div class="nav-section">导入 / 配置</div>
+    <a class="nav-item">指标配置</a>
+  </aside>
+
+  <main class="main">
+    <div class="crumb">数据维护 <span class="sep">/</span> 月度预测·回款填报</div>
+    <h1 class="page-title">月度预测 · <em>回款</em> · 商务填报</h1>
+    <div class="page-meta">每周五 17:00 前必填 · 当前角色 商务 · 李雷 · 央企区 8 个合同</div>
+
+    <div class="deadline-banner">
+      <div class="icon">⏰</div>
+      <div class="text">
+        <div class="t1">本周填报截止：<b>2026-05-08（周五）17:00</b> · 还有 <b>2 天 03 小时</b></div>
+        <div class="t2">回款比签单更复杂：每条合同有多个回款节点（首付/上线/初验/终验/尾款）· 每节点单独填报</div>
+      </div>
+      <button class="btn primary">📋 一键复制上周</button>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="label">我的合同</div>
+        <div class="value">8</div>
+        <div class="delta">28 个回款节点</div>
+      </div>
+      <div class="kpi-card good">
+        <div class="label">已填节点</div>
+        <div class="value">23 / 28</div>
+        <div class="delta">82% 进度</div>
+      </div>
+      <div class="kpi-card warn">
+        <div class="label">待填节点</div>
+        <div class="value">5</div>
+        <div class="delta">含 2 项高金额</div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">本周预测回款</div>
+        <div class="value">¥ 412<span class="unit">万</span></div>
+        <div class="delta">承诺 305 + 争取 107</div>
+      </div>
+      <div class="kpi-card good">
+        <div class="label">月度加权</div>
+        <div class="value">¥ 235<span class="unit">万</span></div>
+        <div class="delta">+ 上月 30 实际</div>
+      </div>
+    </div>
+
+    <div class="month-tabs">
+      <div class="month-tab"><span class="num">4</span>月（已结）<div class="meta">8 节点 · ¥ 178 万 done</div></div>
+      <div class="month-tab active"><span class="num">5</span>月（本月主推）<div class="meta">12 节点 · ¥ 235 万</div></div>
+      <div class="month-tab"><span class="num">6</span>月 <div class="meta">10 节点 · ¥ 178 万</div></div>
+      <div class="month-tab">Q2 <div class="meta">系统派生</div></div>
+    </div>
+
+    <div class="toolbar">
+      <div class="group">视图 <select><option>本月主推 (12)</option><option>含备选</option></select></div>
+      <div class="group">回款类型 <select><option>全部</option><option>首付款</option><option>上线款</option><option>初验款</option><option>终验款</option><option>尾款</option><option>服务费</option><option>方案款</option><option>工作量结算</option></select></div>
+      <div class="group">达成状态 <select><option>全部</option><option>是 - 已达成</option><option>否 - 未达成</option><option>部分</option></select></div>
+      <input class="search" placeholder="合同号/项目搜索...">
+      <div class="stat">本月汇总 <strong>¥ 235 万</strong></div>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width: 28px;">#</th>
+          <th>合同 / 项目</th>
+          <th>回款类型</th>
+          <th class="num">预计回款金额</th>
+          <th>条件达成</th>
+          <th>本周状态 ⭐</th>
+          <th>4-5-6 月可达</th>
+          <th>预计回款时间（周）</th>
+          <th>当前进展</th>
+          <th style="width: 90px;">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="mono">1</td>
+          <td>
+            <div style="font-weight: 500;">华夏银行薪酬模块</div>
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">XS-LCTR-2026-0067</div>
+          </td>
+          <td><select class="cell"><option>首付款</option></select></td>
+          <td class="num"><input class="cell" value="27" style="text-align: right;"> 万</td>
+          <td><select class="cell" style="background: var(--ink-green-soft); color: var(--ink-green);"><option>是</option><option>否</option><option>部分</option></select></td>
+          <td><select class="cell" style="background: var(--steel-soft); color: var(--steel); border-color: var(--steel); font-weight: 600;"><option>承诺 commit</option></select></td>
+          <td><span class="tri-cell"><span class="month empty">—</span><span class="month commit primary">⭐承</span><span class="month empty">—</span></span></td>
+          <td><input class="cell" value="W19 (5/9-5/15)" style="font-family: var(--font-mono); font-size: 11px;"></td>
+          <td><textarea class="cell" rows="2" style="font-family: var(--font-cn); font-size: 11px; line-height: 1.4;">5/3 发票已开 · 客户走付款流程 · 5/12 前到账</textarea></td>
+          <td><span class="pill done">已填 5/3</span></td>
+        </tr>
+
+        <tr>
+          <td class="mono">2</td>
+          <td>
+            <div style="font-weight: 500;">百果园数据中台</div>
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">XS-LCTR-2026-0098</div>
+          </td>
+          <td><select class="cell"><option>上线款</option></select></td>
+          <td class="num"><input class="cell" value="17" style="text-align: right;"> 万</td>
+          <td><select class="cell" style="background: var(--ink-green-soft); color: var(--ink-green);"><option>是</option></select></td>
+          <td><select class="cell" style="background: var(--steel-soft); color: var(--steel); border-color: var(--steel); font-weight: 600;"><option>承诺 commit</option></select></td>
+          <td><span class="tri-cell"><span class="month empty">—</span><span class="month commit primary">⭐承</span><span class="month empty">—</span></span></td>
+          <td><input class="cell" value="W18 (5/2-5/8)" style="font-family: var(--font-mono); font-size: 11px;"></td>
+          <td><textarea class="cell" rows="2" style="font-family: var(--font-cn); font-size: 11px; line-height: 1.4;">付款已发起 · 客户财务确认中</textarea></td>
+          <td><span class="pill done">已填 5/2</span></td>
+        </tr>
+
+        <tr>
+          <td class="mono">3</td>
+          <td>
+            <div style="font-weight: 500;">中信和业 HCM 续约</div>
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">XS-LCTR-2025-0091</div>
+          </td>
+          <td><select class="cell"><option>初验款</option></select></td>
+          <td class="num"><input class="cell" value="80" style="text-align: right;"> 万</td>
+          <td><select class="cell" style="background: var(--amber-soft); color: var(--amber);"><option>部分</option></select></td>
+          <td><select class="cell" style="background: var(--amber-soft); color: var(--amber); border-color: var(--amber); font-weight: 600;"><option>争取 struggle</option></select></td>
+          <td><span class="tri-cell"><span class="month empty">—</span><span class="month struggle primary">⭐争</span><span class="month delay">延</span></span></td>
+          <td><input class="cell" value="W20 (5/16-5/22)" style="font-family: var(--font-mono); font-size: 11px;"></td>
+          <td><textarea class="cell" rows="2" style="font-family: var(--font-cn); font-size: 11px; line-height: 1.4;">初验单 5/8 提交 · 客户走签字流程 7-10 天 · 5 月底前可能</textarea></td>
+          <td><span class="pill done">已填 5/3</span></td>
+        </tr>
+
+        <!-- 待填高金额项 -->
+        <tr style="background: var(--crimson-soft);">
+          <td class="mono">4</td>
+          <td>
+            <div style="font-weight: 500; color: var(--crimson);">⚠ 中国中信集团总部 HCM 综合运维</div>
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">XS-LCTR-2025-0091 子合同</div>
+          </td>
+          <td><select class="cell" style="border: 1px solid var(--crimson);"><option>方案款</option></select></td>
+          <td class="num"><input class="cell" value="" placeholder="必填" style="text-align: right; border: 1px solid var(--crimson);"> 万</td>
+          <td><select class="cell" style="border: 1px solid var(--crimson);"><option>— 选择 —</option><option>是</option><option>否</option><option>部分</option></select></td>
+          <td><select class="cell" style="border: 1px solid var(--crimson);"><option>— 选择 —</option><option>承诺</option><option>争取</option><option>延期</option></select></td>
+          <td><span class="tri-cell"><span class="month empty">—</span><span class="month empty">—</span><span class="month empty">—</span></span></td>
+          <td><input class="cell" value="" placeholder="必填" style="font-family: var(--font-mono); font-size: 11px; border: 1px solid var(--crimson);"></td>
+          <td><textarea class="cell" rows="2" placeholder="必填 · 50-200 字" style="border: 1px solid var(--crimson); font-family: var(--font-cn); font-size: 11px;"></textarea></td>
+          <td><span class="pill" style="background: var(--crimson-soft); color: var(--crimson); border: 1px solid var(--crimson);">⚠ 待填</span></td>
+        </tr>
+
+        <tr>
+          <td class="mono">5</td>
+          <td>
+            <div style="font-weight: 500;">长城证券数智薪酬</div>
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">XS-LCHY-2024-0234</div>
+          </td>
+          <td><select class="cell"><option>终验款</option></select></td>
+          <td class="num"><input class="cell" value="30" style="text-align: right;"> 万</td>
+          <td><select class="cell" style="background: var(--ink-green-soft); color: var(--ink-green);"><option>是</option></select></td>
+          <td><select class="cell" style="background: var(--ink-green); color: #faf8f3; border-color: var(--ink-green); font-weight: 600;"><option>已达成 done</option></select></td>
+          <td><span class="tri-cell"><span class="month done">达</span><span class="month empty">—</span><span class="month empty">—</span></span></td>
+          <td><input class="cell" value="W15 (4/10 实际到账)" style="font-family: var(--font-mono); font-size: 11px;"></td>
+          <td><textarea class="cell" rows="2" style="font-family: var(--font-cn); font-size: 11px; line-height: 1.4;">4/10 已实际到账 30 万 · 终验单已盖</textarea></td>
+          <td><span class="pill done">已达成</span></td>
+        </tr>
+
+        <tr><td colspan="10" style="padding: 0;"><div class="row-add">+ 添加新回款节点</div></td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <div class="label">⚙ 回款类型 8 选项 + 达成状态 3 选项 · 影响公式</div>
+      <div class="text">
+        回款类型：方案款 / 首付款 / 上线款 / 初验款 / 终验款 / 尾款 / 服务费 / 工作量结算<br>
+        条件达成状态：是（已达成可开票）/ 否（未达成）/ 部分（达成但金额打折）<br>
+        本月预测加权 = Σ 当月承诺 × 0.7 + Σ 当月争取 × 0.2 + Σ 当月已达成 × 1.0 = <b>¥ 235.4 万</b>
+      </div>
+    </div>
+
+    <div class="sticky-bar">
+      <div class="info">
+        <div class="t1">本周填报进度 · 23 / 28 节点已完成</div>
+        <div class="t2">还有 <b style="color: var(--crimson);">5 项必填</b>（含 2 项 高金额 ¥ 80+ 万）· 5/8 (周五) 17:00 截止</div>
+      </div>
+      <button class="btn ghost">仅保存草稿</button>
+      <button class="btn">导出我的填报 Excel</button>
+      <button class="btn primary">提交本周（28 项）</button>
+    </div>
+
+    <div style="margin-top: 30px; padding: 16px 18px; background: var(--bg-paper); border-radius: var(--r-md); border: 1px dashed var(--line-strong);">
+      <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;">本页字段 → v3 design doc §6.3.2 月度预测·回款</div>
+      <div style="font-family: var(--font-cn); font-size: 12px; color: var(--ink-soft); line-height: 1.7;">
+        <b style="color: var(--ink);">8 个手填字段</b>：合同（下拉，签单明细自动带）/ 回款类型（8 选 1）/ 预计回款金额（≥0）/ 回款条件达成状态（是/否/部分）/ 本周状态（5 状态）/ 主推月份 / 预计回款时间（周次选择器）/ 当前进展说明<br>
+        <b style="color: var(--ink);">系统自动</b>：合同金额 / 客户 / 项目部 / 上周状态 / 月初状态 / 加权预测金额 / 4-5-6 月可达性
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+if (new URLSearchParams(location.search).get('embedded') === '1') {
+  const sb = document.querySelector('.sidebar'); if (sb) sb.style.display = 'none';
+  const app = document.querySelector('.app'); if (app) app.style.gridTemplateColumns = '1fr';
+}
+</script>
+</body>
+</html>

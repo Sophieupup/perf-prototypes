@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><title>3.1.3 营销战役管理</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+.split { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; }
+
+.year-tabs { display: flex; gap: 4px; padding: 4px; background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); margin-bottom: 14px; width: fit-content; }
+.year-tab { padding: 8px 18px; font-family: var(--font-cn); font-size: 13px; cursor: pointer; border-radius: var(--r-sm); border: 1px solid transparent; }
+.year-tab.active { background: var(--ink); color: #faf8f3; border-color: var(--ink); }
+.year-tab .badge-count { font-family: var(--font-mono); font-size: 9px; margin-left: 6px; opacity: 0.65; }
+
+.section-banner { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); letter-spacing: 0.14em; text-transform: uppercase; margin: 18px 0 10px; padding-top: 14px; border-top: 1px dashed var(--line); display: flex; justify-content: space-between; align-items: baseline; }
+.section-banner span.count { font-family: var(--font-display); font-size: 16px; color: var(--ink); font-style: italic; letter-spacing: 0; text-transform: none; }
+
+.campaign-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.campaign-card { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 16px 18px; box-shadow: var(--shadow-card); cursor: pointer; transition: border-color 0.15s; }
+.campaign-card:hover { border-color: var(--ink-green); }
+.campaign-card.active { border: 2px solid var(--ink); background: var(--bg-card-accent); }
+.campaign-card.archived { opacity: 0.7; background: var(--bg-card-quiet); }
+
+.campaign-card .head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.campaign-card .head h3 { font-family: var(--font-display); font-size: 22px; font-weight: 400; line-height: 1.05; }
+.campaign-card .head h3 em { font-style: italic; color: var(--ink-green); }
+.campaign-card .type-tag { display: inline-block; padding: 2px 8px; font-family: var(--font-mono); font-size: 9px; font-weight: 500; border-radius: 3px; background: var(--ink-green-soft); color: var(--ink-green); border: 1px solid var(--ink-green-mid); letter-spacing: 0.04em; }
+.campaign-card .type-tag.industry { background: var(--blue-soft); color: var(--blue); border-color: var(--blue-mid); }
+.campaign-card .type-tag.region { background: var(--amber-soft); color: var(--amber); border-color: var(--amber-mid); }
+.campaign-card .type-tag.product { background: var(--ink-green-soft); color: var(--ink-green); border-color: var(--ink-green-mid); }
+.campaign-card .type-tag.client { background: var(--steel-soft); color: var(--steel); border-color: var(--line-strong); }
+
+.campaign-card .meta { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-bottom: 12px; line-height: 1.6; }
+.campaign-card .progress-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; font-family: var(--font-mono); font-size: 11px; }
+.campaign-card .progress-row .label { color: var(--ink-mute); }
+.campaign-card .progress-row .pct { font-family: var(--font-display); font-size: 18px; color: var(--ink); font-weight: 400; }
+.campaign-card .progress-row .pct.green { color: var(--ink-green); }
+.campaign-card .progress-row .pct.amber { color: var(--amber); }
+.campaign-card .bar-track { height: 6px; background: var(--bg-card-quiet); border-radius: 3px; overflow: hidden; margin-bottom: 12px; }
+.campaign-card .bar-fill { height: 100%; background: var(--ink-green); }
+.campaign-card .bar-fill.amber { background: var(--amber); }
+
+.campaign-card .sub-list { padding-top: 10px; border-top: 1px dashed var(--line); margin-top: 4px; }
+.campaign-card .sub-list .sub-title { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+.campaign-card .sub-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-family: var(--font-cn); font-size: 12px; border-bottom: 1px dotted var(--line); }
+.campaign-card .sub-item:last-child { border-bottom: none; }
+.campaign-card .sub-item .name { color: var(--ink); }
+.campaign-card .sub-item .stat { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); }
+
+.archived-card { opacity: 0.65; }
+
+/* 详情面板 */
+.detail-pane { background: var(--bg-paper); border: 1px solid var(--line); border-radius: var(--r-md); padding: 18px 20px; height: fit-content; position: sticky; top: 14px; }
+.detail-pane h2 { font-family: var(--font-display); font-size: 26px; font-weight: 400; line-height: 1.1; }
+.detail-pane h2 em { font-style: italic; color: var(--ink-green); }
+.detail-pane .detail-meta { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin: 4px 0 14px; line-height: 1.6; }
+.detail-pane .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; padding: 12px 14px; background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); margin-bottom: 12px; }
+.detail-pane .field-grid .k { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.06em; text-transform: uppercase; display: block; margin-bottom: 2px; }
+.detail-pane .field-grid .v { font-family: var(--font-cn); font-size: 12px; color: var(--ink); }
+.detail-pane .section-title { font-family: var(--font-cn); font-size: 12px; font-weight: 600; padding-bottom: 6px; border-bottom: 1px dashed var(--line); margin: 12px 0 8px; display: flex; justify-content: space-between; }
+.detail-pane .section-title .right-action { font-family: var(--font-mono); font-size: 10px; color: var(--blue); cursor: pointer; }
+
+.sub-mgmt { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 12px 14px; margin-bottom: 12px; }
+.sub-mgmt .sub-row { display: grid; grid-template-columns: 1fr 60px 80px 50px; gap: 8px; padding: 6px 0; border-bottom: 1px dotted var(--line); align-items: center; font-family: var(--font-cn); font-size: 12px; }
+.sub-mgmt .sub-row:last-child { border-bottom: none; }
+.sub-mgmt .sub-row .name { font-weight: 500; }
+.sub-mgmt .sub-row .num { font-family: var(--font-mono); font-size: 11px; text-align: right; color: var(--ink-soft); }
+.sub-mgmt .sub-row .action { font-family: var(--font-mono); font-size: 10px; color: var(--blue); cursor: pointer; text-align: right; }
+
+.opp-list { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); margin-bottom: 12px; overflow: hidden; }
+.opp-list .opp-row { display: grid; grid-template-columns: 1fr 70px 80px; gap: 6px; padding: 7px 12px; border-bottom: 1px dashed var(--line); font-family: var(--font-cn); font-size: 11px; align-items: center; }
+.opp-list .opp-row:last-child { border-bottom: none; }
+.opp-list .opp-row .name { color: var(--ink); }
+.opp-list .opp-row .name .sub-tag { display: inline-block; padding: 1px 5px; font-family: var(--font-mono); font-size: 8px; background: var(--blue-soft); color: var(--blue); border-radius: 2px; margin-left: 4px; }
+.opp-list .opp-row .stage { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); text-align: center; }
+.opp-list .opp-row .amt { font-family: var(--font-display); font-size: 13px; font-style: italic; color: var(--ink); text-align: right; }
+.opp-list .opp-row .amt.committed { color: var(--ink-green); }
+</style></head><body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">业绩 <em>运营</em></div>
+    <div class="brand-sub">PERFORMANCE OPS · v6</div>
+    <div class="nav-section">3 业务功能</div>
+    <a class="nav-item">3.1.1 客户管理</a>
+    <a class="nav-item">3.1.2 商机管理</a>
+    <a class="nav-item active">3.1.3 营销战役管理</a>
+    <a class="nav-item">3.2.1 项目管理</a>
+    <a class="nav-item">3.2.2 回款里程碑</a>
+  </aside>
+
+  <main class="main">
+    <div class="crumb">业务功能 <span class="sep">/</span> 营销管理 <span class="sep">/</span> 营销战役管理</div>
+    <h1 class="page-title">3.1.3 营销 <em>战役管理</em></h1>
+    <div class="page-meta">独立战役主数据 · 嵌套父子结构 · 商机 1 父 + N 子 关联 · 年度切换归档不删除 · 影响 2.1 重点商机分组视图</div>
+
+    <div class="kpi-row">
+      <div class="kpi-card good"><div class="label">进行中战役</div><div class="value">5</div><div class="delta">含 14 个子战役</div></div>
+      <div class="kpi-card"><div class="label">已挂载商机</div><div class="value">142</div><div class="delta">FY2026 · 占总商机 78%</div></div>
+      <div class="kpi-card"><div class="label">战役签单 YTD</div><div class="value">2,856</div><div class="delta">万 · 占总签单 65%</div></div>
+      <div class="kpi-card"><div class="label">已归档（FY2025）</div><div class="value">3</div><div class="delta">参考用 · 不再展示在商机筛选</div></div>
+    </div>
+
+    <div class="year-tabs">
+      <div class="year-tab active">FY2026 进行中 <span class="badge-count">5</span></div>
+      <div class="year-tab">FY2025 已归档 <span class="badge-count">3</span></div>
+      <div class="year-tab">FY2024 已归档 <span class="badge-count">2</span></div>
+      <div class="year-tab">+ 新建战役</div>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn primary">+ 新建战役</button>
+      <button class="btn">📤 批量导入</button>
+      <div class="group">类型 <select><option>全部</option><option>客群战役</option><option>区域战役</option><option>行业战役</option><option>产品战役</option></select></div>
+      <div class="group">状态 <select><option>进行中</option><option>筹备中</option><option>已归档</option></select></div>
+      <input class="search" placeholder="战役名称 模糊搜索...">
+    </div>
+
+    <div class="split">
+
+      <!-- 战役卡片网格 -->
+      <div>
+        <div class="section-banner">
+          <span>FY2026 · 进行中战役 (5)</span>
+          <span class="count">合计目标 18,500 万 · YTD 2,856 万 (15%)</span>
+        </div>
+
+        <div class="campaign-grid">
+
+          <!-- 战役 1: 央企战役 -->
+          <div class="campaign-card active">
+            <div class="head">
+              <h3>2026 央企 <em>战役</em></h3>
+              <span class="type-tag client">客群战役</span>
+            </div>
+            <div class="meta">
+              负责人 黄诗览 · 起止 1/1 - 12/31 · <b style="color: var(--ink);">3 个子战役</b><br>
+              FY2026 优先级最高 · 信创替换 + 薪酬监管 2.0 双驱动
+            </div>
+            <div class="progress-row"><span class="label">签单达成</span><span class="pct green">22%</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width: 22%;"></div></div>
+            <div class="progress-row"><span class="label">商机数 / 目标</span><span class="pct" style="font-size: 14px;">42 / 50</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width: 84%;"></div></div>
+            <div class="sub-list">
+              <div class="sub-title">子战役 (3)</div>
+              <div class="sub-item"><span class="name">└ 央企薪酬监管 2.0 子战役</span><span class="stat">18 商机 / 856 万</span></div>
+              <div class="sub-item"><span class="name">└ 央企信创替换 子战役</span><span class="stat">15 商机 / 1,140 万</span></div>
+              <div class="sub-item"><span class="name">└ 央企集团内复制 子战役</span><span class="stat">9 商机 / 320 万</span></div>
+            </div>
+          </div>
+
+          <!-- 战役 2: 区域薪酬战役 -->
+          <div class="campaign-card">
+            <div class="head">
+              <h3>2026 区域 <em>薪酬战役</em></h3>
+              <span class="type-tag region">区域战役</span>
+            </div>
+            <div class="meta">
+              负责人 张丽 · 起止 2/1 - 11/30 · <b style="color: var(--ink);">5 个子战役</b><br>
+              对应 5 个省级国资委窗口期 · 子战役按区域拆
+            </div>
+            <div class="progress-row"><span class="label">签单达成</span><span class="pct amber">12%</span></div>
+            <div class="bar-track"><div class="bar-fill amber" style="width: 12%;"></div></div>
+            <div class="progress-row"><span class="label">商机数 / 目标</span><span class="pct" style="font-size: 14px;">28 / 35</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width: 80%;"></div></div>
+            <div class="sub-list">
+              <div class="sub-title">子战役 (5)</div>
+              <div class="sub-item"><span class="name">└ 山东薪酬战役</span><span class="stat">8 商机 / 248 万</span></div>
+              <div class="sub-item"><span class="name">└ 河南薪酬战役</span><span class="stat">6 商机 / 156 万</span></div>
+              <div class="sub-item"><span class="name">└ 北京薪酬战役</span><span class="stat">5 商机 / 102 万</span></div>
+              <div class="sub-item"><span class="name">└ 广东薪酬战役</span><span class="stat">5 商机 / 84 万</span></div>
+              <div class="sub-item"><span class="name">└ 重庆薪酬战役</span><span class="stat">4 商机 / 72 万</span></div>
+            </div>
+          </div>
+
+          <!-- 战役 3: 区域银行战役 -->
+          <div class="campaign-card">
+            <div class="head">
+              <h3>2026 区域 <em>银行战役</em></h3>
+              <span class="type-tag industry">行业战役</span>
+            </div>
+            <div class="meta">
+              负责人 王芳 · 起止 1/1 - 12/31 · <b style="color: var(--ink);">2 个子战役</b><br>
+              城商行 + 农商行扩张窗口
+            </div>
+            <div class="progress-row"><span class="label">签单达成</span><span class="pct green">38%</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width: 38%;"></div></div>
+            <div class="progress-row"><span class="label">商机数 / 目标</span><span class="pct" style="font-size: 14px;">22 / 25</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width: 88%;"></div></div>
+            <div class="sub-list">
+              <div class="sub-title">子战役 (2)</div>
+              <div class="sub-item"><span class="name">└ 城商行子战役</span><span class="stat">14 商机 / 380 万</span></div>
+              <div class="sub-item"><span class="name">└ 农商行子战役</span><span class="stat">8 商机 / 178 万</span></div>
+            </div>
+          </div>
+
+          <!-- 战役 4 -->
+          <div class="campaign-card">
+            <div class="head">
+              <h3>2026 AI <em>Copilot 战役</em></h3>
+              <span class="type-tag product">产品战役</span>
+            </div>
+            <div class="meta">
+              负责人 黄诗览 · 起止 4/1 - 12/31 · <b style="color: var(--ink);">3 个子战役</b><br>
+              老客户 AI 追加销售 + 新客户切入抓手
+            </div>
+            <div class="progress-row"><span class="label">签单达成</span><span class="pct">8%</span></div>
+            <div class="bar-track"><div class="bar-fill amber" style="width: 8%;"></div></div>
+            <div class="progress-row"><span class="label">商机数 / 目标</span><span class="pct" style="font-size: 14px;">12 / 20</span></div>
+            <div class="bar-track"><div class="bar-fill amber" style="width: 60%;"></div></div>
+            <div class="sub-list">
+              <div class="sub-title">子战役 (3)</div>
+              <div class="sub-item"><span class="name">└ HR Copilot 试点子战役</span><span class="stat">5 商机 / 64 万</span></div>
+              <div class="sub-item"><span class="name">└ 招聘 AI 子战役</span><span class="stat">4 商机 / 32 万</span></div>
+              <div class="sub-item"><span class="name">└ 薪酬预测 AI 子战役</span><span class="stat">3 商机 / 18 万</span></div>
+            </div>
+          </div>
+
+          <!-- 战役 5 -->
+          <div class="campaign-card">
+            <div class="head">
+              <h3>2026 钢铁 <em>行业战役</em></h3>
+              <span class="type-tag industry">行业战役</span>
+            </div>
+            <div class="meta">
+              负责人 王芳 · 起止 3/1 - 11/30 · <b style="color: var(--ink);">1 个子战役</b><br>
+              河南钢铁 / 昆明钢铁 / 南钢标杆复制
+            </div>
+            <div class="progress-row"><span class="label">签单达成</span><span class="pct green">52%</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width: 52%;"></div></div>
+            <div class="progress-row"><span class="label">商机数 / 目标</span><span class="pct" style="font-size: 14px;">8 / 12</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width: 67%;"></div></div>
+            <div class="sub-list">
+              <div class="sub-title">子战役 (1)</div>
+              <div class="sub-item"><span class="name">└ 钢铁集团总部薪酬子战役</span><span class="stat">8 商机 / 312 万</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 已归档 -->
+        <div class="section-banner">
+          <span>FY2025 · 已归档战役 (3)</span>
+          <span class="count">不在商机筛选默认显示 · 仅供历史追溯</span>
+        </div>
+
+        <div class="campaign-grid">
+          <div class="campaign-card archived">
+            <div class="head">
+              <h3>2025 央企 <em>战役</em></h3>
+              <span class="type-tag client">客群战役</span>
+            </div>
+            <div class="meta">
+              负责人 黄诗览 · 已归档 2025/12/31 · 4 个子战役<br>
+              年度签单达成 4,256 万 / 目标 4,000 万 · 106%
+            </div>
+            <div class="progress-row"><span class="label">最终达成</span><span class="pct green">106%</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width: 100%;"></div></div>
+          </div>
+          <div class="campaign-card archived">
+            <div class="head">
+              <h3>2025 山东 <em>战役</em></h3>
+              <span class="type-tag region">区域战役</span>
+            </div>
+            <div class="meta">
+              负责人 张丽 · 已归档 2025/12/31 · 3 个子战役<br>
+              年度签单达成 820 万 / 目标 1,000 万 · 82%
+            </div>
+            <div class="progress-row"><span class="label">最终达成</span><span class="pct amber">82%</span></div>
+            <div class="bar-track"><div class="bar-fill amber" style="width: 82%;"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 详情面板 -->
+      <div class="detail-pane">
+        <h2>2026 央企 <em>战役</em></h2>
+        <div class="detail-meta">CAMP-2026-001 · 父战役 · 进行中</div>
+
+        <div class="field-grid">
+          <div><span class="k">战役类型</span><span class="v">客群战役</span></div>
+          <div><span class="k">FY 财年</span><span class="v">2026</span></div>
+          <div><span class="k">负责人</span><span class="v">黄诗览</span></div>
+          <div><span class="k">协办人</span><span class="v">张丽 / 王芳</span></div>
+          <div><span class="k">起止日期</span><span class="v">2026/1/1 - 12/31</span></div>
+          <div><span class="k">状态</span><span class="v" style="color: var(--ink-green);">进行中</span></div>
+          <div><span class="k">目标签单</span><span class="v">8,000 万</span></div>
+          <div><span class="k">YTD 签单</span><span class="v">1,766 万 (22%)</span></div>
+        </div>
+
+        <div class="section-title">
+          <span>子战役管理（3）</span>
+          <span class="right-action">+ 新建子战役</span>
+        </div>
+        <div class="sub-mgmt">
+          <div class="sub-row">
+            <div class="name">央企薪酬监管 2.0</div>
+            <div class="num">18</div>
+            <div class="num">856 万</div>
+            <div class="action">编辑</div>
+          </div>
+          <div class="sub-row">
+            <div class="name">央企信创替换</div>
+            <div class="num">15</div>
+            <div class="num">1,140 万</div>
+            <div class="action">编辑</div>
+          </div>
+          <div class="sub-row">
+            <div class="name">央企集团内复制</div>
+            <div class="num">9</div>
+            <div class="num">320 万</div>
+            <div class="action">编辑</div>
+          </div>
+        </div>
+
+        <div class="section-title">
+          <span>关联商机（42）</span>
+          <span class="right-action">→ 跳商机管理</span>
+        </div>
+        <div class="opp-list">
+          <div class="opp-row">
+            <div class="name">中信集团总部 HCM 综合运维 <span class="sub-tag">薪酬+集团内</span></div>
+            <div class="stage">S4</div>
+            <div class="amt committed">¥ 2,800</div>
+          </div>
+          <div class="opp-row">
+            <div class="name">华夏银行薪酬模块 <span class="sub-tag">薪酬</span></div>
+            <div class="stage">S4</div>
+            <div class="amt committed">¥ 540</div>
+          </div>
+          <div class="opp-row">
+            <div class="name">中国华能 HCM 升级 <span class="sub-tag">信创+薪酬</span></div>
+            <div class="stage">S3</div>
+            <div class="amt">¥ 480</div>
+          </div>
+          <div class="opp-row">
+            <div class="name">中国稀土 HCM 替换 <span class="sub-tag">信创</span></div>
+            <div class="stage">S3</div>
+            <div class="amt">¥ 380</div>
+          </div>
+          <div class="opp-row">
+            <div class="name">国家管网 HCM 全集团 <span class="sub-tag">集团内</span></div>
+            <div class="stage">S3</div>
+            <div class="amt">¥ 320</div>
+          </div>
+          <div class="opp-row" style="background: var(--bg-card-quiet); justify-content: center;">
+            <div style="grid-column: 1 / -1; text-align: center; color: var(--ink-mute); font-family: var(--font-mono); font-size: 10px; padding: 4px 0;">⌄ 还有 37 个商机</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 8px; margin-top: 14px;">
+          <button class="btn ghost">编辑战役</button>
+          <button class="btn" style="flex: 1;">复制到 FY2027</button>
+        </div>
+        <div style="margin-top: 8px; display: flex; gap: 8px;">
+          <button class="btn warn" style="flex: 1; font-size: 11px;">📦 提前归档</button>
+          <button class="btn ghost" style="flex: 1; font-size: 11px;">查看历史快照</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="label">设计原则</div>
+      <div class="text">
+        <b>商机挂载规则</b>：1 条商机最多挂 <b>1 个父战役</b>；可挂 <b>该父战役下的多个子战役</b>（如同时挂"薪酬"+"信创"两个子）。<br>
+        <b>年度切换</b>：admin 在每年 12 月底批量把进行中战役状态改为"已归档"，关联关系永久保留 · 商机管理界面默认隐藏已归档战役 · 但 2.1 重点商机历史报表仍可按归档战役查询。<br>
+        <b>无关联商机的处理</b>：不挂战役的商机视为"日常滚动商机"，在 2.1 报表里归到"未归战役"分组。<br>
+        <b>战役维度报表</b>：每个战役卡片的"签单达成 = 关联商机的实际签单 + 预计签单 × 达成可能"，与 4.6 指标页公式一致。
+      </div>
+    </div>
+  </main>
+</div>
+<script>if (new URLSearchParams(location.search).get('embedded') === '1') { document.querySelector('.sidebar').style.display = 'none'; document.querySelector('.app').style.gridTemplateColumns = '1fr'; }</script>
+</body></html>

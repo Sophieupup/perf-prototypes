@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>1.1 整体业绩一览表</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.dash { padding: 18px 24px; max-width: 1700px; }
+.dash-header { display: flex; align-items: baseline; justify-content: space-between; padding-bottom: 14px; border-bottom: 2px solid var(--ink); margin-bottom: 16px; }
+.dash-header h1 { font-family: var(--font-display); font-size: 36px; font-weight: 400; line-height: 1; letter-spacing: -0.02em; }
+.dash-header h1 em { font-style: italic; color: var(--ink-green); }
+
+.kpi-wall { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line-mid); border-radius: var(--r-md); overflow: hidden; margin-bottom: 14px; }
+.kpi-cell { background: var(--bg-card); padding: 16px 18px; }
+.kpi-cell .label { font-family: var(--font-cn); font-size: 12px; color: var(--ink-soft); margin-bottom: 6px; }
+.kpi-cell .nums { display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; }
+.kpi-cell .actual { font-family: var(--font-display); font-size: 36px; font-weight: 400; line-height: 1; letter-spacing: -0.02em; }
+.kpi-cell .target { font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); }
+.kpi-cell .pct-row { display: flex; justify-content: space-between; align-items: center; }
+.kpi-cell .pct { font-family: var(--font-display); font-size: 26px; line-height: 1; font-style: italic; }
+.kpi-cell .predict { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); }
+.kpi-cell.bad .pct { color: var(--crimson); }
+.kpi-cell.warn .pct { color: var(--amber); }
+.kpi-cell.good .pct { color: var(--ink-green); }
+
+.dash-row { display: grid; gap: 12px; margin-bottom: 12px; }
+.dash-row.r2 { grid-template-columns: 1.4fr 1fr 1.2fr; }
+.dash-row.r3 { grid-template-columns: 1fr 1fr 1fr; }
+.dash-row.r4 { grid-template-columns: 1fr 1fr 1fr; }
+.module { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px 16px; box-shadow: var(--shadow-card); }
+.module .head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.module .head h3 { font-family: var(--font-cn); font-size: 13px; font-weight: 500; letter-spacing: 0.04em; }
+.module .head .sub { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase; }
+.region-mtx { width: 100%; font-family: var(--font-mono); font-size: 10px; }
+.region-mtx th { padding: 6px 8px; background: var(--bg-card-quiet); color: var(--ink-mute); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; text-align: right; border-bottom: 1px solid var(--line-mid); font-size: 9px; }
+.region-mtx th.left { text-align: left; }
+.region-mtx td { padding: 6px 8px; border-bottom: 1px solid var(--line); text-align: right; }
+.region-mtx td.left { text-align: left; font-family: var(--font-cn); font-size: 12px; }
+.region-mtx tr:last-child td { border-bottom: none; }
+.region-mtx .pct.good { color: var(--ink-green); font-weight: 600; }
+.region-mtx .pct.warn { color: var(--amber); font-weight: 600; }
+.region-mtx .pct.bad { color: var(--crimson); font-weight: 600; }
+.region-mtx .score { font-family: var(--font-display); font-style: italic; font-size: 13px; }
+.var-item { display: grid; grid-template-columns: 14px 1fr auto auto; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+.var-item:last-child { border-bottom: none; }
+.var-item .icon { font-family: var(--font-mono); font-weight: 700; }
+.var-item .icon.down { color: var(--crimson); }
+.var-item .icon.up { color: var(--ink-green); }
+.var-item .icon.plus { color: var(--blue); }
+.var-item .name { font-family: var(--font-cn); font-size: 12px; }
+.var-item .reason { font-family: var(--font-cn); font-size: 10px; color: var(--ink-mute); margin-top: 1px; }
+.var-item .amt { font-family: var(--font-mono); font-size: 11px; font-weight: 600; }
+.var-item .amt.down { color: var(--crimson); }
+.var-item .amt.up { color: var(--ink-green); }
+.var-item .amt.plus { color: var(--blue); }
+.alert-row { display: grid; grid-template-columns: 16px 1fr auto; gap: 6px; padding: 7px 0; border-bottom: 1px solid var(--line); align-items: center; }
+.alert-row .icon-c { color: var(--crimson); font-size: 11px; }
+.alert-row .name { font-family: var(--font-cn); font-size: 12px; }
+.alert-row .desc { font-family: var(--font-cn); font-size: 10px; color: var(--ink-mute); margin-top: 2px; }
+.alert-row .badge { font-family: var(--font-mono); font-size: 9px; padding: 1px 6px; border-radius: 3px; background: var(--crimson-soft); color: var(--crimson); font-weight: 600; }
+.bid-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.bid-cell { padding: 8px 4px; background: var(--bg-card-quiet); border-radius: 5px; text-align: center; border: 1px solid var(--line); }
+.bid-cell .v { font-family: var(--font-display); font-size: 22px; font-weight: 400; line-height: 1; }
+.bid-cell .v.win-c { color: var(--ink-green); }
+.bid-cell .v.wait-c { color: var(--amber); }
+.bid-cell .v.plan-c { color: var(--blue); }
+.bid-cell .v.lose-c { color: var(--crimson); }
+.bid-cell .lbl { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); text-transform: uppercase; margin-top: 4px; }
+.bid-cell .amt { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px; }
+.pipe-row { display: grid; grid-template-columns: 50px 1fr 80px; gap: 8px; align-items: center; margin-bottom: 5px; font-size: 11px; }
+.pipe-row .label { font-family: var(--font-mono); font-weight: 600; color: var(--ink-green); background: var(--ink-green-soft); padding: 2px 0; border-radius: 2px; text-align: center; }
+.pipe-row .bar-wrap { height: 18px; background: var(--ink-green); border-radius: 2px; position: relative; }
+.pipe-row .bar-label { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); color: #faf8f3; font-family: var(--font-cn); font-size: 11px; }
+.pipe-row .amt { text-align: right; font-family: var(--font-mono); font-size: 10px; color: var(--ink-soft); }
+.pre-rank-row { display: grid; grid-template-columns: 16px 1fr 30px 30px; gap: 8px; padding: 4px 0; align-items: center; font-size: 11px; }
+.pre-rank-row .rank { font-family: var(--font-mono); font-size: 9px; color: var(--ink-faint); text-align: center; }
+.pre-rank-row .name { font-family: var(--font-cn); }
+.pre-rank-row .ytd { text-align: right; font-family: var(--font-mono); font-weight: 500; }
+.pre-rank-row .week { text-align: right; font-family: var(--font-mono); color: var(--ink-mute); font-size: 10px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">业绩 <em>运营</em></div>
+    <div class="brand-sub">PERFORMANCE OPS · v4</div>
+    <div class="nav-section">1 经营驾驶舱</div>
+    <a class="nav-item active">1.1 整体业绩</a>
+    <a class="nav-item">1.2 区域业绩</a>
+    <div class="nav-section">2 明细报表</div>
+    <a class="nav-item">2.1 全年重点商机</a>
+    <a class="nav-item">2.2 投标明细</a>
+    <a class="nav-item">2.3 签单明细</a>
+    <a class="nav-item">2.4 回款明细</a>
+    <div class="nav-section">3 业务功能</div>
+    <a class="nav-item">3.1.1 客户管理</a>
+    <a class="nav-item">3.1.2 商机管理</a>
+    <a class="nav-item">3.2.1 项目管理</a>
+    <a class="nav-item">3.2.2 回款里程碑</a>
+  </aside>
+
+  <main class="main" style="padding: 0;">
+    <div class="dash">
+
+      <div class="dash-header">
+        <div>
+          <h1>1.1 整体 <em>业绩</em> · 一览</h1>
+          <div style="font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); margin-top: 4px;">公司层面 KPI · 7 区域聚合 · 实时</div>
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute);">
+          <span style="display: inline-block; width: 6px; height: 6px; background: var(--ink-green); border-radius: 50%; margin-right: 4px; vertical-align: 1px;"></span> <strong style="color: var(--ink); font-family: var(--font-display); font-style: italic;">W18 · 5/6 18:02</strong> 最近 freeze · 综合评分 <strong style="color: var(--ink-green); font-family: var(--font-display); font-style: italic;">0.8348</strong>
+        </div>
+      </div>
+
+      <!-- KPI 4 联墙 -->
+      <div class="kpi-wall">
+        <div class="kpi-cell bad">
+          <div class="label">签单金额 YTD</div>
+          <div class="nums">
+            <span class="actual">¥ 4,360</span>
+            <span class="target">/ 7,140 万 (累计目标)</span>
+          </div>
+          <div class="pct-row">
+            <span class="pct">61%</span>
+            <span class="predict">本季加权预测 +¥ 1,702 万</span>
+          </div>
+        </div>
+        <div class="kpi-cell warn">
+          <div class="label">签单毛利 YTD (×80%)</div>
+          <div class="nums">
+            <span class="actual">¥ 3,488</span>
+            <span class="target">/ 5,712 万</span>
+          </div>
+          <div class="pct-row">
+            <span class="pct">61%</span>
+            <span class="predict">本季加权 +¥ 1,362 万</span>
+          </div>
+        </div>
+        <div class="kpi-cell good">
+          <div class="label">回款收入 YTD</div>
+          <div class="nums">
+            <span class="actual">¥ 3,870</span>
+            <span class="target">/ 4,080 万</span>
+          </div>
+          <div class="pct-row">
+            <span class="pct">95%</span>
+            <span class="predict">本季加权 +¥ 1,028 万</span>
+          </div>
+        </div>
+        <div class="kpi-cell warn">
+          <div class="label">回款毛利 YTD</div>
+          <div class="nums">
+            <span class="actual">¥ 2,424</span>
+            <span class="target">/ 3,120 万</span>
+          </div>
+          <div class="pct-row">
+            <span class="pct">78%</span>
+            <span class="predict">本季加权 +¥ 822 万</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 综合评分 + 月度趋势 -->
+      <div class="dash-row r3">
+        <div class="module">
+          <div class="head">
+            <h3>综合评分 · 加权（30/20/50）</h3>
+            <span class="sub">OVERALL SCORE</span>
+          </div>
+          <div style="text-align: center; padding: 14px 0;">
+            <div style="font-family: var(--font-display); font-size: 56px; line-height: 1; font-style: italic; color: var(--ink-green);">0.8348</div>
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); letter-spacing: 0.08em; margin-top: 4px;">vs 上周 +0.0021 · vs 月初 -0.012</div>
+          </div>
+          <div style="font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft); padding-top: 10px; border-top: 1px dashed var(--line); line-height: 1.7;">
+            = 签单毛利达成率 0.214 × 30%<br>
+            + 回款收入达成率 0.95 × 20%<br>
+            + 回款毛利达成率 0.78 × 50%
+          </div>
+        </div>
+
+        <div class="module">
+          <div class="head">
+            <h3>月度签单实际 · 12 月趋势</h3>
+            <span class="sub">MONTHLY SIGNING</span>
+          </div>
+          <div style="display: flex; align-items: flex-end; gap: 6px; height: 100px; padding: 8px 0;">
+            <div style="flex: 1; background: var(--ink-green-soft); border-radius: 2px 2px 0 0; height: 60%; position: relative;"><span style="position: absolute; bottom: -16px; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute);">1</span></div>
+            <div style="flex: 1; background: var(--ink-green-soft); border-radius: 2px 2px 0 0; height: 50%;"></div>
+            <div style="flex: 1; background: var(--ink-green-soft); border-radius: 2px 2px 0 0; height: 90%;"></div>
+            <div style="flex: 1; background: var(--ink-green); border-radius: 2px 2px 0 0; height: 100%;"></div>
+            <div style="flex: 1; background: var(--bg-card-quiet); border-radius: 2px 2px 0 0; height: 35%; border: 1px dashed var(--line-strong);"></div>
+            <div style="flex: 1; background: var(--bg-card-quiet); border-radius: 2px 2px 0 0; height: 50%; border: 1px dashed var(--line-strong);"></div>
+            <div style="flex: 1; background: var(--bg-card-quiet); border-radius: 2px 2px 0 0; height: 30%; border: 1px dashed var(--line-strong);"></div>
+            <div style="flex: 1; background: var(--bg-card-quiet); border-radius: 2px 2px 0 0; height: 35%; border: 1px dashed var(--line-strong);"></div>
+            <div style="flex: 1; background: var(--bg-card-quiet); border-radius: 2px 2px 0 0; height: 40%; border: 1px dashed var(--line-strong);"></div>
+            <div style="flex: 1; background: var(--bg-card-quiet); border-radius: 2px 2px 0 0; height: 45%; border: 1px dashed var(--line-strong);"></div>
+            <div style="flex: 1; background: var(--bg-card-quiet); border-radius: 2px 2px 0 0; height: 45%; border: 1px dashed var(--line-strong);"></div>
+            <div style="flex: 1; background: var(--bg-card-quiet); border-radius: 2px 2px 0 0; height: 40%; border: 1px dashed var(--line-strong);"></div>
+          </div>
+          <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); text-align: center; margin-top: 18px;">实色 = 已发生 / 虚线 = 加权预测</div>
+        </div>
+
+        <div class="module">
+          <div class="head">
+            <h3>本周变动汇总</h3>
+            <span class="sub">VARIANCE</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px 0;">
+            <div style="text-align: center; padding: 8px; background: var(--ink-green-soft); border-radius: 5px;">
+              <div style="font-family: var(--font-display); font-size: 22px; color: var(--ink-green);">+86</div>
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px;">▲ 好转 万</div>
+            </div>
+            <div style="text-align: center; padding: 8px; background: var(--crimson-soft); border-radius: 5px;">
+              <div style="font-family: var(--font-display); font-size: 22px; color: var(--crimson);">-148</div>
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px;">▼ 恶化 万</div>
+            </div>
+            <div style="text-align: center; padding: 8px; background: var(--blue-soft); border-radius: 5px;">
+              <div style="font-family: var(--font-display); font-size: 22px; color: var(--blue);">+102</div>
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px;">+ 新增 万</div>
+            </div>
+            <div style="text-align: center; padding: 8px; background: var(--bg-card-accent); border-radius: 5px;">
+              <div style="font-family: var(--font-display); font-size: 22px; color: var(--ink);">+40</div>
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px;">⇿ 净变动 万</div>
+            </div>
+          </div>
+          <div style="margin-top: 6px; font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); padding-top: 8px; border-top: 1px dashed var(--line);">
+            <a style="color: var(--blue); cursor: pointer;">→ 查看 23 项详情</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: 区域 + 风险 + 计划变动 -->
+      <div class="dash-row r2">
+        <div class="module">
+          <div class="head">
+            <h3>区域达成 · 7 大区</h3>
+            <span class="sub">REGIONS</span>
+          </div>
+          <table class="region-mtx">
+            <thead>
+              <tr>
+                <th class="left">区域</th>
+                <th>签单 %</th>
+                <th>收入 %</th>
+                <th>毛利 %</th>
+                <th>综合</th>
+                <th>同比</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td class="left">央企</td><td><span class="pct good">79%</span></td><td><span class="pct good">96%</span></td><td><span class="pct good">86%</span></td><td><span class="score">0.91</span></td><td><span class="pct good">+12%</span></td></tr>
+              <tr><td class="left">广东</td><td><span class="pct bad">30%</span></td><td><span class="pct good">94%</span></td><td><span class="pct warn">75%</span></td><td><span class="score" style="color: var(--crimson);">0.62</span></td><td><span class="pct bad">-8%</span></td></tr>
+              <tr><td class="left">山东</td><td><span class="pct warn">72%</span></td><td><span class="pct good">92%</span></td><td><span class="pct warn">76%</span></td><td><span class="score">0.78</span></td><td><span class="pct good">+5%</span></td></tr>
+              <tr><td class="left">华东</td><td><span class="pct warn">69%</span></td><td><span class="pct good">95%</span></td><td><span class="pct warn">76%</span></td><td><span class="score">0.82</span></td><td><span class="pct good">+3%</span></td></tr>
+              <tr><td class="left">华北</td><td><span class="pct warn">60%</span></td><td><span class="pct good">98%</span></td><td><span class="pct good">85%</span></td><td><span class="score">0.91</span></td><td><span class="pct">0%</span></td></tr>
+              <tr><td class="left">西部</td><td><span class="pct bad">33%</span></td><td><span class="pct good">88%</span></td><td><span class="pct warn">76%</span></td><td><span class="score" style="color: var(--amber);">0.68</span></td><td><span class="pct bad">-15%</span></td></tr>
+              <tr><td class="left">服务</td><td><span class="pct warn">29%</span></td><td><span class="pct good">96%</span></td><td><span class="pct good">93%</span></td><td><span class="score">0.95</span></td><td><span class="pct good">+8%</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="module">
+          <div class="head">
+            <h3>⚠ 风险 Top 5</h3>
+            <span class="sub">ALERTS</span>
+          </div>
+          <div class="alert-row"><span class="icon-c">⚠</span><div><div class="name">贵州磷化 HCM 投标</div><div class="desc">客户倾向用友 · 博弈中</div></div><span class="badge">¥418</span></div>
+          <div class="alert-row"><span class="icon-c">⚠</span><div><div class="name">湖北宏泰 投标</div><div class="desc">价格 vs 北森持平</div></div><span class="badge">¥150</span></div>
+          <div class="alert-row"><span class="icon-c">⚠</span><div><div class="name">安徽昊源 ERP 终验</div><div class="desc">已矫正 2 次 · 风险</div></div><span class="badge">¥68</span></div>
+          <div class="alert-row"><span class="icon-c">⚠</span><div><div class="name">中电信 AI 回款</div><div class="desc">预算未到位 · 延期</div></div><span class="badge">¥32</span></div>
+          <div class="alert-row"><span class="icon-c">⚠</span><div><div class="name">珠海水控 HCM 签单</div><div class="desc">数科流程慢 · 已延期</div></div><span class="badge">¥153</span></div>
+        </div>
+
+        <div class="module">
+          <div class="head">
+            <h3>计划变动 · 本周</h3>
+            <span class="sub">VARIANCE</span>
+          </div>
+          <div class="var-item"><span class="icon down">▼</span><div><div class="name">珠江城市服务</div><div class="reason">金额协商中</div></div><span class="amt down">-80</span><span><span class="pill commit">承</span>→<span class="pill struggle">争</span></span></div>
+          <div class="var-item"><span class="icon down">▼</span><div><div class="name">泰胜风能</div><div class="reason">报价未敲定</div></div><span class="amt down">-50</span><span><span class="pill commit">承</span>→<span class="pill struggle">争</span></span></div>
+          <div class="var-item"><span class="icon up">▲</span><div><div class="name">有研信创迁移</div><div class="reason">合同流程启动</div></div><span class="amt up">+22</span><span><span class="pill struggle">争</span>→<span class="pill commit">承</span></span></div>
+          <div class="var-item"><span class="icon up">▲</span><div><div class="name">中建八局海外</div><div class="reason">客户已确认</div></div><span class="amt up">+21</span><span><span class="pill struggle">争</span>→<span class="pill commit">承</span></span></div>
+          <div class="var-item"><span class="icon plus">+</span><div><div class="name">山东出版</div><div class="reason">4月可争取</div></div><span class="amt plus">+64</span><span><span class="pill new">新</span>→<span class="pill struggle">争</span></span></div>
+        </div>
+      </div>
+
+      <!-- Row 3: 投标 + TOP 签单/回款 -->
+      <div class="dash-row r4">
+        <div class="module">
+          <div class="head">
+            <h3>投标推进 · 本月 18 项</h3>
+            <span class="sub">BIDDING</span>
+          </div>
+          <div class="bid-grid">
+            <div class="bid-cell"><div class="v win-c">1</div><div class="lbl">中标</div><div class="amt">¥ 135</div></div>
+            <div class="bid-cell"><div class="v wait-c">6</div><div class="lbl">等结果</div><div class="amt">¥ 1,004</div></div>
+            <div class="bid-cell"><div class="v plan-c">10</div><div class="lbl">待投</div><div class="amt">¥ 1,709</div></div>
+            <div class="bid-cell"><div class="v lose-c">1</div><div class="lbl">丢标</div><div class="amt">¥ 130</div></div>
+          </div>
+          <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--line);">已投 8/18 · 出率 50% · 中标率 17%</div>
+        </div>
+
+        <div class="module">
+          <div class="head">
+            <h3>TOP 5 签单 · YTD</h3>
+            <span class="sub">TOP CONTRACTS</span>
+          </div>
+          <div style="font-family: var(--font-cn); font-size: 11px; line-height: 1.8;">
+            <div style="display: flex; justify-content: space-between;"><span>中信集团 HCM 综合运维</span><span style="font-family: var(--font-display); font-style: italic;">¥ 2,800</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>中信华创信用 HCM</span><span style="font-family: var(--font-display); font-style: italic;">¥ 1,920</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>南方航空人力升级</span><span style="font-family: var(--font-display); font-style: italic;">¥ 680</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>湖北宏泰 HCM</span><span style="font-family: var(--font-display); font-style: italic;">¥ 580</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>华夏银行薪酬模块</span><span style="font-family: var(--font-display); font-style: italic;">¥ 540</span></div>
+          </div>
+        </div>
+
+        <div class="module">
+          <div class="head">
+            <h3>TOP 5 回款 · 本月</h3>
+            <span class="sub">TOP COLLECTIONS</span>
+          </div>
+          <div style="font-family: var(--font-cn); font-size: 11px; line-height: 1.8;">
+            <div style="display: flex; justify-content: space-between;"><span>中信海洋直升机</span><span style="font-family: var(--font-display); font-style: italic; color: var(--ink-green);">¥ 59</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>长城证券数智薪酬</span><span style="font-family: var(--font-display); font-style: italic; color: var(--ink-green);">¥ 30</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>华夏银行薪酬模块</span><span style="font-family: var(--font-display); font-style: italic;">¥ 27</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>百果园数据中台</span><span style="font-family: var(--font-display); font-style: italic;">¥ 17</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>中信和业 HCM 服务</span><span style="font-family: var(--font-display); font-style: italic;">¥ 12</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 4: 商机水库 + 售前 + 周/月对比 -->
+      <div class="dash-row r4">
+        <div class="module">
+          <div class="head">
+            <h3>商机水库 · S1-S4 漏斗</h3>
+            <span class="sub">PIPELINE</span>
+          </div>
+          <div class="pipe-row"><span class="label">S1</span><div class="bar-wrap"><span class="bar-label">38</span></div><span class="amt"><strong>¥ 5,200</strong></span></div>
+          <div class="pipe-row"><span class="label">S2</span><div class="bar-wrap" style="width: 82%;"><span class="bar-label">29</span></div><span class="amt"><strong>¥ 4,800</strong></span></div>
+          <div class="pipe-row"><span class="label">S3</span><div class="bar-wrap" style="width: 65%;"><span class="bar-label">22</span></div><span class="amt"><strong>¥ 4,200</strong></span></div>
+          <div class="pipe-row"><span class="label">S4</span><div class="bar-wrap" style="width: 50%;"><span class="bar-label">18</span></div><span class="amt"><strong>¥ 2,978</strong></span></div>
+          <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--line);">总池 ¥ 23,400 万 · 142 商机</div>
+        </div>
+
+        <div class="module">
+          <div class="head">
+            <h3>售前活动 · 区域排名</h3>
+            <span class="sub">PRESALES</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed var(--line); text-align: center;">
+            <div><div style="font-family: var(--font-display); font-size: 22px; line-height: 1;">12</div><div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px; letter-spacing: 0.06em; text-transform: uppercase;">本周</div></div>
+            <div><div style="font-family: var(--font-display); font-size: 22px; line-height: 1; color: var(--ink-green);">187</div><div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px; letter-spacing: 0.06em; text-transform: uppercase;">YTD</div></div>
+            <div><div style="font-family: var(--font-display); font-size: 22px; line-height: 1;">28<span style="font-size: 12px;">%</span></div><div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px; letter-spacing: 0.06em; text-transform: uppercase;">商机转化</div></div>
+          </div>
+          <div class="pre-rank-row"><span class="rank">1</span><span class="name">山东</span><span class="ytd">52</span><span class="week" style="color: var(--ink-green);">+5</span></div>
+          <div class="pre-rank-row"><span class="rank">2</span><span class="name">广东</span><span class="ytd">38</span><span class="week" style="color: var(--ink-green);">+3</span></div>
+          <div class="pre-rank-row"><span class="rank">3</span><span class="name">央企</span><span class="ytd">35</span><span class="week">0</span></div>
+          <div class="pre-rank-row"><span class="rank">4</span><span class="name">华北</span><span class="ytd">22</span><span class="week" style="color: var(--crimson);">-2</span></div>
+          <div class="pre-rank-row"><span class="rank">5</span><span class="name">华东</span><span class="ytd">18</span><span class="week">0</span></div>
+        </div>
+
+        <div class="module">
+          <div class="head">
+            <h3>本周快照对比</h3>
+            <span class="sub">SNAPSHOT DIFF</span>
+          </div>
+          <div style="font-family: var(--font-cn); font-size: 12px; color: var(--ink-soft); line-height: 1.8;">
+            <div style="display: flex; justify-content: space-between;"><span>本周 (W18 · 5/3)</span><span style="font-family: var(--font-mono); color: var(--ink); font-weight: 500;">¥ 1,702</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>上周 (W17 · 4/26)</span><span style="font-family: var(--font-mono); color: var(--ink-mute);">¥ 1,662</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>月初 (5/1 快照)</span><span style="font-family: var(--font-mono); color: var(--ink-mute);">¥ 1,544</span></div>
+            <div style="display: flex; justify-content: space-between; padding-top: 8px; margin-top: 6px; border-top: 1px dashed var(--line); color: var(--ink-green); font-weight: 600;"><span>vs 上周</span><span style="font-family: var(--font-display); font-style: italic;">+¥ 40 万</span></div>
+            <div style="display: flex; justify-content: space-between; color: var(--ink-green); font-weight: 600;"><span>vs 月初</span><span style="font-family: var(--font-display); font-style: italic;">+¥ 158 万</span></div>
+          </div>
+          <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--line); font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">
+            <a style="color: var(--blue); cursor: pointer;">→ 查看变动归因详情</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+if (new URLSearchParams(location.search).get('embedded') === '1') {
+  const sb = document.querySelector('.sidebar'); if (sb) sb.style.display = 'none';
+  const app = document.querySelector('.app'); if (app) app.style.gridTemplateColumns = '1fr';
+}
+</script>
+</body>
+</html>

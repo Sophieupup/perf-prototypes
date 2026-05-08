@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>移动端补充 · 我的填报 + 商机 Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.mobile-stage { padding: 40px; background: var(--bg-stage); min-height: 100vh; display: flex; gap: 60px; justify-content: center; align-items: flex-start; flex-wrap: wrap; }
+.device { width: 390px; height: 844px; border-radius: 48px; background: #0b0d10; padding: 10px; box-shadow: 0 40px 100px rgba(28,31,30,0.25), 0 12px 24px rgba(28,31,30,0.12); position: relative; flex-shrink: 0; }
+.device-screen { width: 100%; height: 100%; border-radius: 38px; overflow: hidden; background: var(--bg-paper); display: flex; flex-direction: column; position: relative; }
+.island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 120px; height: 32px; background: #0b0d10; border-radius: 20px; z-index: 20; }
+.status-bar { height: 52px; display: flex; align-items: center; justify-content: space-between; padding: 18px 28px 0; font-size: 15px; font-weight: 600; }
+.app-nav { padding: 4px 16px 10px; background: var(--bg-paper); border-bottom: 1px solid var(--line); }
+.app-nav .nav-row { display: flex; align-items: center; justify-content: space-between; height: 44px; }
+.app-title { text-align: center; flex: 1; }
+.app-title .main { font-family: var(--font-cn); font-weight: 500; font-size: 17px; color: var(--ink); }
+.app-title .sub { font-size: 10px; color: var(--ink-mute); margin-top: 1px; letter-spacing: 0.1em; font-family: var(--font-mono); }
+.nav-btn { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; color: var(--ink-soft); background: none; border: none; }
+.app-main { flex: 1; overflow-y: auto; padding: 14px 14px 20px; }
+.tab-bar { height: 72px; padding: 6px 0 22px; background: rgba(250,248,243,0.94); backdrop-filter: blur(20px); border-top: 1px solid var(--line); display: flex; justify-content: space-around; }
+.tab-bar .t { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--ink-mute); font-size: 10px; font-family: var(--font-cn); padding-top: 4px; }
+.tab-bar .t.active { color: var(--ink-green); }
+
+.deadline-card { background: linear-gradient(135deg, var(--amber-soft), transparent); border: 1px solid var(--amber-mid); border-radius: var(--r-md); padding: 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+.deadline-card .icon { width: 36px; height: 36px; background: var(--amber); color: #faf8f3; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 18px; font-style: italic; }
+.deadline-card .text .t1 { font-family: var(--font-cn); font-size: 13px; font-weight: 500; }
+.deadline-card .text .t2 { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-top: 2px; }
+
+.todo-section { margin-bottom: 18px; }
+.section-title { font-family: var(--font-cn); font-size: 13px; font-weight: 500; margin-bottom: 8px; padding: 0 2px; display: flex; justify-content: space-between; align-items: baseline; }
+.section-title .count { font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); font-weight: 400; }
+
+.task-card { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 12px 14px; margin-bottom: 8px; box-shadow: var(--shadow-card); }
+.task-card.urgent { border-left: 3px solid var(--crimson); }
+.task-card.normal { border-left: 3px solid var(--steel); }
+.task-card .r1 { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+.task-card .name { font-family: var(--font-cn); font-size: 13px; font-weight: 500; }
+.task-card .amt { font-family: var(--font-display); font-size: 17px; font-style: italic; color: var(--ink); }
+.task-card .amt.cn { font-size: 10px; color: var(--ink-mute); margin-left: 2px; }
+.task-card .r2 { display: flex; justify-content: space-between; gap: 8px; font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-bottom: 6px; }
+.task-card .progress { display: flex; gap: 3px; margin-top: 4px; }
+.task-card .pdot { width: 8px; height: 8px; border-radius: 50%; background: var(--line-strong); }
+.task-card .pdot.done { background: var(--ink-green); }
+.task-card .pdot.empty { background: var(--bg-card); border: 1px solid var(--line-strong); }
+
+.fab { position: absolute; bottom: 88px; right: 16px; width: 56px; height: 56px; border-radius: 50%; background: var(--ink-green); color: #faf8f3; box-shadow: 0 4px 14px rgba(30,85,55,0.3); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 28px; font-weight: 400; }
+
+/* Bottom sheet style for review modal */
+.sheet-overlay { position: absolute; inset: 0; background: rgba(28,31,30,0.5); display: flex; align-items: flex-end; }
+.sheet { background: var(--bg-paper); border-radius: 20px 20px 0 0; padding: 18px 16px 26px; width: 100%; max-height: 80%; overflow-y: auto; }
+.sheet-handle { width: 40px; height: 4px; background: var(--line-strong); border-radius: 2px; margin: 0 auto 14px; }
+.sheet-head { margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.sheet-head h3 { font-family: var(--font-display); font-size: 22px; font-weight: 400; }
+.sheet-head .meta { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-top: 4px; }
+
+.field-block { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 12px 14px; margin-bottom: 10px; }
+.field-block .lbl { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+.field-block textarea, .field-block input, .field-block select { width: 100%; padding: 8px 10px; font-family: var(--font-cn); font-size: 13px; border: 1px solid var(--line-mid); border-radius: 5px; background: var(--bg-card-quiet); color: var(--ink); }
+.field-block textarea { resize: none; min-height: 60px; line-height: 1.55; }
+
+.month-mini-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 8px; }
+.month-mini { padding: 8px; background: var(--bg-card-quiet); border: 1px solid var(--line-mid); border-radius: 5px; text-align: center; }
+.month-mini.primary { background: var(--ink-green-soft); border: 2px solid var(--ink-green); }
+.month-mini .m { font-family: var(--font-display); font-size: 14px; font-style: italic; color: var(--ink); }
+.month-mini .s { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px; }
+.month-mini.primary .m { color: var(--ink-green); }
+
+.toggle-card { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--bg-card); border: 2px solid var(--ink-green); border-radius: var(--r-md); margin-bottom: 12px; }
+.toggle-card .text { flex: 1; }
+.toggle-card .t1 { font-family: var(--font-cn); font-size: 13px; font-weight: 500; }
+.toggle-card .t2 { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-top: 2px; }
+.switch-mini { position: relative; width: 44px; height: 24px; background: var(--ink-faint); border-radius: 12px; }
+.switch-mini::before { content: ""; position: absolute; left: 2px; top: 2px; width: 20px; height: 20px; background: var(--bg-card); border-radius: 50%; }
+
+.actions { display: flex; gap: 8px; padding-top: 12px; border-top: 1px solid var(--line); margin-top: 14px; }
+.btn-mobile { flex: 1; padding: 12px; font-family: var(--font-cn); font-size: 14px; border-radius: 8px; border: 1px solid var(--line-strong); background: var(--bg-card); cursor: pointer; }
+.btn-mobile.primary { background: var(--ink-green); color: #faf8f3; border-color: var(--ink-green); }
+
+.label-stage { font-family: var(--font-display); font-size: 36px; font-style: italic; color: var(--ink); margin-bottom: 8px; }
+.label-sub { font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 24px; }
+</style>
+</head>
+<body>
+
+<div class="mobile-stage">
+
+  <!-- 上下文说明 -->
+  <div style="max-width: 420px; padding: 20px;">
+    <div class="label-stage">移动端 <em style="color: var(--ink-green);">补充</em></div>
+    <div class="label-sub">2 屏 · 我的填报 + 商机 Review 精简版</div>
+    <p style="font-family: var(--font-cn); font-size: 13px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 20px;">
+      你的 V4 业绩周报 (移动端) 已经覆盖了董事长 + 区总的<b style="color: var(--ink);">查看</b>需求。这里补两个移动端"<b style="color: var(--ink);">填报+操作</b>"屏：
+    </p>
+
+    <div style="background: var(--bg-paper); padding: 14px 18px; border-radius: var(--r-md); margin-bottom: 20px;">
+      <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;">屏 1 · 我的填报中心</div>
+      <p style="font-family: var(--font-cn); font-size: 12px; color: var(--ink-soft); line-height: 1.6;">销售/商务/售前周五在手机上扫一眼有几项要填，点进去快速填完，不用打开 PC。<br>核心：<b style="color: var(--ink);">截止时间 + 待办列表 + 一点就填</b>。</p>
+    </div>
+
+    <div style="background: var(--bg-paper); padding: 14px 18px; border-radius: var(--r-md);">
+      <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;">屏 2 · 商机 Review 精简版</div>
+      <p style="font-family: var(--font-cn); font-size: 12px; color: var(--ink-soft); line-height: 1.6;">PC 端的商机 Review 表搬到手机：精简到核心 5 字段（4 投标/签单/付款/风险 + <b>是否签单首付款</b> 开关）+ 月度滚动预测 3 月格。</p>
+    </div>
+  </div>
+
+  <!-- 屏 1: 我的填报 -->
+  <div class="device">
+    <div class="device-screen">
+      <div class="island"></div>
+      <div class="status-bar">
+        <span>14:28</span>
+        <span style="font-family: var(--font-mono); font-size: 13px;">●●● 5G ●●●●</span>
+      </div>
+      <div class="app-nav">
+        <div class="nav-row">
+          <button class="nav-btn">←</button>
+          <div class="app-title">
+            <div class="main">我的填报</div>
+            <div class="sub">W18 · 王正 · 销售</div>
+          </div>
+          <button class="nav-btn">⋯</button>
+        </div>
+      </div>
+
+      <div class="app-main">
+        <!-- 截止 banner -->
+        <div class="deadline-card">
+          <div class="icon">⏰</div>
+          <div class="text">
+            <div class="t1"><b style="color: var(--amber);">2 天 03 小时</b> 截止</div>
+            <div class="t2">5/8 (周五) 17:00 · 还差 2 项</div>
+          </div>
+        </div>
+
+        <!-- 今日待办 -->
+        <div class="todo-section">
+          <div class="section-title">⚠ 紧急 · 待填 <span class="count">2 项</span></div>
+
+          <div class="task-card urgent">
+            <div class="r1">
+              <span class="name">山东工商银行薪酬升级</span>
+              <span class="amt">280<span class="cn">万</span></span>
+            </div>
+            <div class="r2">
+              <span>S3-方案 · 山东</span>
+              <span style="color: var(--crimson);">月度预测·签单 待填</span>
+            </div>
+            <div class="progress" title="bid/sign/pay/risk/首付款">
+              <span class="pdot empty"></span>
+              <span class="pdot empty"></span>
+              <span class="pdot empty"></span>
+              <span class="pdot empty"></span>
+              <span class="pdot empty"></span>
+            </div>
+          </div>
+
+          <div class="task-card urgent">
+            <div class="r1">
+              <span class="name">中信集团总部 HCM 综合运维</span>
+              <span class="amt">2,800<span class="cn">万</span></span>
+            </div>
+            <div class="r2">
+              <span>中标未签单 · 央企</span>
+              <span style="color: var(--crimson);">月度预测·回款 待填</span>
+            </div>
+            <div class="progress">
+              <span class="pdot done"></span>
+              <span class="pdot done"></span>
+              <span class="pdot empty"></span>
+              <span class="pdot done"></span>
+              <span class="pdot empty"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 已完成 -->
+        <div class="todo-section">
+          <div class="section-title">✓ 已完成 <span class="count">3 项</span></div>
+
+          <div class="task-card normal" style="opacity: 0.7;">
+            <div class="r1">
+              <span class="name">山东出版集团一期 HCM</span>
+              <span class="amt">64<span class="cn">万</span></span>
+            </div>
+            <div class="r2">
+              <span>S4-投标 · 山东</span>
+              <span style="color: var(--ink-green);">5/3 已填</span>
+            </div>
+            <div class="progress">
+              <span class="pdot done"></span>
+              <span class="pdot done"></span>
+              <span class="pdot done"></span>
+              <span class="pdot done"></span>
+              <span class="pdot done"></span>
+            </div>
+          </div>
+
+          <div class="task-card normal" style="opacity: 0.7;">
+            <div class="r1">
+              <span class="name">青岛海尔 HCM 升级</span>
+              <span class="amt">92<span class="cn">万</span></span>
+            </div>
+            <div class="r2">
+              <span>S4-投标 · 山东</span>
+              <span style="color: var(--ink-green);">5/3 已填</span>
+            </div>
+          </div>
+
+          <div class="task-card normal" style="opacity: 0.7;">
+            <div class="r1">
+              <span class="name">中信和业 HCM 服务续约</span>
+              <span class="amt">92<span class="cn">万</span></span>
+            </div>
+            <div class="r2">
+              <span>已签单 · 央企</span>
+              <span style="color: var(--ink-green);">5/2 已填</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-bar">
+        <div class="t">业绩</div>
+        <div class="t">商机</div>
+        <div class="t active">我的填报</div>
+        <div class="t">投标</div>
+        <div class="t">我的</div>
+      </div>
+
+      <div class="fab">+</div>
+    </div>
+  </div>
+
+  <!-- 屏 2: 商机 Review 精简版（bottom sheet 已展开） -->
+  <div class="device">
+    <div class="device-screen">
+      <div class="island"></div>
+      <div class="status-bar">
+        <span>14:32</span>
+        <span style="font-family: var(--font-mono); font-size: 13px;">●●● 5G ●●●●</span>
+      </div>
+      <div class="app-nav">
+        <div class="nav-row">
+          <button class="nav-btn">←</button>
+          <div class="app-title">
+            <div class="main">商机 Review</div>
+            <div class="sub">W18 · 山东出版集团一期</div>
+          </div>
+          <button class="nav-btn">✕</button>
+        </div>
+      </div>
+
+      <div class="app-main">
+        <!-- 商机基础信息 -->
+        <div style="padding: 12px 14px; background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); margin-bottom: 14px;">
+          <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">OPP-2026-0234 · S4-投标</div>
+          <div style="font-family: var(--font-display); font-size: 19px; line-height: 1.2; margin: 6px 0; font-weight: 400;">山东出版集团一期 HCM</div>
+          <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+            <span style="font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft);">山东 · 销售 王正</span>
+            <span style="font-family: var(--font-display); font-size: 22px; font-style: italic; color: var(--ink-green);">¥ 64 <span style="font-size: 11px; color: var(--ink-mute); font-family: var(--font-cn);">万</span></span>
+          </div>
+        </div>
+
+        <!-- 月度滚动 3 月 -->
+        <div class="field-block">
+          <div class="lbl">月度滚动预测 (主推月 ⭐)</div>
+          <div class="month-mini-grid">
+            <div class="month-mini">
+              <div class="m">4</div>
+              <div class="s">—</div>
+            </div>
+            <div class="month-mini primary">
+              <div class="m">⭐ 5</div>
+              <div class="s">承诺 · 64</div>
+            </div>
+            <div class="month-mini">
+              <div class="m">6</div>
+              <div class="s">—</div>
+            </div>
+          </div>
+          <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 6px;">点格切换主推月 · 季度自动派生</div>
+        </div>
+
+        <!-- 是否签单首付款 (Q6 关键) -->
+        <div class="toggle-card">
+          <div class="text">
+            <div class="t1">是否已收签单首付款？</div>
+            <div class="t2">⭐ 决定项目 Review 自动补录</div>
+          </div>
+          <div class="switch-mini"></div>
+        </div>
+
+        <!-- 4 个 Review 字段（精简） -->
+        <div class="field-block">
+          <div class="lbl">① 投标进展</div>
+          <textarea>4/28 投标已交 · 5/2 客户内部复盘 · 5/7 出结果</textarea>
+        </div>
+
+        <div class="field-block">
+          <div class="lbl">② 签单进展</div>
+          <textarea>5/15 前签约 · 用印 5/12</textarea>
+        </div>
+
+        <div class="field-block">
+          <div class="lbl">③ 付款进展</div>
+          <textarea>30 天内首付款 19.2 万 · 6 月底完成</textarea>
+        </div>
+
+        <div class="field-block">
+          <div class="lbl">④ 风险与对策（4-6 字浓缩）</div>
+          <input value="金额劣势">
+          <textarea style="margin-top: 6px;">价格比北森高 7 分 · 通过陈飞高级实施背书拉回议价</textarea>
+        </div>
+
+        <div class="actions">
+          <button class="btn-mobile">取消</button>
+          <button class="btn-mobile primary">完成 Review</button>
+        </div>
+      </div>
+
+      <div class="tab-bar">
+        <div class="t">业绩</div>
+        <div class="t active">商机</div>
+        <div class="t">我的填报</div>
+        <div class="t">投标</div>
+        <div class="t">我的</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+if (new URLSearchParams(location.search).get('embedded') === '1') {
+  document.body.style.background = 'var(--bg-stage)';
+}
+</script>
+</body>
+</html>

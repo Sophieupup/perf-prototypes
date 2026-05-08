@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><title>4.2 签单明细导入</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.upload-zone { background: var(--bg-card); border: 2px dashed var(--line-strong); border-radius: var(--r-lg); padding: 40px; text-align: center; margin-bottom: 18px; }
+.upload-zone .icon { font-family: var(--font-display); font-size: 48px; color: var(--ink-mute); }
+.upload-zone .title { font-family: var(--font-cn); font-size: 18px; margin: 8px 0 4px; }
+.upload-zone .desc { font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); margin-bottom: 16px; }
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+.import-status { display: inline-flex; padding: 2px 8px; border-radius: 3px; font-family: var(--font-mono); font-size: 9px; font-weight: 500; }
+.import-status.success { background: var(--ink-green-soft); color: var(--ink-green); }
+.import-status.partial { background: var(--amber-soft); color: var(--amber); }
+</style></head><body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">业绩 <em>运营</em></div>
+    <div class="brand-sub">PERFORMANCE OPS · v6</div>
+    <div class="nav-section">4 数据导入与维护</div>
+    <a class="nav-item active">4.1 签单明细导入</a>
+    <a class="nav-item">4.2 回款明细导入</a>
+    <a class="nav-item">4.3 项目明细导入</a>
+    <a class="nav-item">4.4 里程碑导入</a>
+    <a class="nav-item">4.5 项目对应表</a>
+    <a class="nav-item">4.6 指标与预测模型设置</a>
+    <a class="nav-item">4.7 区域划分与权限控制</a>
+  </aside>
+
+  <main class="main">
+    <div class="crumb">数据导入与维护 <span class="sep">/</span> 签单明细导入</div>
+    <h1 class="page-title">4.2 签单明细 <em>导入</em></h1>
+    <div class="page-meta">2026 签单流水 · 28 字段（合同编号/归档号/客户/产品线/MU/签单额/净签单 等）· OMS API 主导</div>
+
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="label">YTD 签单流水</div><div class="value">62 条</div><div class="delta">¥ 4,360 万</div></div>
+      <div class="kpi-card good"><div class="label">最近同步</div><div class="value">5/6 18:00</div><div class="delta">+1 / +¥ 27 万 · 0.8s</div></div>
+      <div class="kpi-card"><div class="label">同步成功率</div><div class="value">99.2<span class="unit">%</span></div><div class="delta">最近 30 天</div></div>
+      <div class="kpi-card warn"><div class="label">无归属合同</div><div class="value">8</div><div class="delta">→ 走 4.4 项目对应表补</div></div>
+    </div>
+
+    <div class="upload-zone">
+      <div class="icon">⬆</div>
+      <div class="title">OMS API 自动 + Excel 离线备用</div>
+      <div class="desc">主用 API · Excel 仅作 OMS 不可用时备份 · 28 字段 · 主键 合同编号</div>
+      <button class="btn primary">📥 OMS API 立即同步</button>
+      <button class="btn">📤 上传 Excel 备份</button>
+      <button class="btn">📋 下载模板</button>
+    </div>
+
+    <h3 style="font-family: var(--font-display); font-size: 22px; margin: 20px 0 12px;">最近 7 次同步</h3>
+    <table class="data-table">
+      <thead><tr><th>时间</th><th>状态</th><th class="num">新增</th><th class="num">修改</th><th class="num">总流水</th><th>用时</th><th>触发</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">5/6 18:00</td><td><span class="import-status success">success</span></td><td class="num">+1</td><td class="num">3</td><td class="num">62</td><td>0.8s</td><td>auto</td></tr>
+        <tr><td class="mono">5/5 18:00</td><td><span class="import-status success">success</span></td><td class="num">0</td><td class="num">2</td><td class="num">61</td><td>0.6s</td><td>auto</td></tr>
+        <tr><td class="mono">5/3 18:00</td><td><span class="import-status success">success</span></td><td class="num">+2</td><td class="num">1</td><td class="num">61</td><td>0.9s</td><td>auto</td></tr>
+        <tr><td class="mono">5/2 18:00</td><td><span class="import-status success">success</span></td><td class="num">+1</td><td class="num">0</td><td class="num">59</td><td>0.7s</td><td>auto</td></tr>
+        <tr><td class="mono">5/1 00:00</td><td><span class="import-status success">success</span></td><td class="num">0</td><td class="num">0</td><td class="num">58</td><td>0.5s</td><td>月初快照</td></tr>
+        <tr><td class="mono">4/30 18:00</td><td><span class="import-status success">success</span></td><td class="num">+3</td><td class="num">2</td><td class="num">58</td><td>1.1s</td><td>auto</td></tr>
+        <tr><td class="mono">4/30 14:22</td><td><span class="import-status partial">⚠ 8 无归属</span></td><td class="num">+8</td><td class="num">0</td><td class="num">55</td><td>3.2s</td><td>黄诗览</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-family: var(--font-display); font-size: 22px; margin: 20px 0 12px;">28 字段示意（部分）</h3>
+    <div style="background: var(--bg-paper); border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px 18px; font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft); line-height: 1.8;">
+      合同编号（主键）/ 合同归档号 / 合同名称 / 签单日期 / 签单额（万）/ 净签单（万，扣代理分成）/ 客户名称 / 归档年月日 / 合同状态 /
+      BU 一级 / BU 二级 / MU 一级 / MU 二级 / 渠道 / 产品 / 合同类型 / 产品线 / 回款状态 / 客户经理 / 代理商 / 代理分成额 / 外包类型 / 外包金额 / ITS转出额 ...
+    </div>
+  </main>
+</div>
+<script>if (new URLSearchParams(location.search).get('embedded') === '1') { document.querySelector('.sidebar').style.display = 'none'; document.querySelector('.app').style.gridTemplateColumns = '1fr'; }</script>
+</body></html>

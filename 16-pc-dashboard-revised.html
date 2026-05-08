@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>PC 经营驾驶舱 · 方案二 + v3 修订</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.dash { padding: 18px 24px; max-width: 1700px; }
+.dash-header { display: flex; align-items: baseline; justify-content: space-between; padding-bottom: 14px; border-bottom: 2px solid var(--ink); margin-bottom: 16px; }
+.dash-header h1 { font-family: var(--font-display); font-size: 36px; font-weight: 400; line-height: 1; letter-spacing: -0.02em; }
+.dash-header h1 em { font-style: italic; color: var(--ink-green); }
+.dash-meta { font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); }
+.dash-meta strong { color: var(--ink-green); font-family: var(--font-display); font-size: 14px; font-weight: 400; font-style: italic; }
+.dash-meta .live { display: inline-block; width: 6px; height: 6px; background: var(--ink-green); border-radius: 50%; margin-right: 4px; vertical-align: 1px; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+.dash-row { display: grid; gap: 12px; margin-bottom: 12px; }
+.dash-row.r1 { grid-template-columns: repeat(4, 1fr); }
+.dash-row.r2 { grid-template-columns: 1.4fr 1fr 1.2fr; }
+.dash-row.r3 { grid-template-columns: 1fr 1fr; }
+.dash-row.r4 { grid-template-columns: 1.5fr 1fr 1fr; }
+
+.module { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px 16px; box-shadow: var(--shadow-card); }
+.module .head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.module .head h3 { font-family: var(--font-cn); font-size: 13px; font-weight: 500; color: var(--ink); letter-spacing: 0.04em; }
+.module .head .sub { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase; }
+.module.new-v3 { border: 2px solid var(--ink-green); }
+.module.new-v3 .head h3 { color: var(--ink-green); }
+.module.new-v3 .head h3::before { content: "⭐ "; }
+
+/* KPI 4 联墙 */
+.kpi-wall { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line-mid); border-radius: var(--r-md); overflow: hidden; }
+.kpi-cell { background: var(--bg-card); padding: 14px 16px; }
+.kpi-cell .label { font-family: var(--font-cn); font-size: 11px; color: var(--ink-soft); margin-bottom: 6px; }
+.kpi-cell .nums { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
+.kpi-cell .actual { font-family: var(--font-display); font-size: 30px; font-weight: 400; line-height: 1; letter-spacing: -0.02em; }
+.kpi-cell .target { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); }
+.kpi-cell .pct-row { display: flex; justify-content: space-between; align-items: center; }
+.kpi-cell .pct { font-family: var(--font-display); font-size: 22px; line-height: 1; font-style: italic; }
+.kpi-cell .predict { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); }
+.kpi-cell.bad .pct { color: var(--crimson); }
+.kpi-cell.warn .pct { color: var(--amber); }
+.kpi-cell.good .pct { color: var(--ink-green); }
+.kpi-cell .trend { display: flex; align-items: flex-end; gap: 2px; height: 26px; margin-top: 8px; }
+.kpi-cell .bar { flex: 1; background: var(--line-mid); border-radius: 1px; }
+.kpi-cell .bar.good { background: var(--ink-green); }
+.kpi-cell .bar.warn { background: var(--amber); }
+.kpi-cell .bar.bad { background: var(--crimson); }
+
+/* Region matrix */
+.region-mtx { width: 100%; font-family: var(--font-mono); font-size: 10px; }
+.region-mtx th { padding: 6px 8px; background: var(--bg-card-quiet); color: var(--ink-mute); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; text-align: right; border-bottom: 1px solid var(--line-mid); font-size: 9px; }
+.region-mtx th.left { text-align: left; }
+.region-mtx td { padding: 6px 8px; border-bottom: 1px solid var(--line); text-align: right; }
+.region-mtx td.left { text-align: left; font-family: var(--font-cn); font-size: 12px; color: var(--ink); }
+.region-mtx tr:last-child td { border-bottom: none; }
+.region-mtx .pct.good { color: var(--ink-green); font-weight: 600; }
+.region-mtx .pct.warn { color: var(--amber); font-weight: 600; }
+.region-mtx .pct.bad { color: var(--crimson); font-weight: 600; }
+.region-mtx .score { font-family: var(--font-display); font-style: italic; font-size: 13px; }
+
+/* Variance items */
+.var-item { display: grid; grid-template-columns: 14px 1fr auto auto; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+.var-item:last-child { border-bottom: none; }
+.var-item .icon { font-family: var(--font-mono); font-weight: 700; }
+.var-item .icon.down { color: var(--crimson); }
+.var-item .icon.up { color: var(--ink-green); }
+.var-item .icon.plus { color: var(--blue); }
+.var-item .name { font-family: var(--font-cn); font-size: 12px; }
+.var-item .reason { font-family: var(--font-cn); font-size: 10px; color: var(--ink-mute); margin-top: 1px; }
+.var-item .amt { font-family: var(--font-mono); font-size: 11px; font-weight: 600; }
+.var-item .amt.down { color: var(--crimson); }
+.var-item .amt.up { color: var(--ink-green); }
+.var-item .amt.plus { color: var(--blue); }
+.var-item .trans { font-family: var(--font-mono); font-size: 9px; }
+
+/* Top alerts */
+.alert-row { display: grid; grid-template-columns: 16px 1fr auto; gap: 6px; padding: 7px 0; border-bottom: 1px solid var(--line); align-items: center; }
+.alert-row .icon-c { color: var(--crimson); font-size: 11px; }
+.alert-row .name { font-family: var(--font-cn); font-size: 12px; }
+.alert-row .desc { font-family: var(--font-cn); font-size: 10px; color: var(--ink-mute); margin-top: 2px; }
+.alert-row .badge { font-family: var(--font-mono); font-size: 9px; padding: 1px 6px; border-radius: 3px; background: var(--crimson-soft); color: var(--crimson); font-weight: 600; }
+
+/* Bid stats 4 grid */
+.bid-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.bid-cell { padding: 8px 4px; background: var(--bg-card-quiet); border-radius: 5px; text-align: center; border: 1px solid var(--line); }
+.bid-cell .v { font-family: var(--font-display); font-size: 22px; font-weight: 400; line-height: 1; }
+.bid-cell .v.win-c { color: var(--ink-green); }
+.bid-cell .v.wait-c { color: var(--amber); }
+.bid-cell .v.plan-c { color: var(--blue); }
+.bid-cell .v.lose-c { color: var(--crimson); }
+.bid-cell .lbl { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); text-transform: uppercase; margin-top: 4px; }
+.bid-cell .amt { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px; }
+
+/* Pipeline */
+.pipe-row { display: grid; grid-template-columns: 50px 1fr 80px; gap: 8px; align-items: center; margin-bottom: 5px; font-size: 11px; }
+.pipe-row .label { font-family: var(--font-mono); font-weight: 600; color: var(--ink-green); background: var(--ink-green-soft); padding: 2px 0; border-radius: 2px; text-align: center; }
+.pipe-row .bar-wrap { height: 18px; background: var(--ink-green); border-radius: 2px; position: relative; }
+.pipe-row .bar-label { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); color: #faf8f3; font-family: var(--font-cn); font-size: 11px; }
+.pipe-row .amt { text-align: right; font-family: var(--font-mono); font-size: 10px; color: var(--ink-soft); }
+.pipe-row .amt strong { color: var(--ink); }
+
+/* New v3 modules */
+.review-progress-list { padding: 6px 0; }
+.review-progress-row { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+.review-progress-row:last-child { border-bottom: none; }
+.review-progress-row .name { font-family: var(--font-cn); font-size: 12px; }
+.review-progress-row .pct { font-family: var(--font-display); font-size: 14px; font-style: italic; }
+.review-progress-row .pct.good { color: var(--ink-green); }
+.review-progress-row .pct.warn { color: var(--amber); }
+.review-progress-row .pct.bad { color: var(--crimson); }
+
+.auto-import-stat { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: var(--blue-soft); border-radius: 5px; margin-bottom: 10px; }
+.auto-import-stat .ic { font-size: 20px; }
+.auto-import-stat .text { flex: 1; font-family: var(--font-cn); font-size: 12px; color: var(--ink); }
+.auto-import-stat .text strong { color: var(--blue); font-family: var(--font-display); font-style: italic; font-size: 16px; }
+.auto-import-stat .text .sub { font-size: 10px; color: var(--ink-mute); margin-top: 2px; font-family: var(--font-mono); }
+
+/* Region rank for presales */
+.pre-rank { padding: 4px 0; }
+.pre-rank-row { display: grid; grid-template-columns: 16px 1fr 30px 30px; gap: 8px; padding: 4px 0; align-items: center; font-size: 11px; }
+.pre-rank-row .rank { font-family: var(--font-mono); font-size: 9px; color: var(--ink-faint); text-align: center; }
+.pre-rank-row .name { font-family: var(--font-cn); }
+.pre-rank-row .ytd { text-align: right; font-family: var(--font-mono); font-weight: 500; }
+.pre-rank-row .week { text-align: right; font-family: var(--font-mono); color: var(--ink-mute); font-size: 10px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">业绩 <em>运营</em></div>
+    <div class="brand-sub">PERFORMANCE OPS</div>
+    <div class="nav-section">看板</div>
+    <a class="nav-item active">PC 驾驶舱（v3 修订）</a>
+    <a class="nav-item">区域业绩</a>
+    <a class="nav-item">📊 数据流转图</a>
+    <div class="nav-section">明细报表</div>
+    <a class="nav-item">5 张明细</a>
+    <div class="nav-section">数据维护</div>
+    <a class="nav-item">商机管理</a>
+    <a class="nav-item">商机 Review</a>
+    <a class="nav-item">项目 Review</a>
+    <a class="nav-item">投标管理</a>
+    <a class="nav-item">月度预测·签单</a>
+    <a class="nav-item">月度预测·回款</a>
+    <a class="nav-item">售前活动登记</a>
+    <div class="nav-section">导入 / 配置</div>
+    <a class="nav-item">数据导入中心</a>
+    <a class="nav-item">指标配置</a>
+  </aside>
+
+  <main class="main" style="padding: 0;">
+    <div class="dash">
+
+      <!-- Dashboard header -->
+      <div class="dash-header">
+        <div>
+          <h1>经营 <em>驾驶舱</em> · v3 修订</h1>
+          <div style="font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); margin-top: 4px;">基于你的方案二（8 模块）+ v3 新增 4 模块（自动补录 / Review 进度 / 商机水库下钻 / 数据流转入口）</div>
+        </div>
+        <div class="dash-meta">
+          <span class="live"></span> <strong>W18 · 5/6 18:02</strong> 最近 freeze · 综合评分 <strong>0.8348</strong>
+        </div>
+      </div>
+
+      <!-- Row 1: KPI 4 联墙 -->
+      <div class="dash-row r1">
+        <div class="kpi-cell bad">
+          <div class="label">签单 YTD · SIGNED</div>
+          <div class="nums">
+            <span class="actual">¥ 4,360</span>
+            <span class="target">/ 7,140 万</span>
+          </div>
+          <div class="pct-row">
+            <span class="pct">61%</span>
+            <span class="predict">预测 71%</span>
+          </div>
+          <div class="trend">
+            <div class="bar" style="height: 30%;"></div>
+            <div class="bar bad" style="height: 35%;"></div>
+            <div class="bar bad" style="height: 28%;"></div>
+            <div class="bar bad" style="height: 38%;"></div>
+            <div class="bar bad" style="height: 32%;"></div>
+            <div class="bar warn" style="height: 45%;"></div>
+            <div class="bar warn" style="height: 50%;"></div>
+          </div>
+        </div>
+        <div class="kpi-cell good">
+          <div class="label">收入 YTD · REVENUE</div>
+          <div class="nums">
+            <span class="actual">¥ 4,010</span>
+            <span class="target">/ 4,080 万</span>
+          </div>
+          <div class="pct-row">
+            <span class="pct">98%</span>
+            <span class="predict">预测 106%</span>
+          </div>
+          <div class="trend">
+            <div class="bar good" style="height: 60%;"></div>
+            <div class="bar good" style="height: 70%;"></div>
+            <div class="bar good" style="height: 80%;"></div>
+            <div class="bar good" style="height: 75%;"></div>
+            <div class="bar good" style="height: 88%;"></div>
+            <div class="bar good" style="height: 92%;"></div>
+            <div class="bar good" style="height: 100%;"></div>
+          </div>
+        </div>
+        <div class="kpi-cell warn">
+          <div class="label">毛利 YTD · PROFIT</div>
+          <div class="nums">
+            <span class="actual">¥ 2,424</span>
+            <span class="target">/ 3,120 万</span>
+          </div>
+          <div class="pct-row">
+            <span class="pct">78%</span>
+            <span class="predict">预测 85%</span>
+          </div>
+          <div class="trend">
+            <div class="bar warn" style="height: 50%;"></div>
+            <div class="bar warn" style="height: 55%;"></div>
+            <div class="bar warn" style="height: 65%;"></div>
+            <div class="bar warn" style="height: 60%;"></div>
+            <div class="bar warn" style="height: 72%;"></div>
+            <div class="bar warn" style="height: 78%;"></div>
+            <div class="bar warn" style="height: 80%;"></div>
+          </div>
+        </div>
+        <div class="kpi-cell good">
+          <div class="label">综合评分 · OVERALL</div>
+          <div class="nums">
+            <span class="actual">0.8348</span>
+            <span class="target">/ 1.0</span>
+          </div>
+          <div class="pct-row">
+            <span class="pct" style="font-size: 16px; font-style: normal; font-family: var(--font-mono);">+0.0021</span>
+            <span class="predict">vs W17</span>
+          </div>
+          <div class="trend">
+            <div class="bar good" style="height: 70%;"></div>
+            <div class="bar good" style="height: 72%;"></div>
+            <div class="bar good" style="height: 75%;"></div>
+            <div class="bar good" style="height: 80%;"></div>
+            <div class="bar good" style="height: 78%;"></div>
+            <div class="bar good" style="height: 82%;"></div>
+            <div class="bar good" style="height: 84%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: 区域矩阵 / 风险告警 / 计划变动 -->
+      <div class="dash-row r2">
+
+        <div class="module">
+          <div class="head">
+            <h3>区域达成 · 7 大区</h3>
+            <span class="sub">REGIONAL MATRIX · 5 cols</span>
+          </div>
+          <table class="region-mtx">
+            <thead>
+              <tr>
+                <th class="left">区域</th>
+                <th>签单 %</th>
+                <th>收入 %</th>
+                <th>毛利 %</th>
+                <th>综合</th>
+                <th>同比</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td class="left">央企</td><td><span class="pct good">79%</span></td><td><span class="pct good">96%</span></td><td><span class="pct good">86%</span></td><td><span class="score">0.91</span></td><td><span class="pct good">+12%</span></td></tr>
+              <tr><td class="left">广东</td><td><span class="pct bad">30%</span></td><td><span class="pct good">94%</span></td><td><span class="pct warn">75%</span></td><td><span class="score" style="color: var(--crimson);">0.62</span></td><td><span class="pct bad">-8%</span></td></tr>
+              <tr><td class="left">山东</td><td><span class="pct warn">72%</span></td><td><span class="pct good">92%</span></td><td><span class="pct warn">76%</span></td><td><span class="score">0.78</span></td><td><span class="pct good">+5%</span></td></tr>
+              <tr><td class="left">华东</td><td><span class="pct warn">69%</span></td><td><span class="pct good">95%</span></td><td><span class="pct warn">76%</span></td><td><span class="score">0.82</span></td><td><span class="pct good">+3%</span></td></tr>
+              <tr><td class="left">华北</td><td><span class="pct warn">60%</span></td><td><span class="pct good">98%</span></td><td><span class="pct good">85%</span></td><td><span class="score">0.91</span></td><td><span class="pct">0%</span></td></tr>
+              <tr><td class="left">西部</td><td><span class="pct bad">33%</span></td><td><span class="pct good">88%</span></td><td><span class="pct warn">76%</span></td><td><span class="score" style="color: var(--amber);">0.68</span></td><td><span class="pct bad">-15%</span></td></tr>
+              <tr><td class="left">服务</td><td><span class="pct warn">29%</span></td><td><span class="pct good">96%</span></td><td><span class="pct good">93%</span></td><td><span class="score">0.95</span></td><td><span class="pct good">+8%</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="module">
+          <div class="head">
+            <h3>⚠ 风险 Top 5</h3>
+            <span class="sub">RISK ALERTS</span>
+          </div>
+          <div class="alert-row">
+            <span class="icon-c">⚠</span>
+            <div>
+              <div class="name">贵州磷化 HCM 投标</div>
+              <div class="desc">客户倾向用友 · 博弈中</div>
+            </div>
+            <span class="badge">¥418</span>
+          </div>
+          <div class="alert-row">
+            <span class="icon-c">⚠</span>
+            <div>
+              <div class="name">湖北宏泰 投标</div>
+              <div class="desc">价格 vs 北森持平</div>
+            </div>
+            <span class="badge">¥150</span>
+          </div>
+          <div class="alert-row">
+            <span class="icon-c">⚠</span>
+            <div>
+              <div class="name">安徽昊源 ERP 终验</div>
+              <div class="desc">已矫正 2 次 · 风险</div>
+            </div>
+            <span class="badge">¥68</span>
+          </div>
+          <div class="alert-row">
+            <span class="icon-c">⚠</span>
+            <div>
+              <div class="name">中电信 AI 科技 回款</div>
+              <div class="desc">预算未到位 · 延期</div>
+            </div>
+            <span class="badge">¥32</span>
+          </div>
+          <div class="alert-row">
+            <span class="icon-c">⚠</span>
+            <div>
+              <div class="name">珠海水控 HCM 签单</div>
+              <div class="desc">数科流程慢 · 已延期</div>
+            </div>
+            <span class="badge">¥153</span>
+          </div>
+        </div>
+
+        <div class="module">
+          <div class="head">
+            <h3>计划变动 · 本周</h3>
+            <span class="sub">VARIANCE BY PROJECT</span>
+          </div>
+          <div class="var-item">
+            <span class="icon down">▼</span>
+            <div>
+              <div class="name">珠江城市服务</div>
+              <div class="reason">金额协商中</div>
+            </div>
+            <span class="amt down">−80</span>
+            <span class="trans"><span class="pill commit">承</span>→<span class="pill struggle">争</span></span>
+          </div>
+          <div class="var-item">
+            <span class="icon down">▼</span>
+            <div>
+              <div class="name">泰胜风能</div>
+              <div class="reason">报价未敲定</div>
+            </div>
+            <span class="amt down">−50</span>
+            <span class="trans"><span class="pill commit">承</span>→<span class="pill struggle">争</span></span>
+          </div>
+          <div class="var-item">
+            <span class="icon up">▲</span>
+            <div>
+              <div class="name">有研信创迁移</div>
+              <div class="reason">合同流程启动</div>
+            </div>
+            <span class="amt up">+22</span>
+            <span class="trans"><span class="pill struggle">争</span>→<span class="pill commit">承</span></span>
+          </div>
+          <div class="var-item">
+            <span class="icon up">▲</span>
+            <div>
+              <div class="name">中建八局海外</div>
+              <div class="reason">客户已确认</div>
+            </div>
+            <span class="amt up">+21</span>
+            <span class="trans"><span class="pill struggle">争</span>→<span class="pill commit">承</span></span>
+          </div>
+          <div class="var-item">
+            <span class="icon plus">+</span>
+            <div>
+              <div class="name">山东出版</div>
+              <div class="reason">4月可争取</div>
+            </div>
+            <span class="amt plus">+64</span>
+            <span class="trans"><span class="pill new">新</span>→<span class="pill struggle">争</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 3: 投标 + TOP 签单/回款 -->
+      <div class="dash-row r4">
+        <div class="module">
+          <div class="head">
+            <h3>投标推进 · 本月 18 项</h3>
+            <span class="sub">BIDDING PIPELINE</span>
+          </div>
+          <div class="bid-grid">
+            <div class="bid-cell">
+              <div class="v win-c">1</div>
+              <div class="lbl">中标</div>
+              <div class="amt">¥ 135</div>
+            </div>
+            <div class="bid-cell">
+              <div class="v wait-c">6</div>
+              <div class="lbl">等结果</div>
+              <div class="amt">¥ 1,004</div>
+            </div>
+            <div class="bid-cell">
+              <div class="v plan-c">10</div>
+              <div class="lbl">待投</div>
+              <div class="amt">¥ 1,709</div>
+            </div>
+            <div class="bid-cell">
+              <div class="v lose-c">1</div>
+              <div class="lbl">丢标</div>
+              <div class="amt">¥ 130</div>
+            </div>
+          </div>
+          <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--line);">已投 8/18 · 出率 50% · 中标率 17% (行业 30%)</div>
+        </div>
+
+        <div class="module">
+          <div class="head">
+            <h3>TOP 5 签单 · YTD</h3>
+            <span class="sub">TOP CONTRACTS</span>
+          </div>
+          <div style="font-family: var(--font-cn); font-size: 11px; line-height: 1.8;">
+            <div style="display: flex; justify-content: space-between;"><span>中信集团 HCM 综合运维续约</span><span style="font-family: var(--font-display); font-style: italic; color: var(--ink);">¥ 2,800</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>南方航空人力升级</span><span style="font-family: var(--font-display); font-style: italic; color: var(--ink);">¥ 680</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>中信华创信用 HCM</span><span style="font-family: var(--font-display); font-style: italic; color: var(--ink);">¥ 1,920</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>湖北宏泰 HCM</span><span style="font-family: var(--font-display); font-style: italic; color: var(--ink);">¥ 580</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>华夏银行薪酬模块</span><span style="font-family: var(--font-display); font-style: italic; color: var(--ink);">¥ 540</span></div>
+          </div>
+        </div>
+
+        <div class="module">
+          <div class="head">
+            <h3>TOP 5 回款 · 本月</h3>
+            <span class="sub">TOP COLLECTIONS</span>
+          </div>
+          <div style="font-family: var(--font-cn); font-size: 11px; line-height: 1.8;">
+            <div style="display: flex; justify-content: space-between;"><span>中信海洋直升机 4/15 到账</span><span style="font-family: var(--font-display); font-style: italic; color: var(--ink-green);">¥ 59</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>长城证券数智薪酬 4/10 到账</span><span style="font-family: var(--font-display); font-style: italic; color: var(--ink-green);">¥ 30</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>中信和业 HCM 服务</span><span style="font-family: var(--font-display); font-style: italic; color: var(--ink);">¥ 12</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>百果园数据中台 上线款</span><span style="font-family: var(--font-display); font-style: italic; color: var(--ink);">¥ 17</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>华夏银行薪酬模块 首付款</span><span style="font-family: var(--font-display); font-style: italic; color: var(--ink);">¥ 27</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 4: 商机水库 / ⭐ Review 进度 / 售前活动 -->
+      <div class="dash-row r4">
+        <div class="module">
+          <div class="head">
+            <h3>商机水库 · S1-S4 漏斗</h3>
+            <span class="sub">PIPELINE FUNNEL</span>
+          </div>
+          <div class="pipe-row"><span class="label">S1</span><div class="bar-wrap" style="opacity: 1;"><span class="bar-label">38</span></div><span class="amt"><strong>¥ 5,200</strong></span></div>
+          <div class="pipe-row"><span class="label">S2</span><div class="bar-wrap" style="width: 82%;"><span class="bar-label">29</span></div><span class="amt"><strong>¥ 4,800</strong></span></div>
+          <div class="pipe-row"><span class="label">S3</span><div class="bar-wrap" style="width: 65%;"><span class="bar-label">22</span></div><span class="amt"><strong>¥ 4,200</strong></span></div>
+          <div class="pipe-row"><span class="label">S4</span><div class="bar-wrap" style="width: 50%;"><span class="bar-label">18</span></div><span class="amt"><strong>¥ 2,978</strong></span></div>
+          <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--line); display: flex; justify-content: space-between;">
+            <span>本周新增 +5 / 转出 -2</span>
+            <span style="color: var(--ink-green);">总池 ¥ 23,400 万</span>
+          </div>
+        </div>
+
+        <!-- ⭐ v3 新增：商机/项目 Review 进度 -->
+        <div class="module new-v3">
+          <div class="head">
+            <h3>Review 进度</h3>
+            <span class="sub">v3 NEW · WEEKLY REVIEW</span>
+          </div>
+
+          <div class="review-progress-list">
+            <div class="review-progress-row">
+              <span class="name">商机 Review (W18)</span>
+              <span class="pct good">29 / 42</span>
+              <span class="pct" style="font-size: 12px; color: var(--amber);">69%</span>
+            </div>
+            <div class="review-progress-row">
+              <span class="name">项目 Review (W18)</span>
+              <span class="pct warn">23 / 28</span>
+              <span class="pct" style="font-size: 12px; color: var(--amber);">82%</span>
+            </div>
+            <div class="review-progress-row">
+              <span class="name">月度预测·签单</span>
+              <span class="pct good">38 / 42</span>
+              <span class="pct" style="font-size: 12px; color: var(--ink-green);">90%</span>
+            </div>
+            <div class="review-progress-row">
+              <span class="name">月度预测·回款</span>
+              <span class="pct">23 / 28</span>
+              <span class="pct" style="font-size: 12px; color: var(--amber);">82%</span>
+            </div>
+          </div>
+
+          <div class="auto-import-stat">
+            <span class="ic">⚙</span>
+            <div class="text">
+              <strong>+2</strong> 项目自动补录
+              <div class="sub">5/6 18:01 系统识别 · 待 PMO review</div>
+            </div>
+          </div>
+
+          <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); padding-top: 6px; border-top: 1px dashed var(--line);">
+            5/8 17:00 截止 · 还有 <b style="color: var(--amber);">2 天 03 小时</b>
+          </div>
+        </div>
+
+        <div class="module">
+          <div class="head">
+            <h3>售前活动 · 区域排名</h3>
+            <span class="sub">PRESALES BY REGION</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px dashed var(--line); text-align: center;">
+            <div>
+              <div style="font-family: var(--font-display); font-size: 24px; line-height: 1;">12</div>
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px; letter-spacing: 0.06em; text-transform: uppercase;">本周</div>
+            </div>
+            <div>
+              <div style="font-family: var(--font-display); font-size: 24px; line-height: 1; color: var(--ink-green);">187</div>
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px; letter-spacing: 0.06em; text-transform: uppercase;">YTD</div>
+            </div>
+            <div>
+              <div style="font-family: var(--font-display); font-size: 24px; line-height: 1;">28<span style="font-size: 14px;">%</span></div>
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px; letter-spacing: 0.06em; text-transform: uppercase;">商机转化</div>
+            </div>
+          </div>
+          <div class="pre-rank">
+            <div class="pre-rank-row"><span class="rank">1</span><span class="name">山东</span><span class="ytd">52</span><span class="week" style="color: var(--ink-green);">+5</span></div>
+            <div class="pre-rank-row"><span class="rank">2</span><span class="name">广东</span><span class="ytd">38</span><span class="week" style="color: var(--ink-green);">+3</span></div>
+            <div class="pre-rank-row"><span class="rank">3</span><span class="name">央企</span><span class="ytd">35</span><span class="week">0</span></div>
+            <div class="pre-rank-row"><span class="rank">4</span><span class="name">华北</span><span class="ytd">22</span><span class="week" style="color: var(--crimson);">-2</span></div>
+            <div class="pre-rank-row"><span class="rank">5</span><span class="name">华东</span><span class="ytd">18</span><span class="week">0</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 5: ⭐ v3 新增 -- 渠道伙伴 + 数据流转入口 + 综合评分趋势 -->
+      <div class="dash-row r4">
+        <div class="module new-v3">
+          <div class="head">
+            <h3>渠道伙伴 · Phase 1</h3>
+            <span class="sub">v3 NEW · PARTNER CHANNEL</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <div style="background: var(--bg-card-quiet); padding: 10px; border-radius: 5px; text-align: center;">
+              <div style="font-family: var(--font-display); font-size: 22px; color: var(--ink-green);">14</div>
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px;">渠道商机</div>
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute);">¥ 980 万 YTD</div>
+            </div>
+            <div style="background: var(--bg-card-quiet); padding: 10px; border-radius: 5px; text-align: center;">
+              <div style="font-family: var(--font-display); font-size: 22px;">23</div>
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px;">伙伴单位</div>
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute);">18 active</div>
+            </div>
+          </div>
+          <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--line);">渠道毛利率 68% (vs 直销 80%) · Phase 2 上完整 UI</div>
+        </div>
+
+        <div class="module new-v3">
+          <div class="head">
+            <h3>📸 快照 · 锁定状态</h3>
+            <span class="sub">v3 NEW · SNAPSHOT LOCK</span>
+          </div>
+          <div style="margin-bottom: 8px; padding: 8px 10px; background: var(--ink-green-soft); border-radius: 5px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-family: var(--font-cn); font-size: 12px; color: var(--ink);">周快照 · 锁定</div>
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px;">下次 5/8 (周五) 18:00</div>
+            </div>
+            <span style="font-family: var(--font-mono); font-size: 11px; color: var(--ink-green); font-weight: 600;">🔒</span>
+          </div>
+          <div style="margin-bottom: 8px; padding: 8px 10px; background: var(--amber-soft); border-radius: 5px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-family: var(--font-cn); font-size: 12px; color: var(--ink);">月快照 · 临时</div>
+              <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px;">5/30 18:00（提前 1 天）</div>
+            </div>
+            <span style="font-family: var(--font-mono); font-size: 11px; color: var(--amber); font-weight: 600;">🔓</span>
+          </div>
+          <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); padding-top: 6px; border-top: 1px dashed var(--line);">
+            <a style="color: var(--blue); cursor: pointer; text-decoration: underline;">→ 指标配置</a>
+          </div>
+        </div>
+
+        <div class="module new-v3">
+          <div class="head">
+            <h3>📊 数据流转 · 入口</h3>
+            <span class="sub">v3 NEW · DATA LINEAGE</span>
+          </div>
+          <p style="font-family: var(--font-cn); font-size: 11px; color: var(--ink-soft); margin-bottom: 10px; line-height: 1.6;">查看本系统所有数据"从哪来 / 怎么算 / 流到哪" · 6 层 · 18+ 数据节点</p>
+          <button class="btn primary" style="width: 100%;">→ 打开数据流转图</button>
+
+          <div style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); line-height: 1.6;">
+            最近：<b style="color: var(--ink);">5/6 18:00 success</b><br>
+            ① OMS 拉数 → ② 对账 → ③ 自动补录 → ④ freeze<br>
+            用时 4.2s · 全链路无错
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer note -->
+      <div style="margin-top: 18px; padding: 14px 18px; background: var(--bg-paper); border-radius: var(--r-md); border: 1px dashed var(--line-strong);">
+        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;">v3 修订 vs 你的方案二（既有 8 模块）</div>
+        <div style="font-family: var(--font-cn); font-size: 12px; color: var(--ink-soft); line-height: 1.7;">
+          <b style="color: var(--ink);">沿用你方案二 8 模块</b>：① KPI 4 联墙（加 + 综合评分）② 区域矩阵（加同比列）③ 风险 Top 5 ④ 计划变动 ⑤ 投标推进 ⑥ TOP 签单 + TOP 回款 ⑦ 商机水库 ⑧ 售前活动<br>
+          <b style="color: var(--ink-green);">⭐ v3 新增 4 模块</b>：⑨ Review 进度（商机+项目+月度预测）⑩ 渠道伙伴 ⑪ 快照锁定状态 ⑫ 数据流转入口
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+if (new URLSearchParams(location.search).get('embedded') === '1') {
+  const sb = document.querySelector('.sidebar'); if (sb) sb.style.display = 'none';
+  const app = document.querySelector('.app'); if (app) app.style.gridTemplateColumns = '1fr';
+}
+</script>
+</body>
+</html>

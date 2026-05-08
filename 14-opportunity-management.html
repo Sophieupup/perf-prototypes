@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>商机管理 · 主数据</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_shared.css">
+<style>
+.kpi-row { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; margin-bottom: 16px; }
+.stage-card { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 12px; box-shadow: var(--shadow-card); cursor: pointer; }
+.stage-card.active { background: var(--ink); color: #faf8f3; border-color: var(--ink); }
+.stage-card .name { font-family: var(--font-cn); font-size: 11px; color: var(--ink-soft); }
+.stage-card.active .name { color: var(--ink-faint); }
+.stage-card .num { font-family: var(--font-display); font-size: 22px; font-weight: 400; line-height: 1; }
+.stage-card .amt { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px; }
+.stage-card.active .amt { color: var(--ink-faint); }
+
+.split-2 { display: grid; grid-template-columns: 2.2fr 1fr; gap: 14px; }
+.detail-pane { background: var(--bg-paper); border: 1px solid var(--line); border-radius: var(--r-md); padding: 18px; height: fit-content; box-shadow: var(--shadow-card); }
+.detail-head { padding-bottom: 12px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+.detail-head .opp-no { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); }
+.detail-head h3 { font-family: var(--font-display); font-size: 22px; font-weight: 400; margin: 4px 0 4px; line-height: 1.15; }
+.detail-head .info { font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft); }
+
+.kv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; margin-bottom: 12px; }
+.kv { padding: 4px 0; }
+.kv .k { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.06em; text-transform: uppercase; }
+.kv .v { font-family: var(--font-cn); font-size: 12px; color: var(--ink); margin-top: 2px; }
+.kv .v.num { font-family: var(--font-display); font-size: 16px; }
+.kv .v input.cell, .kv .v select.cell, .kv .v textarea.cell { width: 100%; padding: 5px 8px; font-family: var(--font-cn); font-size: 12px; border: 1px solid var(--line-mid); border-radius: 4px; background: var(--bg-card); }
+
+.section-block { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 12px 14px; margin-bottom: 12px; }
+.section-block .title { font-family: var(--font-cn); font-size: 12px; font-weight: 600; margin-bottom: 8px; color: var(--ink); padding-bottom: 6px; border-bottom: 1px dashed var(--line); }
+
+.pipeline-bar { display: flex; gap: 2px; margin-bottom: 14px; }
+.pipeline-stage { flex: 1; padding: 8px 4px; background: var(--bg-card-quiet); border: 1px solid var(--line); text-align: center; font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); border-radius: 3px; }
+.pipeline-stage.active { background: var(--ink); color: #faf8f3; border-color: var(--ink); }
+.pipeline-stage.passed { background: var(--ink-green-soft); color: var(--ink-green); border-color: var(--ink-green-mid); }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">业绩 <em>运营</em></div>
+    <div class="brand-sub">PERFORMANCE OPS</div>
+    <div class="nav-section">看板</div>
+    <a class="nav-item">驾驶舱</a>
+    <a class="nav-item">区域业绩</a>
+    <div class="nav-section">明细报表</div>
+    <a class="nav-item">5 张明细</a>
+    <div class="nav-section">数据维护</div>
+    <a class="nav-item active">商机管理</a>
+    <a class="nav-item">商机 Review</a>
+    <a class="nav-item">项目 Review</a>
+    <a class="nav-item">投标管理</a>
+    <a class="nav-item">售前活动登记</a>
+    <a class="nav-item">月度预测·签单</a>
+    <a class="nav-item">月度预测·回款</a>
+    <div class="nav-section">导入 / 配置</div>
+    <a class="nav-item">数据导入中心</a>
+    <a class="nav-item">指标配置</a>
+  </aside>
+
+  <main class="main">
+    <div class="crumb">数据维护 <span class="sep">/</span> 商机管理</div>
+    <h1 class="page-title">商机 <em>管理</em></h1>
+    <div class="page-meta">商机主数据 · 37 字段（来自 hcmops 项目内置规格）· HCM API 同步 + 销售本地维护</div>
+
+    <!-- 8 商机阶段水库 -->
+    <div class="kpi-row">
+      <div class="stage-card"><div class="name">S1-发现</div><div class="num">38</div><div class="amt">¥ 5,200 万</div></div>
+      <div class="stage-card"><div class="name">S2-确认</div><div class="num">29</div><div class="amt">¥ 4,800 万</div></div>
+      <div class="stage-card"><div class="name">S3-方案</div><div class="num">22</div><div class="amt">¥ 4,200 万</div></div>
+      <div class="stage-card active"><div class="name">S4-投标</div><div class="num">18</div><div class="amt">¥ 2,978 万</div></div>
+      <div class="stage-card"><div class="name">中标未签单</div><div class="num">12</div><div class="amt">¥ 4,820 万</div></div>
+      <div class="stage-card"><div class="name">已签单</div><div class="num">62</div><div class="amt">¥ 4,360 万</div></div>
+      <div class="stage-card"><div class="name">丢标</div><div class="num">15</div><div class="amt">¥ 1,400 万</div></div>
+      <div class="stage-card"><div class="name">弃标</div><div class="num">8</div><div class="amt">¥ 600 万</div></div>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn primary">+ 新增商机</button>
+      <div class="group">区域 <select><option>全部</option><option>央企</option><option>广东</option><option>山东</option><option>华东</option><option>华北</option><option>西部</option><option>服务</option></select></div>
+      <div class="group">商机阶段 <select><option>S4-投标 (18)</option><option>S3-方案</option><option>中标未签单</option></select></div>
+      <div class="group">达成可能 <select><option>全部</option><option>承诺</option><option>争取</option><option>风险</option></select></div>
+      <div class="group">主推月 <select><option>全部</option><option>5 月</option><option>6 月</option></select></div>
+      <div class="group">渠道 <select><option>全部</option><option>直销</option><option>渠道</option></select></div>
+      <input class="search" placeholder="商机名/客户/编号 搜索...">
+    </div>
+
+    <div class="split-2">
+
+      <!-- 左：列表 -->
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width: 28px;">#</th>
+            <th>商机名称</th>
+            <th>客户</th>
+            <th>区域</th>
+            <th>销售/售前</th>
+            <th class="num">预计签单</th>
+            <th>主推月</th>
+            <th>归档达成</th>
+            <th>渠道</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background: var(--ink-green-soft);">
+            <td class="mono">1</td>
+            <td>
+              <div style="font-weight: 500;">山东出版集团一期 HCM</div>
+              <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">OPP-2026-0234</div>
+            </td>
+            <td>山东出版集团</td>
+            <td>山东</td>
+            <td>王正/陈飞</td>
+            <td class="num">¥ 64</td>
+            <td><span class="pill commit">5 月承诺</span></td>
+            <td><span class="pill struggle">争取</span></td>
+            <td><span class="pill stage">直销</span></td>
+          </tr>
+          <tr>
+            <td class="mono">2</td>
+            <td>
+              <div style="font-weight: 500;">贵州磷化（集团）人力资源</div>
+              <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">OPP-2025-0098</div>
+            </td>
+            <td>贵州磷化</td>
+            <td>西部</td>
+            <td>刘正/陈飞</td>
+            <td class="num">¥ 418</td>
+            <td><span class="pill struggle">5 月争取</span></td>
+            <td><span class="pill struggle">争取</span></td>
+            <td><span class="pill stage">直销</span></td>
+          </tr>
+          <tr>
+            <td class="mono">3</td>
+            <td>
+              <div style="font-weight: 500;">湖北宏泰 HCM</div>
+              <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">OPP-2025-0210</div>
+            </td>
+            <td>湖北宏泰</td>
+            <td>华东</td>
+            <td>李雷/周明</td>
+            <td class="num">¥ 580</td>
+            <td><span class="pill struggle">6 月争取</span></td>
+            <td><span class="pill struggle">争取</span></td>
+            <td><span class="pill stage">直销</span></td>
+          </tr>
+          <tr>
+            <td class="mono">4</td>
+            <td>
+              <div style="font-weight: 500;">百果园数据中台扩容</div>
+              <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">OPP-2026-0098</div>
+            </td>
+            <td>百果园</td>
+            <td>广东</td>
+            <td>王浩/李明</td>
+            <td class="num">¥ 17</td>
+            <td><span class="pill done">已达成</span></td>
+            <td><span class="pill done">已达成</span></td>
+            <td><span class="pill new">📡 渠道</span></td>
+          </tr>
+          <tr>
+            <td class="mono">5</td>
+            <td>
+              <div style="font-weight: 500;">山东工商银行薪酬升级</div>
+              <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute);">OPP-2026-0301</div>
+            </td>
+            <td>山东工商银行</td>
+            <td>山东</td>
+            <td>王正/陈飞</td>
+            <td class="num">¥ 280</td>
+            <td><span class="pill commit">5 月承诺</span></td>
+            <td><span class="pill commit">承诺</span></td>
+            <td><span class="pill stage">直销</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- 右：详情面板（37 字段全展示） -->
+      <div class="detail-pane">
+        <div class="detail-head">
+          <div class="opp-no">OPP-2026-0234 · 唯一编号</div>
+          <h3>山东出版集团一期 HCM</h3>
+          <div class="info">商机阶段 S4-投标 · 进行中 · 创建于 2026-04-15</div>
+          <!-- 阶段进度条 -->
+          <div class="pipeline-bar" style="margin-top: 10px;">
+            <div class="pipeline-stage passed">S1</div>
+            <div class="pipeline-stage passed">S2</div>
+            <div class="pipeline-stage passed">S3</div>
+            <div class="pipeline-stage active">S4</div>
+            <div class="pipeline-stage">中标</div>
+            <div class="pipeline-stage">已签</div>
+          </div>
+        </div>
+
+        <!-- 客户/团队 -->
+        <div class="section-block">
+          <div class="title">👥 团队 + 客户</div>
+          <div class="kv-grid">
+            <div class="kv"><div class="k">客户名称</div><div class="v">山东出版集团总部</div></div>
+            <div class="kv"><div class="k">HCM 区域</div><div class="v">山东</div></div>
+            <div class="kv"><div class="k">MU</div><div class="v">山东（自动）</div></div>
+            <div class="kv"><div class="k">售前</div><div class="v">陈飞</div></div>
+            <div class="kv"><div class="k">商务</div><div class="v">王正</div></div>
+            <div class="kv"><div class="k">区总</div><div class="v">张华</div></div>
+          </div>
+        </div>
+
+        <!-- 商机金额 -->
+        <div class="section-block">
+          <div class="title">💰 金额</div>
+          <div class="kv-grid">
+            <div class="kv"><div class="k">商机预算</div><div class="v num">¥ 80 万</div></div>
+            <div class="kv"><div class="k">预计签单</div><div class="v num">¥ 64 万</div></div>
+            <div class="kv"><div class="k">预计签单毛利 (×80%)</div><div class="v num" style="color: var(--ink-green);">¥ 51.2 万</div></div>
+            <div class="kv"><div class="k">实际签单</div><div class="v" style="color: var(--ink-mute);">—</div></div>
+          </div>
+        </div>
+
+        <!-- 时间节点 -->
+        <div class="section-block">
+          <div class="title">📅 时间节点</div>
+          <div class="kv-grid">
+            <div class="kv"><div class="k">预计投标时间</div><div class="v">2026-04-25</div></div>
+            <div class="kv"><div class="k">实际投标日期</div><div class="v">2026-04-28</div></div>
+            <div class="kv"><div class="k">预计签单日期</div><div class="v">2026-05-15</div></div>
+            <div class="kv"><div class="k">预计归档时间</div><div class="v">2026-05-20</div></div>
+            <div class="kv"><div class="k">归档达成可能</div><div class="v"><select class="cell"><option>承诺</option><option>争取</option><option>已达成</option></select></div></div>
+            <div class="kv"><div class="k">直接签约（免投标）</div><div class="v"><select class="cell"><option>否</option><option>是</option></select></div></div>
+          </div>
+        </div>
+
+        <!-- 首付款 -->
+        <div class="section-block">
+          <div class="title">💵 首付款（影响项目 Review 自动补录）</div>
+          <div class="kv-grid">
+            <div class="kv"><div class="k">首付款类型</div><div class="v"><select class="cell"><option>签单首付款</option><option>非签单首付款</option></select></div></div>
+            <div class="kv"><div class="k">首付款比例</div><div class="v"><input class="cell" value="30" style="text-align: right;"> %</div></div>
+            <div class="kv"><div class="k">首付款金额</div><div class="v num">¥ 19.2 万</div></div>
+            <div class="kv"><div class="k">首付款时间</div><div class="v">2026-06-15</div></div>
+            <div class="kv"><div class="k">首付款达成可能</div><div class="v"><select class="cell"><option>承诺</option><option>争取</option><option>已达成</option></select></div></div>
+            <div class="kv"><div class="k">是否提起付款</div><div class="v"><select class="cell"><option>否</option><option>是</option></select></div></div>
+          </div>
+        </div>
+
+        <!-- 竞争分析 -->
+        <div class="section-block">
+          <div class="title">🥊 竞争 + 客户需求</div>
+          <div class="kv-grid">
+            <div class="kv"><div class="k">主要竞争对手</div><div class="v">北森</div></div>
+            <div class="kv"><div class="k">原厂商</div><div class="v">用友 NC（已部署 5 年）</div></div>
+            <div class="kv"><div class="k">中标概率</div><div class="v num">60%</div></div>
+            <div class="kv"><div class="k">达成可能</div><div class="v"><select class="cell"><option>承诺</option><option>争取</option><option>风险</option></select></div></div>
+          </div>
+          <div style="margin-top: 8px;">
+            <div class="k" style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px;">客户需求</div>
+            <textarea class="cell" rows="3" style="width: 100%; font-family: var(--font-cn); font-size: 12px; padding: 6px 10px; background: var(--bg-card-quiet);">薪酬绩效一体化 · 老系统数据迁移 · 历史 3 年数据保留 · 接入山东出版财务系统</textarea>
+          </div>
+        </div>
+
+        <!-- 过程跟进（必填且保留历史） -->
+        <div class="section-block">
+          <div class="title">📝 过程跟进 · 必填且保留历史</div>
+          <textarea class="cell" rows="4" style="width: 100%; font-family: var(--font-cn); font-size: 12px; padding: 6px 10px; background: var(--bg-card-quiet);">5/3 王正 · 客户法务确认合同主体已 OK，5/15 用印
+5/2 陈飞 · 投标技术分 92/100 · 价格比北森高 7 分
+4/28 王正 · 投标已交</textarea>
+          <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 4px;">每条更新自动追加 · 不可删除 · 系统记录时间+人</div>
+        </div>
+
+        <!-- 操作 -->
+        <div style="display: flex; gap: 8px; padding-top: 12px; border-top: 1px solid var(--line);">
+          <button class="btn ghost">取消</button>
+          <button class="btn">仅保存</button>
+          <button class="btn primary">保存 + 推 review</button>
+        </div>
+
+        <!-- 系统字段 -->
+        <div style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute);">
+          📅 创建于 2026-04-15 · 最近更新 2026-05-03 09:15 by 王正
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 30px; padding: 16px 18px; background: var(--bg-paper); border-radius: var(--r-md); border: 1px dashed var(--line-strong);">
+      <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;">本页字段 → v3 design doc §6.2.1 商机信息（37 字段全字段）</div>
+      <div style="font-family: var(--font-cn); font-size: 12px; color: var(--ink-soft); line-height: 1.7;">
+        <b style="color: var(--ink);">核心 37 字段</b>分 6 组：
+        ① 唯一标识（HCM区域 / 商机名称 / 客户名称 / 商机阶段 8 状态 / 商机状态 进行中-暂停 / 过程跟进保留历史 / 售前 / 商务 / MU / 商机编号唯一）<br>
+        ② 金额（商机预算 / 预计签单 / 预计签单毛利 = 签单×80% 自动算 / 实际签单）<br>
+        ③ 时间（预计投标 / 实际中标日期 / 预计签单日期 / 合同签约主体 / 预计归档 / 归档达成可能 / 实际归档）<br>
+        ④ 首付款（首付款类型签/非签 / 首付款比例 / 首付款金额 / 首付款时间 / 首付款达成可能 / 是否提起付款 / 是否开票）<br>
+        ⑤ 竞争（直接签约 / 中标概率 / 达成可能 / 主要竞争对手 / 原厂商 / 客户需求）<br>
+        ⑥ 系统（创建时间 / 更新时间 / 更新人）
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+if (new URLSearchParams(location.search).get('embedded') === '1') {
+  const sb = document.querySelector('.sidebar'); if (sb) sb.style.display = 'none';
+  const app = document.querySelector('.app'); if (app) app.style.gridTemplateColumns = '1fr';
+}
+</script>
+</body>
+</html>

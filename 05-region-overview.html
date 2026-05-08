@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>区域业绩一览表 · FY2026 · PC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-stage: #ebe8df; --bg-paper: #faf8f3; --bg-card: #ffffff; --bg-card-quiet: #fcfbf7; --bg-card-accent: #f5f2e9;
+  --ink: #1c1f1e; --ink-soft: #44504a; --ink-mute: #8b928d; --ink-faint: #c8ccc6;
+  --ink-green: #1e5537; --ink-green-soft: rgba(30,85,55,0.08); --ink-green-mid: rgba(30,85,55,0.22);
+  --steel: #475569; --steel-soft: rgba(71,85,105,0.08);
+  --amber: #b45309; --amber-soft: rgba(180,83,9,0.08); --amber-mid: rgba(180,83,9,0.22);
+  --crimson: #991b1b; --crimson-soft: rgba(153,27,27,0.08);
+  --blue: #1d4ed8; --blue-soft: rgba(37,99,235,0.08);
+  --line: rgba(28,31,30,0.08); --line-mid: rgba(28,31,30,0.12); --line-strong: rgba(28,31,30,0.18);
+  --r-sm: 6px; --r-md: 10px; --r-lg: 14px;
+  --font-display: 'Instrument Serif', 'Noto Serif SC', Georgia, serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-sans: 'Manrope', 'PingFang SC', sans-serif;
+  --font-cn: 'Noto Serif SC', 'PingFang SC', serif;
+  --shadow-card: 0 1px 0 rgba(28,31,30,.02), 0 2px 6px rgba(28,31,30,.04);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg-stage); color: var(--ink); font-family: var(--font-sans); font-size: 12px; line-height: 1.5; }
+
+.app { min-height: 100vh; display: grid; grid-template-columns: 200px 1fr; }
+.sidebar { background: var(--bg-paper); border-right: 1px solid var(--line); padding: 24px 16px; }
+.brand { font-family: var(--font-display); font-size: 22px; line-height: 1.05; }
+.brand em { font-style: italic; color: var(--ink-green); }
+.brand-sub { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 28px; }
+.nav-section { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.14em; text-transform: uppercase; margin: 18px 0 6px; padding-top: 12px; border-top: 1px solid var(--line); }
+.nav-item { display: block; padding: 7px 10px; font-family: var(--font-cn); font-size: 13px; color: var(--ink-soft); border-radius: 6px; cursor: pointer; }
+.nav-item.active { background: var(--ink); color: #faf8f3; }
+
+.main { padding: 22px 24px 60px; }
+.crumb { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+.crumb .sep { color: var(--ink-faint); margin: 0 6px; }
+h1 { font-family: var(--font-display); font-size: 32px; font-weight: 400; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 6px; }
+h1 em { font-style: italic; color: var(--ink-green); }
+.page-meta { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-bottom: 16px; }
+
+.toolbar { background: var(--bg-paper); border: 1px solid var(--line); border-radius: var(--r-md); padding: 10px 14px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+.toolbar .group { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); }
+.toolbar select { padding: 5px 10px; font-family: var(--font-cn); font-size: 12px; border: 1px solid var(--line-mid); border-radius: 4px; background: var(--bg-card); color: var(--ink); }
+.toolbar .stat { margin-left: auto; font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); }
+.toolbar .stat strong { font-family: var(--font-display); font-style: italic; font-size: 17px; color: var(--ink-green); font-weight: 400; }
+
+/* Wide table with sticky region column + grouped headers */
+.table-wrap { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); box-shadow: var(--shadow-card); overflow: hidden; }
+.table-scroll { overflow-x: auto; }
+.fy-table { border-collapse: separate; border-spacing: 0; min-width: 1400px; font-family: var(--font-mono); font-size: 10px; }
+.fy-table thead tr.lvl1 th { padding: 6px 8px; font-family: var(--font-mono); font-size: 9px; font-weight: 600; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase; text-align: center; background: var(--bg-card-accent); border-bottom: 1px solid var(--line-mid); border-right: 1px solid var(--line); }
+.fy-table thead tr.lvl1 th.region-head { background: var(--ink); color: #faf8f3; }
+.fy-table thead tr.lvl1 th.target-head { background: var(--bg-card-accent); }
+.fy-table thead tr.lvl1 th.score-head { background: var(--ink-green-soft); color: var(--ink-green); }
+.fy-table thead tr.lvl1 th.cur-head { background: var(--blue-soft); color: var(--blue); }
+.fy-table thead tr.lvl1 th.month-head { background: var(--bg-card-quiet); }
+.fy-table thead tr.lvl1 th.gap-head { background: var(--crimson-soft); color: var(--crimson); }
+
+.fy-table thead tr.lvl2 th { padding: 5px 6px; font-family: var(--font-mono); font-size: 8px; font-weight: 500; color: var(--ink-mute); letter-spacing: 0.04em; text-align: right; background: var(--bg-card-quiet); border-bottom: 1px solid var(--line-mid); border-right: 1px solid var(--line); white-space: nowrap; }
+.fy-table thead tr.lvl2 th.left { text-align: left; padding-left: 10px; }
+
+.fy-table tbody td { padding: 7px 8px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); white-space: nowrap; }
+.fy-table tbody tr:last-child td { border-bottom: none; }
+
+.fy-table .region-cell { font-family: var(--font-cn); font-size: 12px; font-weight: 500; color: var(--ink); padding-left: 12px; text-align: left; background: var(--bg-paper); position: sticky; left: 0; z-index: 1; box-shadow: 1px 0 0 var(--line-strong); }
+.fy-table .region-cell.indent { padding-left: 28px; font-weight: 400; color: var(--ink-soft); }
+.fy-table .region-cell.total { background: var(--ink); color: #faf8f3; font-family: var(--font-display); font-style: italic; }
+.fy-table .num { font-family: var(--font-mono); font-size: 10px; text-align: right; color: var(--ink); }
+.fy-table .num.faint { color: var(--ink-mute); }
+.fy-table .num.big { font-family: var(--font-display); font-size: 13px; font-style: italic; }
+.fy-table .pct { font-family: var(--font-mono); font-size: 10px; text-align: right; }
+.fy-table .pct.good { color: var(--ink-green); font-weight: 600; }
+.fy-table .pct.warn { color: var(--amber); font-weight: 600; }
+.fy-table .pct.bad { color: var(--crimson); font-weight: 600; }
+.fy-table .score { font-family: var(--font-display); font-style: italic; font-size: 14px; text-align: right; color: var(--ink-green); font-weight: 400; }
+.fy-table .score.bad { color: var(--crimson); }
+.fy-table .gap { font-family: var(--font-mono); font-size: 10px; text-align: right; color: var(--crimson); }
+.fy-table .gap.good { color: var(--ink-green); }
+.fy-table .target-bg { background: rgba(245,242,233, 0.5); }
+.fy-table .score-bg { background: var(--ink-green-soft); }
+.fy-table .cur-bg { background: var(--blue-soft); }
+.fy-table .gap-bg { background: var(--crimson-soft); }
+.fy-table .total-row td { background: var(--bg-card-accent); font-weight: 600; border-top: 2px solid var(--ink); }
+.fy-table .total-row .num.big { font-size: 14px; }
+
+/* Score visual bar */
+.score-bar-wrap { display: inline-flex; align-items: center; gap: 4px; }
+.score-bar { width: 40px; height: 5px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.score-bar-fill { height: 100%; background: var(--ink-green); }
+.score-bar-fill.warn { background: var(--amber); }
+.score-bar-fill.bad { background: var(--crimson); }
+
+.legend { display: flex; gap: 16px; padding: 10px 14px; background: var(--bg-paper); border: 1px solid var(--line); border-radius: var(--r-md); margin-top: 12px; flex-wrap: wrap; font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); }
+.legend .item { display: inline-flex; align-items: center; gap: 6px; }
+.legend .swatch { width: 12px; height: 12px; border-radius: 2px; }
+
+/* Summary cards on top */
+.kpi-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
+.kpi-strip .card { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px 16px; box-shadow: var(--shadow-card); }
+.kpi-strip .card .label { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+.kpi-strip .card .value { font-family: var(--font-display); font-size: 28px; font-weight: 400; line-height: 1; letter-spacing: -0.02em; }
+.kpi-strip .card .value .unit { font-family: var(--font-cn); font-size: 12px; color: var(--ink-mute); margin-left: 4px; }
+.kpi-strip .card .delta { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-top: 4px; }
+.kpi-strip .card.warn .value { color: var(--amber); }
+.kpi-strip .card.bad .value { color: var(--crimson); }
+.kpi-strip .card.good .value { color: var(--ink-green); }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">业绩 <em>运营</em></div>
+    <div class="brand-sub">PERFORMANCE OPS</div>
+    <div class="nav-section">看板</div>
+    <a class="nav-item">驾驶舱</a>
+    <a class="nav-item active">区域业绩</a>
+    <div class="nav-section">明细报表</div>
+    <a class="nav-item">5 张明细</a>
+    <div class="nav-section">数据维护</div>
+    <a class="nav-item">商机管理</a>
+    <a class="nav-item">商机 Review</a>
+    <a class="nav-item">投标管理</a>
+    <a class="nav-item">月度预测·签单</a>
+    <a class="nav-item">月度预测·回款</a>
+    <a class="nav-item">售前活动</a>
+    <div class="nav-section">导入 / 配置</div>
+    <a class="nav-item">指标配置</a>
+  </aside>
+
+  <main class="main">
+    <div class="crumb">看板 <span class="sep">/</span> 区域业绩一览表</div>
+    <h1>区域 <em>业绩</em> · FY2026 一览</h1>
+    <div class="page-meta">对应 FY2026 运营管理一览表 · 110 列宽表 · 行=7 区域 + 部门细分 · 列=指标 × 月份 × 类型 · 综合评分 = 签单毛利×30% + 收入×20% + 毛利×50%</div>
+
+    <!-- Top KPI Strip -->
+    <div class="kpi-strip">
+      <div class="card">
+        <div class="label">YTD 签单实际</div>
+        <div class="value">¥ 4,360<span class="unit">万</span></div>
+        <div class="delta">YTD 目标 7,140 万 · <span style="color: var(--amber); font-weight: 600;">61% 达成</span></div>
+      </div>
+      <div class="card good">
+        <div class="label">YTD 回款实际</div>
+        <div class="value">¥ 4,010<span class="unit">万</span></div>
+        <div class="delta">YTD 目标 4,080 万 · <span style="color: var(--ink-green); font-weight: 600;">98% 达成</span></div>
+      </div>
+      <div class="card warn">
+        <div class="label">YTD 回款毛利</div>
+        <div class="value">¥ 2,424<span class="unit">万</span></div>
+        <div class="delta">YTD 目标 3,120 万 · <span style="color: var(--amber); font-weight: 600;">78% 达成</span></div>
+      </div>
+      <div class="card good">
+        <div class="label">综合评分 W18</div>
+        <div class="value">0.8348</div>
+        <div class="delta">vs 上周 W17 · <span style="color: var(--ink-green); font-weight: 600;">+0.0021</span></div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="group">视图 <select><option>合并大区+部门</option><option>仅 7 大区</option><option>展开到项目部</option></select></div>
+      <div class="group">指标 <select><option>4 指标全显示</option><option>仅签单金额</option><option>仅回款收入</option><option>仅回款毛利</option></select></div>
+      <div class="group">时间维度 <select><option>YTD + 最近 3 月 + 缺口</option><option>展开 12 个月</option><option>仅 YTD</option></select></div>
+      <div class="group">📸 <select><option>当前·active W18</option><option>W17 · 5/3 freeze</option><option>5月初快照</option><option>4月初快照</option></select></div>
+      <div class="stat">综合评分 <strong>0.8348</strong> · 行业基准 0.75</div>
+    </div>
+
+    <!-- 宽表（11 行 × 24 显示列，原始 110 列分组横向滚动） -->
+    <div class="table-wrap">
+      <div class="table-scroll">
+        <table class="fy-table">
+          <thead>
+            <tr class="lvl1">
+              <th rowspan="2" class="region-head" style="min-width: 160px;">区域 / 部门</th>
+              <th colspan="4" class="target-head">FY2026 年度目标</th>
+              <th colspan="1" class="target-head">累计目标</th>
+              <th colspan="4" class="score-head">得分计算 30/20/50</th>
+              <th colspan="8" class="cur-head">YTD 累计达成（4 月底）</th>
+              <th colspan="4" class="month-head">5 月已达成</th>
+              <th colspan="3" class="gap-head">年度缺口</th>
+            </tr>
+            <tr class="lvl2">
+              <th>签单金额</th>
+              <th>签单毛利</th>
+              <th>收入</th>
+              <th>毛利</th>
+              <th>YTD</th>
+              <th>签单毛利</th>
+              <th>收入</th>
+              <th>毛利</th>
+              <th>合计</th>
+              <th>签单 实际</th>
+              <th>签单 达成%</th>
+              <th>签单毛利 实际</th>
+              <th>毛利 达成%</th>
+              <th>收入 实际</th>
+              <th>收入 达成%</th>
+              <th>回款毛利 实际</th>
+              <th>毛利 达成%</th>
+              <th>签单</th>
+              <th>签单毛利</th>
+              <th>收入</th>
+              <th>毛利</th>
+              <th>签单</th>
+              <th>收入</th>
+              <th>毛利</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- 央企（带子分组） -->
+            <tr>
+              <td class="region-cell">央企</td>
+              <td class="num target-bg">8,400</td>
+              <td class="num target-bg">6,720</td>
+              <td class="num target-bg">5,200</td>
+              <td class="num target-bg">3,200</td>
+              <td class="num target-bg">2,520</td>
+              <td class="num score-bg" style="font-family: var(--font-mono);">×30%</td>
+              <td class="num score-bg" style="font-family: var(--font-mono);">×20%</td>
+              <td class="num score-bg" style="font-family: var(--font-mono);">×50%</td>
+              <td class="score">0.91</td>
+              <td class="num big cur-bg">1,995</td>
+              <td class="pct cur-bg good">79%</td>
+              <td class="num cur-bg">1,596</td>
+              <td class="pct cur-bg good">79%</td>
+              <td class="num big cur-bg">1,810</td>
+              <td class="pct cur-bg good">96%</td>
+              <td class="num cur-bg">1,094</td>
+              <td class="pct cur-bg good">86%</td>
+              <td class="num">456</td>
+              <td class="num faint">365</td>
+              <td class="num">412</td>
+              <td class="num faint">248</td>
+              <td class="gap good">−2,640</td>
+              <td class="gap good">−1,180</td>
+              <td class="gap good">−712</td>
+            </tr>
+            <tr>
+              <td class="region-cell indent">└ 大企业市场处</td>
+              <td class="num target-bg faint">5,200</td>
+              <td class="num target-bg faint">4,160</td>
+              <td class="num target-bg faint">3,200</td>
+              <td class="num target-bg faint">1,920</td>
+              <td class="num target-bg faint">1,560</td>
+              <td colspan="3" class="num score-bg faint">—</td>
+              <td class="score">0.85</td>
+              <td class="num big cur-bg">1,238</td>
+              <td class="pct cur-bg good">79%</td>
+              <td class="num cur-bg">990</td>
+              <td class="pct cur-bg good">79%</td>
+              <td class="num big cur-bg">1,135</td>
+              <td class="pct cur-bg good">95%</td>
+              <td class="num cur-bg">680</td>
+              <td class="pct cur-bg good">85%</td>
+              <td class="num">288</td>
+              <td class="num faint">230</td>
+              <td class="num">252</td>
+              <td class="num faint">151</td>
+              <td class="gap good">−1,634</td>
+              <td class="gap good">−732</td>
+              <td class="gap good">−437</td>
+            </tr>
+            <tr>
+              <td class="region-cell indent">└ 战略客户推进处</td>
+              <td class="num target-bg faint">3,200</td>
+              <td class="num target-bg faint">2,560</td>
+              <td class="num target-bg faint">2,000</td>
+              <td class="num target-bg faint">1,280</td>
+              <td class="num target-bg faint">960</td>
+              <td colspan="3" class="num score-bg faint">—</td>
+              <td class="score">1.00</td>
+              <td class="num big cur-bg">757</td>
+              <td class="pct cur-bg good">79%</td>
+              <td class="num cur-bg">606</td>
+              <td class="pct cur-bg good">79%</td>
+              <td class="num big cur-bg">675</td>
+              <td class="pct cur-bg good">98%</td>
+              <td class="num cur-bg">414</td>
+              <td class="pct cur-bg good">86%</td>
+              <td class="num">168</td>
+              <td class="num faint">135</td>
+              <td class="num">160</td>
+              <td class="num faint">97</td>
+              <td class="gap good">−1,006</td>
+              <td class="gap good">−448</td>
+              <td class="gap good">−275</td>
+            </tr>
+            <!-- 广东 -->
+            <tr>
+              <td class="region-cell">广东</td>
+              <td class="num target-bg">5,200</td>
+              <td class="num target-bg">4,160</td>
+              <td class="num target-bg">3,400</td>
+              <td class="num target-bg">2,000</td>
+              <td class="num target-bg">1,560</td>
+              <td colspan="3" class="num score-bg faint">—</td>
+              <td class="score bad">0.62</td>
+              <td class="num big cur-bg">468</td>
+              <td class="pct cur-bg bad">30%</td>
+              <td class="num cur-bg">374</td>
+              <td class="pct cur-bg bad">30%</td>
+              <td class="num big cur-bg">800</td>
+              <td class="pct cur-bg good">94%</td>
+              <td class="num cur-bg">450</td>
+              <td class="pct cur-bg warn">75%</td>
+              <td class="num">142</td>
+              <td class="num faint">114</td>
+              <td class="num">180</td>
+              <td class="num faint">102</td>
+              <td class="gap bad">−4,732</td>
+              <td class="gap good">−2,600</td>
+              <td class="gap warn">−1,550</td>
+            </tr>
+            <!-- 山东 -->
+            <tr>
+              <td class="region-cell">山东</td>
+              <td class="num target-bg">3,800</td>
+              <td class="num target-bg">3,040</td>
+              <td class="num target-bg">2,400</td>
+              <td class="num target-bg">1,440</td>
+              <td class="num target-bg">1,140</td>
+              <td colspan="3" class="num score-bg faint">—</td>
+              <td class="score">0.78</td>
+              <td class="num big cur-bg">820</td>
+              <td class="pct cur-bg warn">72%</td>
+              <td class="num cur-bg">656</td>
+              <td class="pct cur-bg warn">72%</td>
+              <td class="num big cur-bg">540</td>
+              <td class="pct cur-bg good">92%</td>
+              <td class="num cur-bg">320</td>
+              <td class="pct cur-bg warn">76%</td>
+              <td class="num">187</td>
+              <td class="num faint">150</td>
+              <td class="num">128</td>
+              <td class="num faint">76</td>
+              <td class="gap warn">−2,980</td>
+              <td class="gap good">−1,860</td>
+              <td class="gap warn">−1,120</td>
+            </tr>
+            <!-- 华东 -->
+            <tr>
+              <td class="region-cell">华东</td>
+              <td class="num target-bg">2,800</td>
+              <td class="num target-bg">2,240</td>
+              <td class="num target-bg">1,800</td>
+              <td class="num target-bg">1,080</td>
+              <td class="num target-bg">840</td>
+              <td colspan="3" class="num score-bg faint">—</td>
+              <td class="score">0.82</td>
+              <td class="num big cur-bg">580</td>
+              <td class="pct cur-bg warn">69%</td>
+              <td class="num cur-bg">464</td>
+              <td class="pct cur-bg warn">69%</td>
+              <td class="num big cur-bg">490</td>
+              <td class="pct cur-bg good">95%</td>
+              <td class="num cur-bg">280</td>
+              <td class="pct cur-bg warn">76%</td>
+              <td class="num">98</td>
+              <td class="num faint">78</td>
+              <td class="num">87</td>
+              <td class="num faint">52</td>
+              <td class="gap warn">−2,220</td>
+              <td class="gap good">−1,310</td>
+              <td class="gap warn">−800</td>
+            </tr>
+            <!-- 华北 -->
+            <tr>
+              <td class="region-cell">华北</td>
+              <td class="num target-bg">1,800</td>
+              <td class="num target-bg">1,440</td>
+              <td class="num target-bg">1,200</td>
+              <td class="num target-bg">720</td>
+              <td class="num target-bg">540</td>
+              <td colspan="3" class="num score-bg faint">—</td>
+              <td class="score">0.91</td>
+              <td class="num big cur-bg">324</td>
+              <td class="pct cur-bg warn">60%</td>
+              <td class="num cur-bg">259</td>
+              <td class="pct cur-bg warn">60%</td>
+              <td class="num big cur-bg">340</td>
+              <td class="pct cur-bg good">98%</td>
+              <td class="num cur-bg">208</td>
+              <td class="pct cur-bg good">85%</td>
+              <td class="num">68</td>
+              <td class="num faint">54</td>
+              <td class="num">62</td>
+              <td class="num faint">37</td>
+              <td class="gap warn">−1,476</td>
+              <td class="gap good">−860</td>
+              <td class="gap warn">−512</td>
+            </tr>
+            <!-- 西部 -->
+            <tr>
+              <td class="region-cell">西部</td>
+              <td class="num target-bg">1,200</td>
+              <td class="num target-bg">960</td>
+              <td class="num target-bg">800</td>
+              <td class="num target-bg">480</td>
+              <td class="num target-bg">360</td>
+              <td colspan="3" class="num score-bg faint">—</td>
+              <td class="score warn">0.68</td>
+              <td class="num big cur-bg">120</td>
+              <td class="pct cur-bg bad">33%</td>
+              <td class="num cur-bg">96</td>
+              <td class="pct cur-bg bad">33%</td>
+              <td class="num big cur-bg">230</td>
+              <td class="pct cur-bg good">88%</td>
+              <td class="num cur-bg">120</td>
+              <td class="pct cur-bg warn">76%</td>
+              <td class="num">42</td>
+              <td class="num faint">34</td>
+              <td class="num">50</td>
+              <td class="num faint">29</td>
+              <td class="gap bad">−1,080</td>
+              <td class="gap good">−570</td>
+              <td class="gap warn">−360</td>
+            </tr>
+            <!-- 服务 -->
+            <tr>
+              <td class="region-cell">服务</td>
+              <td class="num target-bg">600</td>
+              <td class="num target-bg">480</td>
+              <td class="num target-bg">2,400</td>
+              <td class="num target-bg">1,440</td>
+              <td class="num target-bg">180</td>
+              <td colspan="3" class="num score-bg faint">—</td>
+              <td class="score">0.95</td>
+              <td class="num big cur-bg">53</td>
+              <td class="pct cur-bg warn">29%</td>
+              <td class="num cur-bg">42</td>
+              <td class="pct cur-bg warn">29%</td>
+              <td class="num big cur-bg">600</td>
+              <td class="pct cur-bg good">96%</td>
+              <td class="num cur-bg">478</td>
+              <td class="pct cur-bg good">93%</td>
+              <td class="num">12</td>
+              <td class="num faint">10</td>
+              <td class="num">160</td>
+              <td class="num faint">128</td>
+              <td class="gap warn">−547</td>
+              <td class="gap good">−1,800</td>
+              <td class="gap good">−962</td>
+            </tr>
+            <!-- 合计 -->
+            <tr class="total-row">
+              <td class="region-cell total">合计 · ALL</td>
+              <td class="num big">23,800</td>
+              <td class="num big">19,040</td>
+              <td class="num big">17,200</td>
+              <td class="num big">10,360</td>
+              <td class="num big">7,140</td>
+              <td class="num">×30%</td>
+              <td class="num">×20%</td>
+              <td class="num">×50%</td>
+              <td class="score">0.8348</td>
+              <td class="num big">4,360</td>
+              <td class="pct warn">61%</td>
+              <td class="num big">3,486</td>
+              <td class="pct warn">61%</td>
+              <td class="num big">4,810</td>
+              <td class="pct good">96%</td>
+              <td class="num big">2,950</td>
+              <td class="pct warn">82%</td>
+              <td class="num">1,005</td>
+              <td class="num">805</td>
+              <td class="num">1,079</td>
+              <td class="num">644</td>
+              <td class="gap warn">−18,435</td>
+              <td class="gap good">−11,310</td>
+              <td class="gap warn">−6,766</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 图例 -->
+    <div class="legend">
+      <div class="item"><span class="swatch" style="background: var(--ink-green-soft); border: 1px solid var(--ink-green);"></span>得分计算（30 / 20 / 50）</div>
+      <div class="item"><span class="swatch" style="background: var(--blue-soft); border: 1px solid var(--blue);"></span>YTD 累计达成</div>
+      <div class="item"><span class="swatch" style="background: var(--bg-card-accent);"></span>年度目标</div>
+      <div class="item"><span class="swatch" style="background: var(--crimson-soft); border: 1px solid var(--crimson);"></span>缺口（负数 = 已超额）</div>
+      <div class="item"><span style="color: var(--ink-green); font-weight: 600;">绿</span> ≥ 90% 达成 · <span style="color: var(--amber); font-weight: 600;">琥珀</span> 70-90% · <span style="color: var(--crimson); font-weight: 600;">绛红</span> &lt; 70%</div>
+      <div class="item"><span style="font-family: var(--font-mono); color: var(--ink-mute);">110 列原始字段：本视图显示 24 列摘要 · 横向滚动可查看 12 个月明细</span></div>
+    </div>
+
+    <!-- 视图说明 -->
+    <div style="margin-top: 18px; padding: 14px 18px; background: var(--bg-paper); border-radius: var(--r-md); border: 1px dashed var(--line-strong);">
+      <div style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;">本视图字段映射 → FY2026 一览表 (110 列)</div>
+      <div style="font-family: var(--font-cn); font-size: 12px; color: var(--ink-soft); line-height: 1.7;">
+        本视图采用<b style="color: var(--ink);">"摘要+滚动钻取"</b>策略：默认展示 4 类指标的<b style="color: var(--ink);">YTD 累计 + 年度目标 + 综合评分 + 当月已达成 + 全年缺口</b>共 24 列。原 FY2026 一览表的<b style="color: var(--ink);">12 个月细分（每月 8 列）</b>通过<b>横向滚动</b>可查看，或通过<b>顶部"时间维度"切换"展开 12 个月"</b>显式调出。<br>
+        <b style="color: var(--ink);">下钻路径</b>：点击任意区域行 → 跳转该区域的<b>明细钻取页（项目部 → 销售/商务 → 单个商机/合同）</b>。
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+if (new URLSearchParams(location.search).get('embedded') === '1') {
+  const sb = document.querySelector('.sidebar'); if (sb) sb.style.display = 'none';
+  const app = document.querySelector('.app'); if (app) app.style.gridTemplateColumns = '1fr';
+}
+</script>
+</body>
+</html>
