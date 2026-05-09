@@ -2,101 +2,132 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>3.1.2 商机管理 · 含 Review</title>
+<title>3.1.2 商机管理</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="_shared.css">
 <style>
+/* ── 布局 ── */
 .kpi-row { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; margin-bottom: 14px; }
-.stage-card { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 10px; box-shadow: var(--shadow-card); cursor: pointer; }
+.stage-card { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 10px; box-shadow: var(--shadow-card); cursor: pointer; transition: all .15s; }
+.stage-card:hover { border-color: var(--ink-green-mid); background: var(--ink-green-soft); }
 .stage-card.active { background: var(--ink); color: #faf8f3; border-color: var(--ink); }
 .stage-card .name { font-family: var(--font-cn); font-size: 11px; color: var(--ink-soft); }
 .stage-card.active .name { color: var(--ink-faint); }
-.stage-card .num { font-family: var(--font-display); font-size: 22px; line-height: 1; }
+.stage-card .num { font-family: var(--font-display); font-size: 22px; line-height: 1.1; margin-top: 2px; }
 .stage-card .amt { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px; }
 .stage-card.active .amt { color: var(--ink-faint); }
 
-.split { display: grid; grid-template-columns: 1.5fr 1fr; gap: 14px; }
-.detail-pane { background: var(--bg-paper); border: 1px solid var(--line); border-radius: var(--r-md); padding: 16px; height: fit-content; box-shadow: var(--shadow-card); }
-.detail-head { padding-bottom: 12px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
-.detail-head .opp-no { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); }
-.detail-head h3 { font-family: var(--font-display); font-size: 22px; font-weight: 400; margin: 4px 0; line-height: 1.15; }
-.detail-head .info { font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft); }
+.split { display: grid; grid-template-columns: 1.4fr 1fr; gap: 14px; align-items: start; }
 
-.section-block { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 12px 14px; margin-bottom: 10px; }
-.section-block.review { border: 2px solid var(--ink-green); }
-.section-block .title { font-family: var(--font-cn); font-size: 12px; font-weight: 600; margin-bottom: 8px; color: var(--ink); padding-bottom: 6px; border-bottom: 1px dashed var(--line); display: flex; justify-content: space-between; align-items: center; }
-.section-block .title em { font-style: italic; color: var(--ink-green); font-family: var(--font-display); font-size: 13px; }
-.section-block .title .badge-ts { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); font-weight: 400; letter-spacing: 0.04em; }
-.kv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; }
-.kv { padding: 4px 0; }
-.kv .k { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.06em; text-transform: uppercase; }
-.kv .v { font-family: var(--font-cn); font-size: 12px; margin-top: 2px; }
-.kv .v.num { font-family: var(--font-display); font-size: 16px; }
-.kv input.cell, .kv select.cell, .kv textarea.cell { width: 100%; padding: 5px 8px; font-family: var(--font-cn); font-size: 12px; border: 1px solid var(--line-mid); border-radius: 4px; background: var(--bg-card); }
-
-.month-mini-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 6px; }
-.month-mini { padding: 6px 8px; background: var(--bg-card-quiet); border: 1px solid var(--line-mid); border-radius: 4px; text-align: center; }
-.month-mini.primary { background: var(--ink-green-soft); border: 2px solid var(--ink-green); }
-.month-mini .m { font-family: var(--font-display); font-size: 13px; font-style: italic; color: var(--ink); }
-.month-mini.primary .m { color: var(--ink-green); }
-.month-mini .s { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px; }
-
-.toggle-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--bg-card); border: 2px solid var(--ink-green); border-radius: var(--r-md); margin-bottom: 10px; }
-.toggle-card .text .t1 { font-family: var(--font-cn); font-size: 12px; font-weight: 500; }
-.toggle-card .text .t2 { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 2px; }
-.switch-mini { position: relative; width: 36px; height: 20px; background: var(--ink-faint); border-radius: 10px; flex-shrink: 0; }
-.switch-mini::before { content: ""; position: absolute; left: 2px; top: 2px; width: 16px; height: 16px; background: var(--bg-card); border-radius: 50%; }
-
-.row { padding: 10px 12px; border-bottom: 1px solid var(--line); cursor: pointer; }
-.row.selected { background: var(--ink-green-soft); border-left: 3px solid var(--ink-green); padding-left: 9px; }
+/* ── 列表 ── */
+.opp-list { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); box-shadow: var(--shadow-card); overflow: hidden; }
+.row { padding: 10px 12px; border-bottom: 1px solid var(--line); cursor: pointer; transition: background .1s; }
+.row:hover { background: var(--bg-card-accent); }
+.row.selected { background: var(--ink-green-soft) !important; border-left: 3px solid var(--ink-green); padding-left: 9px; }
 .row .r1 { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 4px; }
-.row .name { font-family: var(--font-cn); font-size: 13px; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.row .amt { font-family: var(--font-display); font-size: 16px; }
-.row .r2 { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; color: var(--ink-mute); font-family: var(--font-mono); }
-
-.review-dots { display: inline-flex; gap: 3px; }
-.review-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--line-strong); }
-.review-dot.done { background: var(--ink-green); }
-.review-dot.warn { background: var(--amber); }
-.review-dot.empty { background: var(--bg-card); border: 1px solid var(--line-strong); }
-
-/* 战役 chip */
+.row .oname { font-family: var(--font-cn); font-size: 13px; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row .oamt { font-family: var(--font-display); font-size: 16px; font-style: italic; }
+.row .r2 { display: flex; justify-content: space-between; gap: 8px; font-size: 10px; color: var(--ink-mute); font-family: var(--font-mono); }
 .row .r3 { display: flex; gap: 4px; margin-top: 5px; flex-wrap: wrap; }
-.camp-chip { display: inline-flex; align-items: center; padding: 1px 7px; font-family: var(--font-mono); font-size: 9px; border-radius: 10px; letter-spacing: 0.04em; }
-.camp-chip.parent { background: var(--ink-green-soft); color: var(--ink-green); border: 1px solid var(--ink-green-mid); font-weight: 600; }
+.stage-pill { display: inline-block; padding: 1px 7px; font-family: var(--font-mono); font-size: 9px; border-radius: 3px; font-weight: 500; }
+.stage-pill.s1, .stage-pill.s2, .stage-pill.s3 { background: var(--blue-soft); color: var(--blue); border: 1px solid var(--blue-mid); }
+.stage-pill.s4 { background: var(--amber-soft, #fef9c3); color: #92400e; border: 1px solid #fde68a; }
+.stage-pill.win { background: var(--ink-green-soft); color: var(--ink-green); border: 1px solid var(--ink-green-mid); }
+.stage-pill.signed { background: var(--ink); color: #fff; }
+.stage-pill.lost,.stage-pill.drop { background: var(--bg-card-quiet); color: var(--ink-mute); border: 1px dashed var(--line-strong); }
+.achieve-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 3px; }
+.achieve-dot.promise { background: var(--ink-green); }
+.achieve-dot.try { background: var(--amber); }
+.achieve-dot.risk { background: #b91c1c; }
+
+/* ── 详情面板 ── */
+.detail-pane { background: var(--bg-paper); border: 1px solid var(--line); border-radius: var(--r-md); box-shadow: var(--shadow-card); overflow: hidden; }
+.detail-head { padding: 14px 16px 12px; border-bottom: 1px solid var(--line); }
+.detail-head .opp-no { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-bottom: 4px; }
+.detail-head h3 { font-family: var(--font-display); font-size: 20px; font-weight: 400; margin: 0 0 5px; line-height: 1.2; }
+.detail-head h3 em { font-style: italic; color: var(--ink-green); }
+.detail-head .head-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+/* ── 板块 ── */
+.section-block { border: 1px solid var(--line); border-radius: var(--r-md); margin: 12px; overflow: hidden; }
+.section-block.highlight { border-color: var(--ink-green-mid); }
+.section-block.cond { border-color: var(--amber); }
+.section-title { display: flex; align-items: center; justify-content: space-between; padding: 9px 14px; background: var(--bg-card-quiet); border-bottom: 1px solid var(--line); cursor: pointer; user-select: none; }
+.section-title .s-label { font-family: var(--font-cn); font-size: 12px; font-weight: 600; }
+.section-title .s-badge { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); background: var(--bg-card); padding: 1px 6px; border-radius: 3px; border: 1px solid var(--line); }
+.section-title .s-cond { font-family: var(--font-mono); font-size: 9px; color: #92400e; background: #fef9c3; padding: 2px 7px; border-radius: 10px; border: 1px solid #fde68a; }
+.section-title .s-toggle { font-family: var(--font-mono); font-size: 12px; color: var(--ink-mute); transition: transform .2s; }
+.section-title.collapsed .s-toggle { transform: rotate(-90deg); }
+.section-body { padding: 12px 14px; }
+.section-body.hidden { display: none; }
+
+/* ── 字段网格 ── */
+.fg-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
+.fg-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px 16px; }
+.fg-1 { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.field { margin-bottom: 2px; }
+.field label { display: block; font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 4px; }
+.field label .req { color: #b91c1c; margin-left: 1px; }
+.field label .auto-badge { background: var(--blue-soft); color: var(--blue); border: 1px solid var(--blue-mid); border-radius: 3px; padding: 0 4px; font-size: 8px; margin-left: 4px; vertical-align: middle; font-style: normal; }
+.field label .cond-badge { background: #fef9c3; color: #92400e; border: 1px solid #fde68a; border-radius: 3px; padding: 0 4px; font-size: 8px; margin-left: 4px; vertical-align: middle; font-style: normal; }
+.field input[type="text"],
+.field input[type="number"],
+.field input[type="date"],
+.field select,
+.field textarea { width: 100%; padding: 6px 9px; font-family: var(--font-cn); font-size: 12px; border: 1px solid var(--line-mid); border-radius: 4px; background: var(--bg-card); color: var(--ink); box-sizing: border-box; transition: border-color .15s, box-shadow .15s; }
+.field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--ink-green); box-shadow: 0 0 0 2px var(--ink-green-soft); }
+.field input[readonly], .field input.auto-val { background: var(--bg-card-quiet); color: var(--ink-mute); cursor: default; border-style: dashed; }
+.field input.auto-val { color: var(--blue); font-weight: 500; border-color: var(--blue-mid); }
+.field .unit { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin-top: 3px; }
+.field .hint { font-family: var(--font-mono); font-size: 9px; color: var(--ink-faint); margin-top: 3px; }
+.field.span-2 { grid-column: span 2; }
+.field.span-3 { grid-column: span 3; }
+.field textarea { resize: vertical; min-height: 56px; }
+
+/* ── 过程跟进历史 ── */
+.track-history { background: var(--bg-card-quiet); border: 1px solid var(--line); border-radius: 4px; padding: 8px 10px; margin-bottom: 8px; max-height: 100px; overflow-y: auto; }
+.track-item { font-family: var(--font-cn); font-size: 11px; color: var(--ink-soft); line-height: 1.7; }
+.track-item .ts { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-right: 4px; }
+
+/* ── 系统字段 ── */
+.sys-row { display: flex; gap: 20px; padding: 10px 12px; background: var(--bg-card-quiet); border-top: 1px solid var(--line); }
+.sys-row .sf { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); }
+.sys-row .sf span { color: var(--ink-soft); margin-left: 4px; }
+
+/* ── 操作按钮 ── */
+.detail-actions { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--line); background: var(--bg-card-quiet); }
+.detail-actions .spacer { flex: 1; }
+
+/* ── 条件板块提示条 ── */
+.cond-placeholder { display: flex; align-items: center; gap: 10px; padding: 12px 14px; margin: 12px; background: var(--bg-card-quiet); border: 1px dashed var(--line-strong); border-radius: var(--r-md); }
+.cond-placeholder .icon { font-size: 16px; }
+.cond-placeholder .text { font-family: var(--font-cn); font-size: 12px; color: var(--ink-mute); }
+.cond-placeholder .text strong { color: var(--ink-soft); }
+
+/* ── 战役关联 ── */
+.camp-chip { display: inline-flex; padding: 1px 7px; font-family: var(--font-mono); font-size: 9px; border-radius: 9px; }
+.camp-chip.parent { background: var(--ink-green-soft); color: var(--ink-green); border: 1px solid var(--ink-green-mid); }
 .camp-chip.sub { background: var(--blue-soft); color: var(--blue); border: 1px solid var(--blue-mid); }
 .camp-chip.none { background: var(--bg-card-quiet); color: var(--ink-mute); border: 1px dashed var(--line-strong); font-style: italic; }
 
-/* 详情面板战役区 */
-.campaign-panel { background: var(--bg-card); border: 1px solid var(--ink-green-mid); border-radius: var(--r-md); padding: 12px 14px; margin-bottom: 10px; }
-.campaign-panel .title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px dashed var(--line); }
-.campaign-panel .title-row .title { font-family: var(--font-cn); font-size: 12px; font-weight: 600; }
-.campaign-panel .title-row .title em { font-style: italic; color: var(--ink-green); font-family: var(--font-display); font-size: 13px; }
-.campaign-panel .parent-row { display: grid; grid-template-columns: 90px 1fr 24px; gap: 10px; align-items: center; padding: 8px 0; }
-.campaign-panel .parent-row .label-k { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.06em; text-transform: uppercase; }
-.campaign-panel .parent-row select { padding: 5px 8px; font-family: var(--font-cn); font-size: 12px; border: 1px solid var(--line-mid); border-radius: 4px; background: var(--bg-card); width: 100%; }
-.campaign-panel .sub-tags-row { padding: 6px 0; }
-.campaign-panel .sub-tag-list { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
-.campaign-panel .sub-tag-active { display: inline-flex; align-items: center; padding: 2px 8px; font-family: var(--font-mono); font-size: 10px; border-radius: 12px; background: var(--blue-soft); color: var(--blue); border: 1px solid var(--blue-mid); cursor: pointer; gap: 4px; }
-.campaign-panel .sub-tag-active .x { color: var(--ink-mute); font-weight: 600; cursor: pointer; }
-.campaign-panel .sub-tag-add { display: inline-flex; align-items: center; padding: 2px 8px; font-family: var(--font-mono); font-size: 10px; border-radius: 12px; background: var(--bg-card-quiet); color: var(--ink-mute); border: 1px dashed var(--line-strong); cursor: pointer; }
+/* ── Toast ── */
+.toast { position: fixed; bottom: 24px; right: 24px; background: var(--ink-green); color: #fff; padding: 12px 20px; border-radius: 6px; font-family: var(--font-cn); font-size: 13px; z-index: 2000; opacity: 0; transform: translateY(10px); transition: all .2s; pointer-events: none; }
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* ── 数额自动计算提示 ── */
+.calc-hint { font-family: var(--font-mono); font-size: 9px; color: var(--blue); margin-top: 3px; cursor: pointer; }
+.calc-hint:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
-
 <div class="app">
   <aside class="sidebar">
     <div class="brand">业绩 <em>运营</em></div>
-    <div class="brand-sub">PERFORMANCE OPS · v4</div>
-    <div class="nav-section">2 明细报表</div>
-    <a class="nav-item">2.1 全年重点商机</a>
-    <a class="nav-item">2.2 投标明细</a>
-    <a class="nav-item">2.3 签单明细</a>
-    <a class="nav-item">2.4 回款明细</a>
+    <div class="brand-sub">PERFORMANCE OPS · v8</div>
     <div class="nav-section">3 业务功能</div>
-    <a class="nav-item">3.1.1 客户管理</a>
+    <a class="nav-item" href="45-customer-management.html">3.1.1 客户管理</a>
     <a class="nav-item active">3.1.2 商机管理</a>
     <a class="nav-item">3.1.3 营销战役管理</a>
     <a class="nav-item">3.2.1 项目管理</a>
@@ -105,269 +136,639 @@
 
   <main class="main">
     <div class="crumb">业务功能 <span class="sep">/</span> 营销管理 <span class="sep">/</span> 商机管理</div>
-    <h1 class="page-title">3.1.2 商机 <em>管理</em>（含 Review）</h1>
-    <div class="page-meta">商机主数据 + 周度 Review + 月度滚动预测 + 营销战役关联 · 142 商机 · HCM API 同步 + 销售本地维护 · 数据源驱动 2.x 所有明细报表</div>
+    <h1 class="page-title">3.1.2 商机 <em>管理</em></h1>
+    <div class="page-meta">40 字段 · 3 板块（基本信息 / 竞争分析 / 签单回款）· 板块3 按阶段条件显示 · 毛利 / 首付款收入自动计算</div>
 
     <!-- 8 阶段水库 -->
     <div class="kpi-row">
-      <div class="stage-card"><div class="name">S1 发现</div><div class="num">38</div><div class="amt">¥ 5,200</div></div>
-      <div class="stage-card"><div class="name">S2 确认</div><div class="num">29</div><div class="amt">¥ 4,800</div></div>
-      <div class="stage-card"><div class="name">S3 方案</div><div class="num">22</div><div class="amt">¥ 4,200</div></div>
-      <div class="stage-card active"><div class="name">S4 投标</div><div class="num">18</div><div class="amt">¥ 2,978</div></div>
-      <div class="stage-card"><div class="name">中标未签单</div><div class="num">12</div><div class="amt">¥ 4,820</div></div>
-      <div class="stage-card"><div class="name">已签单</div><div class="num">62</div><div class="amt">¥ 4,360</div></div>
-      <div class="stage-card"><div class="name">丢标</div><div class="num">15</div><div class="amt">¥ 1,400</div></div>
-      <div class="stage-card"><div class="name">弃标</div><div class="num">8</div><div class="amt">¥ 600</div></div>
+      <div class="stage-card" onclick="filterStage(this,'s1')"><div class="name">S1 发现</div><div class="num">38</div><div class="amt">¥5,200万</div></div>
+      <div class="stage-card" onclick="filterStage(this,'s2')"><div class="name">S2 确认</div><div class="num">29</div><div class="amt">¥4,800万</div></div>
+      <div class="stage-card" onclick="filterStage(this,'s3')"><div class="name">S3 方案</div><div class="num">22</div><div class="amt">¥4,200万</div></div>
+      <div class="stage-card active" onclick="filterStage(this,'s4')"><div class="name">S4 投标</div><div class="num">18</div><div class="amt">¥2,978万</div></div>
+      <div class="stage-card" onclick="filterStage(this,'win')"><div class="name">中标未签单</div><div class="num">12</div><div class="amt">¥4,820万</div></div>
+      <div class="stage-card" onclick="filterStage(this,'signed')"><div class="name">已签单</div><div class="num">62</div><div class="amt">¥4,360万</div></div>
+      <div class="stage-card" onclick="filterStage(this,'lost')"><div class="name">丢标</div><div class="num">15</div><div class="amt">¥1,400万</div></div>
+      <div class="stage-card" onclick="filterStage(this,'drop')"><div class="name">弃标</div><div class="num">8</div><div class="amt">¥600万</div></div>
     </div>
 
+    <!-- 工具栏 -->
     <div class="toolbar">
-      <button class="btn primary">+ 新增商机</button>
-      <div class="group">区域 <select><option>全部</option></select></div>
-      <div class="group">阶段 <select><option>S4-投标 (18)</option></select></div>
+      <button class="btn primary" onclick="newOpp()">+ 新增商机</button>
+      <div class="group">区域 <select><option>全部</option><option>央企</option><option>山东</option><option>广东</option><option>华北</option></select></div>
       <div class="group">达成 <select><option>全部</option><option>承诺</option><option>争取</option><option>风险</option></select></div>
-      <div class="group">主推月 <select><option>全部</option><option>5</option><option>6</option></select></div>
-      <div class="group">本周 Review <select><option>全部</option><option>已 review</option><option>待 review</option></select></div>
-      <div class="group">战役 <select><option>全部</option><option>2026 央企战役</option><option>2026 区域薪酬战役</option><option>2026 区域银行战役</option><option>2026 AI Copilot 战役</option><option>2026 钢铁行业战役</option><option>未归战役</option></select></div>
-      <input class="search" placeholder="商机名/客户/编号 搜索...">
+      <div class="group">是否综合项目 <select><option>全部</option><option>是</option><option>否</option></select></div>
+      <input class="search" placeholder="商机名 / 客户 / 编号搜索...">
     </div>
 
     <div class="split">
-
-      <!-- 左：商机列表 -->
-      <div style="background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); box-shadow: var(--shadow-card); overflow: hidden;">
-        <div class="row selected">
+      <!-- ── 左：商机列表 ── -->
+      <div class="opp-list">
+        <div class="row selected" onclick="selectOpp(this,0)">
           <div class="r1">
-            <div class="name">山东出版集团一期 HCM</div>
-            <div class="amt">64 万</div>
+            <span class="oname">山东出版集团一期 HCM</span>
+            <span class="oamt">64 万</span>
           </div>
           <div class="r2">
-            <span>OPP-2026-0234 · S4-投标 · 山东 · 王正</span>
-            <span class="review-dots" title="bid/sign/pay/risk/首付款">
-              <span class="review-dot done"></span><span class="review-dot done"></span><span class="review-dot done"></span><span class="review-dot done"></span><span class="review-dot empty"></span>
-            </span>
+            <span>OPP-2026-0234 · <span class="achieve-dot promise"></span>承诺 · 山东区 · 王正</span>
+            <span class="stage-pill s4">S4-投标</span>
           </div>
           <div class="r3">
             <span class="camp-chip parent">2026 区域薪酬战役</span>
             <span class="camp-chip sub">山东薪酬子战役</span>
           </div>
         </div>
-        <div class="row">
+        <div class="row" onclick="selectOpp(this,1)">
           <div class="r1">
-            <div class="name">中信集团 HCM 综合运维</div>
-            <div class="amt">2,800 万</div>
+            <span class="oname">中信集团 HCM 综合运维</span>
+            <span class="oamt">2,800 万</span>
           </div>
           <div class="r2">
-            <span>OPP-2025-0123 · 中标未签单 · 央企</span>
-            <span class="review-dots">
-              <span class="review-dot done"></span><span class="review-dot done"></span><span class="review-dot done"></span><span class="review-dot done"></span><span class="review-dot done"></span>
-            </span>
+            <span>OPP-2025-0123 · <span class="achieve-dot promise"></span>承诺 · 战略大客户部 · 黄诗览</span>
+            <span class="stage-pill win">中标未签单</span>
           </div>
           <div class="r3">
             <span class="camp-chip parent">2026 央企战役</span>
-            <span class="camp-chip sub">央企薪酬</span>
-            <span class="camp-chip sub">央企集团内复制</span>
           </div>
         </div>
-        <div class="row">
+        <div class="row" onclick="selectOpp(this,2)">
           <div class="r1">
-            <div class="name">贵州磷化人力资源</div>
-            <div class="amt">418 万</div>
+            <span class="oname">贵州磷化人力资源系统</span>
+            <span class="oamt">418 万</span>
           </div>
           <div class="r2">
-            <span>OPP-2025-0098 · S4-投标 · 西部</span>
-            <span class="review-dots">
-              <span class="review-dot done"></span><span class="review-dot empty"></span><span class="review-dot empty"></span><span class="review-dot warn"></span><span class="review-dot empty"></span>
-            </span>
+            <span>OPP-2025-0098 · <span class="achieve-dot risk"></span>风险 · 行业拓展部</span>
+            <span class="stage-pill s4">S4-投标</span>
           </div>
           <div class="r3">
             <span class="camp-chip none">未归战役</span>
           </div>
         </div>
-        <div class="row">
+        <div class="row" onclick="selectOpp(this,3)">
           <div class="r1">
-            <div class="name">湖北宏泰 HCM</div>
-            <div class="amt">580 万</div>
+            <span class="oname">华夏银行薪酬模块升级</span>
+            <span class="oamt">540 万</span>
           </div>
           <div class="r2">
-            <span>OPP-2025-0210 · S4-投标 · 华东</span>
-            <span class="review-dots">
-              <span class="review-dot done"></span><span class="review-dot empty"></span><span class="review-dot empty"></span><span class="review-dot done"></span><span class="review-dot empty"></span>
-            </span>
-          </div>
-          <div class="r3">
-            <span class="camp-chip parent">2026 央企战役</span>
-            <span class="camp-chip sub">央企信创替换</span>
-          </div>
-        </div>
-        <div class="row">
-          <div class="r1">
-            <div class="name">华夏银行薪酬模块</div>
-            <div class="amt">540 万</div>
-          </div>
-          <div class="r2">
-            <span>OPP-2026-0067 · 已签单 · 华北</span>
-            <span class="review-dots">
-              <span class="review-dot done"></span><span class="review-dot done"></span><span class="review-dot done"></span><span class="review-dot done"></span><span class="review-dot done"></span>
-            </span>
+            <span>OPP-2026-0067 · <span class="achieve-dot promise"></span>承诺 · 北京区 · 季琳</span>
+            <span class="stage-pill signed">已签单</span>
           </div>
           <div class="r3">
             <span class="camp-chip parent">2026 央企战役</span>
             <span class="camp-chip sub">央企薪酬</span>
-            <span class="camp-chip sub">+ 区域银行</span>
           </div>
         </div>
-        <div style="text-align: center; padding: 10px; color: var(--ink-mute); font-family: var(--font-mono); font-size: 10px; background: var(--bg-card-quiet);">
+        <div class="row" onclick="selectOpp(this,4)">
+          <div class="r1">
+            <span class="oname">湖北宏泰 HCM</span>
+            <span class="oamt">580 万</span>
+          </div>
+          <div class="r2">
+            <span>OPP-2025-0210 · <span class="achieve-dot try"></span>争取 · 湖北区</span>
+            <span class="stage-pill s4">S4-投标</span>
+          </div>
+          <div class="r3">
+            <span class="camp-chip parent">2026 央企战役</span>
+          </div>
+        </div>
+        <div style="text-align:center;padding:12px;color:var(--ink-mute);font-family:var(--font-mono);font-size:10px;background:var(--bg-card-quiet);">
           ⌄ 还有 137 行 · 滚动加载
         </div>
       </div>
 
-      <!-- 右：商机详情（含 Review） -->
+      <!-- ── 右：商机详情表单（40 字段） ── -->
       <div class="detail-pane">
         <div class="detail-head">
-          <div class="opp-no">OPP-2026-0234 · 唯一商机编号</div>
-          <h3>山东出版集团一期 HCM</h3>
-          <div class="info">商机阶段 S4-投标 · 进行中 · 创建于 2026-04-15</div>
+          <div class="opp-no">OPP-2026-0234 · 唯一商机编号（系统生成）</div>
+          <h3 id="dp-opp-name">山东出版集团 <em>一期 HCM</em></h3>
+          <div class="head-row">
+            <span class="stage-pill s4" id="dp-stage-pill">S4-投标</span>
+            <span style="font-family:var(--font-mono);font-size:10px;color:var(--ink-mute)">进行中 · 创建 2026-04-15</span>
+          </div>
         </div>
 
-        <!-- 商机基础字段（精简版，37 字段中的关键 12 个） -->
+        <!-- ══ 板块1：基本信息 ══ -->
         <div class="section-block">
-          <div class="title"><span>① 商机基础信息</span><span class="badge-ts">来自 HCM API</span></div>
-          <div class="kv-grid">
-            <div class="kv"><div class="k">客户</div><div class="v">山东出版集团总部</div></div>
-            <div class="kv"><div class="k">HCM 区域 / MU</div><div class="v">山东 / 山东</div></div>
-            <div class="kv"><div class="k">售前 / 商务</div><div class="v">陈飞 / 王正</div></div>
-            <div class="kv"><div class="k">商机预算 / 预计签单</div><div class="v num">¥ 80 / ¥ 64 万</div></div>
-            <div class="kv"><div class="k">实际签单 <span style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); font-weight: 400;">(签单后反写)</span></div><div class="v num" style="color: var(--ink-mute);">— <span style="font-family: var(--font-mono); font-size: 9px;">未签</span></div></div>
-            <div class="kv"><div class="k">签单毛利 <span style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); font-weight: 400;">默认 = 签单 × 80% · 可覆盖</span></div><div class="v" style="display: flex; align-items: center; gap: 6px;"><input class="cell" value="51.2" style="width: 80px; text-align: right; font-family: var(--font-display); font-size: 16px; color: var(--ink-green); padding: 4px 8px; border: 1px solid var(--line-mid); border-radius: 4px; background: var(--bg-card);"> <span style="font-family: var(--font-cn); font-size: 11px;">万</span> <span style="font-family: var(--font-mono); font-size: 9px; color: var(--blue); cursor: pointer;" title="按 预计签单 × 默认毛利率 重新计算">↻ 重算</span></div></div>
-            <div class="kv"><div class="k">预计投标 / 签单 / 归档</div><div class="v">4/25 / 5/15 / 5/20</div></div>
+          <div class="section-title" onclick="toggleSection(this)">
+            <span class="s-label">① 基本信息</span>
+            <span style="display:flex;gap:8px;align-items:center">
+              <span class="s-badge">10 字段</span>
+              <span class="s-toggle">▼</span>
+            </span>
           </div>
-        </div>
-
-        <!-- 关联营销战役（v7 新增） -->
-        <div class="campaign-panel">
-          <div class="title-row">
-            <div class="title">关联 <em>营销战役</em></div>
-            <span class="badge-ts" style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute);">1 父 + N 子 · 来自 3.1.3</span>
-          </div>
-          <div class="parent-row">
-            <span class="label-k">父战役</span>
-            <select>
-              <option>2026 区域薪酬战役 ✓</option>
-              <option>2026 央企战役</option>
-              <option>2026 区域银行战役</option>
-              <option>2026 AI Copilot 战役</option>
-              <option>2026 钢铁行业战役</option>
-              <option>未归战役</option>
-            </select>
-            <span style="color: var(--ink-mute); font-family: var(--font-mono); font-size: 14px; cursor: pointer;">×</span>
-          </div>
-          <div class="sub-tags-row">
-            <span class="label-k">子战役（已选 1，可多选）</span>
-            <div class="sub-tag-list">
-              <span class="sub-tag-active">山东薪酬子战役 <span class="x">×</span></span>
-              <span class="sub-tag-add">+ 河南薪酬子战役</span>
-              <span class="sub-tag-add">+ 北京薪酬子战役</span>
-              <span class="sub-tag-add">+ 广东薪酬子战役</span>
-              <span class="sub-tag-add">+ 重庆薪酬子战役</span>
+          <div class="section-body">
+            <div class="fg-3">
+              <div class="field">
+                <label>财年 <em class="auto-badge">AUTO</em></label>
+                <input type="text" id="f-year" value="FY2026" readonly class="auto-val">
+              </div>
+              <div class="field">
+                <label>HCM 区域 <span class="req">*</span></label>
+                <select id="f-region">
+                  <option>央企</option><option selected>山东</option><option>广东</option>
+                  <option>北京</option><option>天津</option><option>上海</option>
+                  <option>江苏</option><option>湖北</option><option>重庆</option>
+                  <option>辽宁</option><option>江西</option><option>湖南</option>
+                  <option>吉林</option><option>黑龙江</option><option>河北</option>
+                  <option>海南</option><option>内蒙</option><option>甘肃</option><option>其他</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>MU <em class="auto-badge">客户关联</em></label>
+                <input type="text" id="f-mu" value="山东区" readonly class="auto-val">
+              </div>
+            </div>
+            <div class="fg-1" style="margin-top:10px">
+              <div class="field">
+                <label>商机名称 <span class="req">*</span></label>
+                <input type="text" id="f-opp-name" value="山东出版集团一期 HCM" oninput="syncOppName(this.value)">
+              </div>
+            </div>
+            <div class="fg-2" style="margin-top:10px">
+              <div class="field">
+                <label>客户名称 <span class="req">*</span></label>
+                <select id="f-customer" onchange="onCustomerChange(this.value)">
+                  <option>山东出版集团</option>
+                  <option>中国中信集团总部</option>
+                  <option>华夏银行股份</option>
+                  <option>湖北宏泰国有资本投资</option>
+                  <option>贵州磷化（集团）</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>商机编号 <em class="auto-badge">系统唯一</em></label>
+                <input type="text" value="OPP-2026-0234" readonly class="auto-val">
+              </div>
+            </div>
+            <div class="fg-3" style="margin-top:10px">
+              <div class="field">
+                <label>商机阶段 <span class="req">*</span></label>
+                <select id="f-stage" onchange="onStageChange(this.value)">
+                  <option>S1-发现</option>
+                  <option>S2-确认</option>
+                  <option>S3-方案</option>
+                  <option selected>S4-投标</option>
+                  <option>中标未签单</option>
+                  <option>已签单</option>
+                  <option>丢标</option>
+                  <option>弃标</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>商机状态 <span class="req">*</span></label>
+                <select id="f-status">
+                  <option selected>进行中</option>
+                  <option>已关闭</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>达成可能 <span class="req">*</span></label>
+                <select id="f-achieve">
+                  <option selected>承诺</option>
+                  <option>争取</option>
+                  <option>风险</option>
+                </select>
+              </div>
+            </div>
+            <div class="fg-2" style="margin-top:10px">
+              <div class="field">
+                <label>售前负责人</label>
+                <input type="text" value="陈飞">
+              </div>
+              <div class="field">
+                <label>商务负责人</label>
+                <input type="text" value="王正">
+              </div>
             </div>
           </div>
-          <div style="font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-top: 8px; padding-top: 6px; border-top: 1px dashed var(--line);">
-            ⓘ 切换父战役会清空所有子战役标记 · 子战役只能从父战役下选 · 改动写入 3.1.3 战役维度报表实时刷新
-          </div>
         </div>
 
-        <!-- 月度滚动预测（Review 核心） -->
-        <div class="section-block review">
-          <div class="title"><span>② 月度 <em>滚动预测</em></span><span class="badge-ts">本周 Review · 王正 5/3</span></div>
-          <div class="month-mini-grid">
-            <div class="month-mini"><div class="m">4</div><div class="s">—</div></div>
-            <div class="month-mini primary"><div class="m">⭐ 5</div><div class="s">承诺 64</div></div>
-            <div class="month-mini"><div class="m">6</div><div class="s">—</div></div>
-          </div>
-          <div style="margin-top: 8px; padding: 6px 8px; background: var(--bg-card-quiet); border-radius: 4px; font-family: var(--font-mono); font-size: 10px;">
-            <span style="color: var(--ink-green); font-weight: 600;">5 月预测 +44.8 万</span> (64 × 0.7) ·
-            <span style="color: var(--blue);">Q2 派生 +44.8</span>
-          </div>
-        </div>
-
-        <!-- 是否签单首付款 -->
-        <div class="toggle-card">
-          <div class="text" style="flex: 1;">
-            <div class="t1">是否已收签单首付款？</div>
-            <div class="t2">驱动 3.2.2 回款里程碑自动补录</div>
-          </div>
-          <div class="switch-mini"></div>
-        </div>
-
-        <!-- 4 个 Review 字段 -->
-        <div class="section-block review">
-          <div class="title"><span>③ <em>Review</em> · 投标 / 签单 / 付款 / 风险</span><span class="badge-ts">5/3 王正</span></div>
-          <div class="kv">
-            <div class="k">投标进展 (bid_status)</div>
-            <textarea class="cell" rows="2">4/28 投标已交 · 5/2 客户内部复盘 · 5/7 出结果</textarea>
-          </div>
-          <div class="kv" style="margin-top: 8px;">
-            <div class="k">签单进展 (signing_status)</div>
-            <textarea class="cell" rows="2">5/15 前签约 · 用印 5/12</textarea>
-          </div>
-          <div class="kv" style="margin-top: 8px;">
-            <div class="k">付款进展 (payment_status)</div>
-            <textarea class="cell" rows="2">30 天内首付款 19.2 万 · 6 月底完成</textarea>
-          </div>
-          <div class="kv" style="margin-top: 8px;">
-            <div class="k">风险与对策（4-6 字浓缩 + 详述）</div>
-            <input class="cell" value="金额劣势" style="margin-bottom: 4px;">
-            <textarea class="cell" rows="2">价格高 7 分 · 通过陈飞高级实施背书拉回议价</textarea>
-          </div>
-        </div>
-
-        <!-- 首付款相关 (Q6 字段所在) -->
+        <!-- ══ 板块2：竞争分析与经营过程 ══ -->
         <div class="section-block">
-          <div class="title"><span>④ 首付款</span><span class="badge-ts">影响 3.2.2 自动补录</span></div>
-          <div class="kv-grid">
-            <div class="kv"><div class="k">首付款类型</div><div class="v"><select class="cell"><option>签单首付款</option><option>非签单首付款</option></select></div></div>
-            <div class="kv"><div class="k">首付款比例</div><div class="v"><input class="cell" value="30" style="text-align: right;"> %</div></div>
-            <div class="kv"><div class="k">首付款金额</div><div class="v num">¥ 19.2 万</div></div>
-            <div class="kv"><div class="k">首付款时间</div><div class="v">2026-06-15</div></div>
+          <div class="section-title" onclick="toggleSection(this)">
+            <span class="s-label">② 竞争分析与经营过程</span>
+            <span style="display:flex;gap:8px;align-items:center">
+              <span class="s-badge">13 字段</span>
+              <span class="s-toggle">▼</span>
+            </span>
+          </div>
+          <div class="section-body">
+            <div class="fg-2">
+              <div class="field">
+                <label>主要竞争对手</label>
+                <input type="text" value="北森 / 用友">
+              </div>
+              <div class="field">
+                <label>原厂商（现有系统）</label>
+                <input type="text" placeholder="如：金蝶 / 无（新建）">
+              </div>
+            </div>
+            <div class="fg-1" style="margin-top:10px">
+              <div class="field">
+                <label>客户需求描述</label>
+                <textarea rows="2">薪酬核算 + 人力资源报表，约 3000 员工，需国产化替代</textarea>
+              </div>
+            </div>
+            <div class="fg-3" style="margin-top:10px">
+              <div class="field">
+                <label>商机预算金额（万元）</label>
+                <input type="number" id="f-budget" value="80" oninput="onBudgetChange()">
+                <div class="unit">万元（客户预算）</div>
+              </div>
+              <div class="field">
+                <label>预计签单金额（万元）<span class="req">*</span></label>
+                <input type="number" id="f-sign-amt" value="64" oninput="calcSignProfit()">
+                <div class="unit">万元</div>
+              </div>
+              <div class="field">
+                <label>预计签单毛利 <em class="auto-badge">× 80%</em></label>
+                <input type="number" id="f-sign-profit" value="51.2" class="auto-val">
+                <div class="calc-hint" onclick="calcSignProfit(true)">↻ 按签单额重新计算</div>
+              </div>
+            </div>
+            <div class="fg-3" style="margin-top:10px">
+              <div class="field">
+                <label>直接签约</label>
+                <select>
+                  <option selected>是</option><option>否</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>是否综合项目</label>
+                <select>
+                  <option selected>否</option><option>是</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>中标概率（%）</label>
+                <input type="number" value="70" min="0" max="100">
+                <div class="unit">%</div>
+              </div>
+            </div>
+            <div class="fg-3" style="margin-top:10px">
+              <div class="field">
+                <label>预计投标日期</label>
+                <input type="date" value="2026-04-25">
+              </div>
+              <div class="field">
+                <label>预计签单日期</label>
+                <input type="date" value="2026-05-15">
+              </div>
+              <div class="field">
+                <label>达成可能（2）</label>
+                <select>
+                  <option selected>承诺</option><option>争取</option><option>风险</option>
+                </select>
+              </div>
+            </div>
+            <!-- 过程跟进 -->
+            <div class="field" style="margin-top:10px">
+              <label>过程跟进（保留历史，追加记录）</label>
+              <div class="track-history">
+                <div class="track-item"><span class="ts">5/3 王正</span>客户法务确认合同主体已 OK，5/15 用印</div>
+                <div class="track-item"><span class="ts">5/2 陈飞</span>投标技术分 92/100，价格比北森高 7 分</div>
+                <div class="track-item"><span class="ts">4/28 王正</span>投标已交</div>
+                <div class="track-item"><span class="ts">4/15 王正</span>商机立项，客户预算 80 万</div>
+              </div>
+              <textarea id="f-track-input" rows="2" placeholder="新增跟进记录...（保存时自动附加时间戳和用户名）"></textarea>
+            </div>
+          </div>
+        </div>
+        <!-- ══ 板块3a：签单过程（条件：中标未签单）══ -->
+        <div class="section-block cond" id="block-3a" style="display:none">
+          <div class="section-title" onclick="toggleSection(this)">
+            <span class="s-label">③a 签单过程</span>
+            <span style="display:flex;gap:8px;align-items:center">
+              <span class="s-cond">阶段 = 中标未签单</span>
+              <span class="s-badge">12 字段</span>
+              <span class="s-toggle">▼</span>
+            </span>
+          </div>
+          <div class="section-body">
+            <div class="fg-2">
+              <div class="field">
+                <label>实际中标日期 <span class="req">*</span></label>
+                <input type="date" id="f-win-date" value="2026-05-10">
+              </div>
+              <div class="field">
+                <label>合同签约主体</label>
+                <input type="text" placeholder="如：山东出版集团有限公司">
+              </div>
+            </div>
+            <div class="fg-3" style="margin-top:10px">
+              <div class="field">
+                <label>签单达成可能 <span class="req">*</span></label>
+                <select id="f-sign-achieve" onchange="onSignAchieveChange(this.value)">
+                  <option selected>承诺</option>
+                  <option>争取</option>
+                  <option>已达成</option>
+                </select>
+              </div>
+              <div class="field span-2" id="f-sign-commit-wrap">
+                <label>签单承诺达成日期 <em class="cond-badge">承诺/争取时必填</em></label>
+                <input type="date" id="f-sign-commit-date" value="2026-05-20">
+              </div>
+            </div>
+            <div style="height:1px;background:var(--line);margin:14px 0"></div>
+            <div class="fg-3">
+              <div class="field">
+                <label>首付款类型 <span class="req">*</span></label>
+                <select id="f-pay-type">
+                  <option selected>签单首付款</option>
+                  <option>非签单首付款</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>首付款比例（%）</label>
+                <input type="number" id="f-pay-ratio" value="30" min="0" max="100" oninput="calcPayAmt()">
+              </div>
+              <div class="field">
+                <label>首付款金额（万元）</label>
+                <input type="number" id="f-pay-amt" value="19.2" oninput="calcPayIncome()">
+                <div class="unit">= 签单额 × 比例</div>
+              </div>
+            </div>
+            <div class="fg-2" style="margin-top:10px">
+              <div class="field">
+                <label>首付款收入（万元）<em class="auto-badge">÷ 1.13</em></label>
+                <input type="number" id="f-pay-income" value="17.0" readonly class="auto-val">
+                <div class="hint">= 首付款金额 ÷ 1.13（不含税）</div>
+              </div>
+              <div class="field">
+                <label>首付款毛利（万元）<em class="auto-badge">× 80%</em></label>
+                <input type="number" id="f-pay-profit" value="13.6" readonly class="auto-val">
+                <div class="hint">= 首付款收入 × 80%</div>
+              </div>
+            </div>
+            <div class="fg-3" style="margin-top:10px">
+              <div class="field">
+                <label>首付款时间</label>
+                <input type="date" id="f-pay-date" value="2026-06-15">
+              </div>
+              <div class="field">
+                <label>首付款达成可能 <span class="req">*</span></label>
+                <select id="f-pay-achieve" onchange="onPayAchieveChange(this.value)">
+                  <option selected>承诺</option>
+                  <option>争取</option>
+                  <option>已达成</option>
+                </select>
+              </div>
+              <div class="field" id="f-pay-commit-wrap">
+                <label>首付款承诺达成日期 <em class="cond-badge">承诺/争取时必填</em></label>
+                <input type="date" id="f-pay-commit-date" value="2026-06-15">
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- 过程跟进历史 -->
-        <div class="section-block">
-          <div class="title"><span>⑤ 过程跟进 · 历史保留</span><span class="badge-ts">不可删 · 时间排序</span></div>
-          <div style="font-family: var(--font-cn); font-size: 11px; color: var(--ink-soft); line-height: 1.7;">
-            <div>5/3 王正 · 客户法务确认合同主体已 OK，5/15 用印</div>
-            <div>5/2 陈飞 · 投标技术分 92/100 · 价格比北森高 7 分</div>
-            <div>4/28 王正 · 投标已交</div>
-            <div>4/15 王正 · 商机立项 · 客户预算 80 万</div>
+        <!-- ══ 板块3b：回款过程（条件：已签单）══ -->
+        <div class="section-block cond" id="block-3b" style="display:none">
+          <div class="section-title" onclick="toggleSection(this)">
+            <span class="s-label">③b 回款过程</span>
+            <span style="display:flex;gap:8px;align-items:center">
+              <span class="s-cond">阶段 = 已签单</span>
+              <span class="s-badge">2 字段</span>
+              <span class="s-toggle">▼</span>
+            </span>
           </div>
-          <div style="margin-top: 8px;">
-            <textarea class="cell" rows="2" placeholder="新增跟进记录...（保存后系统自动添加时间戳和用户名）" style="width: 100%; font-family: var(--font-cn); font-size: 12px;"></textarea>
+          <div class="section-body">
+            <div class="fg-2">
+              <div class="field">
+                <label>是否已提起付款流程 <span class="req">*</span></label>
+                <select>
+                  <option>否</option><option>是</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>是否已开票 <span class="req">*</span></label>
+                <select>
+                  <option>否</option><option>是</option>
+                </select>
+              </div>
+            </div>
+            <div class="hint" style="margin-top:8px">
+              ⓘ 付款流程提起后，系统自动在 3.2.2 回款里程碑创建对应记录
+            </div>
           </div>
         </div>
 
-        <!-- 操作 -->
-        <div style="display: flex; gap: 8px; padding-top: 12px; border-top: 1px solid var(--line);">
-          <button class="btn ghost">取消</button>
-          <button class="btn">保存草稿</button>
-          <button class="btn primary">保存 + 完成本周 Review</button>
+        <!-- 条件板块占位提示（当阶段不需要板块3时显示） -->
+        <div id="block-3-placeholder" class="cond-placeholder">
+          <span class="icon">💡</span>
+          <span class="text">商机阶段进入 <strong>「中标未签单」</strong> 后自动展开签单过程字段；进入 <strong>「已签单」</strong> 后展开回款过程字段</span>
         </div>
-      </div>
-    </div>
+
+        <!-- 系统字段 -->
+        <div class="sys-row">
+          <div class="sf">商机新建时间 <span>2026-04-15 09:32</span></div>
+          <div class="sf">更新时间 <span>2026-05-03 14:18</span></div>
+          <div class="sf">更新人 <span>王正</span></div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="detail-actions">
+          <button class="btn ghost" onclick="cancelOpp()">取消</button>
+          <div class="spacer"></div>
+          <button class="btn" onclick="saveDraft()">保存草稿</button>
+          <button class="btn primary" onclick="saveOpp()">保存</button>
+        </div>
+      </div><!-- /detail-pane -->
+    </div><!-- /split -->
 
     <div class="callout">
-      <div class="label">💡 v4 合并说明</div>
+      <div class="label">字段规格（v8 · 40 字段）</div>
       <div class="text">
-        本页是 v3 中 <code style="font-family: var(--font-mono); background: var(--bg-card-accent); padding: 1px 5px;">02 商机 Review</code> + <code style="font-family: var(--font-mono); background: var(--bg-card-accent); padding: 1px 5px;">14 商机管理</code> 的合并版。<br>
-        <b>商机基础字段（37 个）</b> · 在每个商机详情页里折叠展示<br>
-        <b>本周 Review 字段</b> · 投标/签单/付款/风险 4 个 textarea + 是否签单首付款 toggle + 月度滚动预测<br>
-        <b>派生到</b>：2.1 重点商机（≥500 万阈值）/ 2.2 投标明细 / 2.3 签单明细（预测部分）
+        <b>板块① 基本信息（10）</b>：财年（自动）· HCM区域 · 商机名称 · 客户名称 · 商机阶段（8选项）· 商机状态（2选项）· 售前 · 商务 · MU（关联客户自动带入）· 商机编号（系统唯一）<br>
+        <b>板块② 竞争分析与经营过程（13）</b>：主要竞争对手 · 原厂商 · 客户需求 · 商机预算 · 预计签单 · 预计签单毛利（×80%自动，可覆盖）· 直接签约 · 综合项目 · 预计投标日 · 预计签单日 · 中标概率 · 达成可能 · 过程跟进（历史保留）<br>
+        <b>板块③a 签单过程（12）</b>：<em>商机阶段=中标未签单时展开</em>。实际中标日 · 合同签约主体 · 签单达成可能 · 签单承诺达成日（承诺/争取时必填）· 首付款类型 · 首付款比例 · 首付款金额 · 首付款收入（÷1.13自动）· 首付款毛利（×80%自动）· 首付款时间 · 首付款达成可能 · 首付款承诺达成日<br>
+        <b>板块③b 回款过程（2）</b>：<em>商机阶段=已签单时展开</em>。是否提起付款流程 · 是否开票
       </div>
     </div>
   </main>
 </div>
 
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
 <script>
+/* ── 商机阶段变化 → 控制板块3 ── */
+function onStageChange(val) {
+  const block3a = document.getElementById('block-3a');
+  const block3b = document.getElementById('block-3b');
+  const placeholder = document.getElementById('block-3-placeholder');
+  const pill = document.getElementById('dp-stage-pill');
+
+  // 更新阶段徽章
+  const classMap = {
+    'S1-发现':'s1','S2-确认':'s2','S3-方案':'s3','S4-投标':'s4',
+    '中标未签单':'win','已签单':'signed','丢标':'lost','弃标':'drop'
+  };
+  pill.className = 'stage-pill ' + (classMap[val] || 's1');
+  pill.textContent = val;
+
+  if (val === '中标未签单') {
+    block3a.style.display = 'block';
+    block3b.style.display = 'none';
+    placeholder.style.display = 'none';
+  } else if (val === '已签单') {
+    block3a.style.display = 'block';
+    block3b.style.display = 'block';
+    placeholder.style.display = 'none';
+  } else {
+    block3a.style.display = 'none';
+    block3b.style.display = 'none';
+    placeholder.style.display = 'flex';
+  }
+}
+
+/* ── 签单达成可能 → 控制承诺达成日期必填 ── */
+function onSignAchieveChange(val) {
+  const wrap = document.getElementById('f-sign-commit-wrap');
+  const input = document.getElementById('f-sign-commit-date');
+  if (val === '已达成') {
+    wrap.style.opacity = '0.4';
+    input.required = false;
+    input.disabled = true;
+  } else {
+    wrap.style.opacity = '1';
+    input.required = true;
+    input.disabled = false;
+  }
+}
+
+/* ── 首付款达成可能 → 控制承诺达成日期必填 ── */
+function onPayAchieveChange(val) {
+  const wrap = document.getElementById('f-pay-commit-wrap');
+  const input = document.getElementById('f-pay-commit-date');
+  if (val === '已达成') {
+    wrap.style.opacity = '0.4';
+    input.required = false;
+    input.disabled = true;
+  } else {
+    wrap.style.opacity = '1';
+    input.required = true;
+    input.disabled = false;
+  }
+}
+
+/* ── 自动计算：签单毛利 ── */
+function calcSignProfit(forceRecalc) {
+  const amt = parseFloat(document.getElementById('f-sign-amt').value) || 0;
+  const profitField = document.getElementById('f-sign-profit');
+  if (forceRecalc || profitField.classList.contains('auto-val')) {
+    profitField.value = (amt * 0.8).toFixed(2);
+  }
+}
+
+/* ── 自动计算：首付款金额 ── */
+function calcPayAmt() {
+  const signAmt = parseFloat(document.getElementById('f-sign-amt').value) || 0;
+  const ratio = parseFloat(document.getElementById('f-pay-ratio').value) || 0;
+  document.getElementById('f-pay-amt').value = (signAmt * ratio / 100).toFixed(2);
+  calcPayIncome();
+}
+
+/* ── 自动计算：首付款收入 + 毛利 ── */
+function calcPayIncome() {
+  const amt = parseFloat(document.getElementById('f-pay-amt').value) || 0;
+  const income = amt / 1.13;
+  document.getElementById('f-pay-income').value = income.toFixed(2);
+  document.getElementById('f-pay-profit').value = (income * 0.8).toFixed(2);
+}
+
+/* ── 客户变化 → 自动更新 MU ── */
+const customerMuMap = {
+  '山东出版集团': '山东区',
+  '中国中信集团总部': '战略大客户部',
+  '华夏银行股份': '北京区',
+  '湖北宏泰国有资本投资': '湖北区',
+  '贵州磷化（集团）': '行业拓展部',
+};
+function onCustomerChange(val) {
+  const mu = customerMuMap[val] || '—';
+  document.getElementById('f-mu').value = mu;
+}
+
+/* ── 商机名称同步到面板标题 ── */
+function syncOppName(val) {
+  document.getElementById('dp-opp-name').textContent = val || '（未命名商机）';
+}
+
+/* ── 板块折叠/展开 ── */
+function toggleSection(titleEl) {
+  const body = titleEl.nextElementSibling;
+  const toggle = titleEl.querySelector('.s-toggle');
+  if (body.classList.contains('hidden')) {
+    body.classList.remove('hidden');
+    titleEl.classList.remove('collapsed');
+  } else {
+    body.classList.add('hidden');
+    titleEl.classList.add('collapsed');
+  }
+}
+
+/* ── 阶段卡片点击 ── */
+function filterStage(card, stage) {
+  document.querySelectorAll('.stage-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+}
+
+/* ── 列表点击 ── */
+const oppData = [
+  { name: '山东出版集团一期 HCM', stage: 'S4-投标' },
+  { name: '中信集团 HCM 综合运维', stage: '中标未签单' },
+  { name: '贵州磷化人力资源系统', stage: 'S4-投标' },
+  { name: '华夏银行薪酬模块升级', stage: '已签单' },
+  { name: '湖北宏泰 HCM', stage: 'S4-投标' },
+];
+function selectOpp(row, idx) {
+  document.querySelectorAll('.row').forEach(r => r.classList.remove('selected'));
+  row.classList.add('selected');
+  const d = oppData[idx];
+  document.getElementById('dp-opp-name').textContent = d.name;
+  document.getElementById('f-opp-name').value = d.name;
+  document.getElementById('f-stage').value = d.stage;
+  onStageChange(d.stage);
+  document.querySelector('.detail-pane').scrollTop = 0;
+}
+
+/* ── 操作按钮 ── */
+function newOpp() { showToast('→ 清空表单，新建商机'); }
+function saveDraft() { showToast('✓ 草稿已保存'); }
+function cancelOpp() { showToast('已取消编辑'); }
+function saveOpp() {
+  const name = document.getElementById('f-opp-name').value.trim();
+  if (!name) { alert('请填写商机名称'); return; }
+  const stage = document.getElementById('f-stage').value;
+  if (stage === '中标未签单' || stage === '已签单') {
+    const winDate = document.getElementById('f-win-date').value;
+    if (!winDate) { alert('请填写实际中标日期'); return; }
+  }
+  const trackInput = document.getElementById('f-track-input').value.trim();
+  if (trackInput) {
+    const now = new Date();
+    const ts = `${now.getMonth()+1}/${now.getDate()} 用户`;
+    const history = document.querySelector('.track-history');
+    const newItem = document.createElement('div');
+    newItem.className = 'track-item';
+    newItem.innerHTML = `<span class="ts">${ts}</span>${trackInput}`;
+    history.insertBefore(newItem, history.firstChild);
+    document.getElementById('f-track-input').value = '';
+  }
+  showToast('✓ 商机信息已保存');
+}
+
+/* ── Toast ── */
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+/* ── 初始化：根据初始阶段控制板块3 ── */
+onStageChange(document.getElementById('f-stage').value);
+
+/* ── embedded 模式 ── */
 if (new URLSearchParams(location.search).get('embedded') === '1') {
   const sb = document.querySelector('.sidebar'); if (sb) sb.style.display = 'none';
   const app = document.querySelector('.app'); if (app) app.style.gridTemplateColumns = '1fr';
