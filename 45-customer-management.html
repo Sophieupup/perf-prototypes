@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+SYNTHETIC_PASTE_TEST_12345<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -9,360 +9,442 @@
 <link rel="stylesheet" href="_shared.css">
 <style>
 .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
-.split { display: grid; grid-template-columns: 1.6fr 1fr; gap: 14px; }
-.detail-pane { background: var(--bg-paper); border: 1px solid var(--line); border-radius: var(--r-md); padding: 16px; height: fit-content; }
-
-/* 父子层级树 */
+.split { display: grid; grid-template-columns: 1.55fr 1fr; gap: 14px; align-items: start; }
 .tier-tag { display: inline-flex; align-items: center; padding: 1px 6px; font-family: var(--font-mono); font-size: 9px; border-radius: 2px; margin-right: 4px; font-weight: 500; }
 .tier-tag.group { background: var(--ink); color: #faf8f3; }
-.tier-tag.sub { background: var(--bg-card-quiet); color: var(--ink-mute); border: 1px solid var(--line-strong); }
-
-/* 客户级别 */
-.lv-pill { display: inline-block; padding: 1px 7px; font-family: var(--font-mono); font-size: 9px; font-weight: 600; border-radius: 10px; letter-spacing: 0.04em; }
-.lv-pill.A { background: #b91c1c; color: #faf8f3; }
-.lv-pill.B { background: var(--amber); color: #faf8f3; }
-.lv-pill.C { background: var(--steel); color: #faf8f3; }
-.lv-pill.D { background: var(--bg-card-quiet); color: var(--ink-mute); border: 1px solid var(--line-strong); }
-
-/* 战役 chip */
+.tier-tag.sub   { background: var(--bg-card-quiet); color: var(--ink-mute); border: 1px solid var(--line-strong); }
 .camp-chip { display: inline-flex; padding: 1px 6px; font-family: var(--font-mono); font-size: 9px; border-radius: 9px; margin: 1px; }
 .camp-chip.parent { background: var(--ink-green-soft); color: var(--ink-green); border: 1px solid var(--ink-green-mid); }
-.camp-chip.sub { background: var(--blue-soft); color: var(--blue); border: 1px solid var(--blue-mid); }
-
-/* 父客户行 */
+.camp-chip.sub    { background: var(--blue-soft); color: var(--blue); border: 1px solid var(--blue-mid); }
+.camp-chip.none   { background: var(--bg-card-quiet); color: var(--ink-mute); border: 1px dashed var(--line-strong); font-style: italic; }
 tr.parent-row td { background: var(--bg-card-accent); font-weight: 500; }
-tr.parent-row td:first-child { padding-left: 14px; }
 tr.child-row td:nth-child(2)::before { content: "└ "; color: var(--ink-faint); margin-left: 10px; font-family: var(--font-mono); }
-
-/* 详情面板 */
-.detail-pane h3 { font-family: var(--font-display); font-size: 24px; font-weight: 400; line-height: 1.05; }
-.detail-pane h3 em { font-style: italic; color: var(--ink-green); }
-.detail-pane .sub-meta { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); margin: 4px 0 12px; line-height: 1.6; }
-
-.section-card { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 12px 14px; margin-bottom: 10px; }
-.section-card .title { font-family: var(--font-cn); font-size: 12px; font-weight: 600; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px dashed var(--line); display: flex; justify-content: space-between; align-items: baseline; }
-.section-card .title em { font-style: italic; color: var(--ink-green); font-family: var(--font-display); font-size: 13px; }
-.section-card .title .right { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); font-weight: 400; }
-
-.kv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; font-family: var(--font-cn); font-size: 12px; }
-.kv-grid .k { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: 0.06em; text-transform: uppercase; display: block; margin-bottom: 2px; }
-.kv-grid .v { color: var(--ink); }
-
-.bar-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; font-family: var(--font-cn); font-size: 11px; border-bottom: 1px dotted var(--line); }
-.bar-row:last-child { border-bottom: none; }
-.bar-row .name { color: var(--ink); font-size: 12px; }
-.bar-row .name .stage { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); margin-left: 6px; padding: 1px 4px; background: var(--bg-card-quiet); border-radius: 2px; }
-.bar-row .amt { font-family: var(--font-display); font-size: 15px; font-style: italic; color: var(--ink); }
-.bar-row .amt.committed { color: var(--ink-green); }
-.bar-row .amt.muted { color: var(--ink-mute); }
-
-.compact-list { font-family: var(--font-cn); font-size: 11px; line-height: 1.7; }
-.compact-list .item { display: flex; justify-content: space-between; align-items: center; padding: 3px 0; border-bottom: 1px dotted var(--line); }
-.compact-list .item:last-child { border-bottom: none; }
-.compact-list .label { color: var(--ink-mute); font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.04em; text-transform: uppercase; }
-.compact-list .val { color: var(--ink); }
+tr.clickable:hover td { background: var(--ink-green-soft); cursor: pointer; }
+tr.active-row td { background: var(--ink-green-soft) !important; border-left: 3px solid var(--ink-green); }
+.detail-pane { background: var(--bg-paper); border: 1px solid var(--line); border-radius: var(--r-md); box-shadow: var(--shadow-card); overflow: hidden; }
+.detail-head { padding: 16px 16px 12px; border-bottom: 1px solid var(--line); }
+.detail-head h3 { font-family: var(--font-display); font-size: 22px; font-weight: 400; margin: 0 0 4px; line-height: 1.15; }
+.detail-head h3 em { font-style: italic; color: var(--ink-green); }
+.detail-head .meta { font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); line-height: 1.6; }
+.tab-bar { display: flex; border-bottom: 1px solid var(--line); background: var(--bg-card-quiet); }
+.tab-btn { flex: 1; padding: 9px 12px; font-family: var(--font-cn); font-size: 12px; font-weight: 500; border: none; background: transparent; color: var(--ink-mute); cursor: pointer; border-bottom: 2px solid transparent; transition: all .15s; }
+.tab-btn:hover { color: var(--ink); background: var(--bg-card); }
+.tab-btn.active { color: var(--ink-green); border-bottom-color: var(--ink-green); background: var(--bg-paper); }
+.tab-badge { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; font-family: var(--font-mono); font-size: 9px; background: var(--bg-card-accent); border-radius: 50%; margin-left: 4px; color: var(--ink-soft); }
+.tab-btn.active .tab-badge { background: var(--ink-green-soft); color: var(--ink-green); }
+.tab-pane { display: none; padding: 14px 16px 16px; }
+.tab-pane.active { display: block; }
+.field-group { margin-bottom: 12px; }
+.field-group label { display: block; font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 5px; }
+.field-group label .req { color: #b91c1c; margin-left: 2px; }
+.field-group input[type="text"], .field-group select, .field-group textarea { width: 100%; padding: 7px 10px; font-family: var(--font-cn); font-size: 13px; border: 1px solid var(--line-mid); border-radius: 5px; background: var(--bg-card); color: var(--ink); transition: border-color .15s, box-shadow .15s; box-sizing: border-box; }
+.field-group input:focus, .field-group select:focus, .field-group textarea:focus { outline: none; border-color: var(--ink-green); box-shadow: 0 0 0 2px var(--ink-green-soft); }
+.field-group .hint { font-family: var(--font-mono); font-size: 9px; color: var(--ink-faint); margin-top: 4px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.sys-info { background: var(--bg-card-quiet); border: 1px solid var(--line); border-radius: var(--r-md); padding: 10px 12px; margin: 14px 0; }
+.sys-info .row { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 10px; color: var(--ink-mute); padding: 3px 0; }
+.sys-info .row .val { color: var(--ink-soft); }
+.detail-actions { display: flex; gap: 8px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+.detail-actions .btn { flex: 1; }
+.opp-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.opp-summary .card { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 10px 12px; }
+.opp-summary .card .k { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); text-transform: uppercase; letter-spacing: .05em; }
+.opp-summary .card .v { font-family: var(--font-display); font-size: 20px; margin-top: 2px; }
+.opp-summary .card .v em { font-style: italic; color: var(--ink-green); }
+.opp-item { padding: 9px 0; border-bottom: 1px dotted var(--line); }
+.opp-item:last-child { border-bottom: none; }
+.opp-item .r1 { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 3px; }
+.opp-item .name { font-family: var(--font-cn); font-size: 12px; font-weight: 500; }
+.opp-item .amt { font-family: var(--font-display); font-size: 15px; font-style: italic; }
+.opp-item .amt.green { color: var(--ink-green); }
+.opp-item .r2 { font-family: var(--font-mono); font-size: 9px; color: var(--ink-mute); }
+.stage-tag { display: inline-block; padding: 1px 6px; font-family: var(--font-mono); font-size: 9px; border-radius: 3px; background: var(--bg-card-accent); color: var(--ink-soft); margin-left: 4px; }
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(10,10,8,.45); z-index: 1000; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal-card { background: var(--bg-paper); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 8px 32px rgba(0,0,0,.18); width: 480px; max-width: 95vw; max-height: 90vh; overflow-y: auto; }
+.modal-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 14px; border-bottom: 1px solid var(--line); }
+.modal-head h2 { font-family: var(--font-display); font-size: 22px; font-weight: 400; margin: 0; }
+.modal-head h2 em { font-style: italic; color: var(--ink-green); }
+.modal-close { width: 28px; height: 28px; border: none; background: var(--bg-card-quiet); border-radius: 50%; font-size: 16px; cursor: pointer; color: var(--ink-mute); display: flex; align-items: center; justify-content: center; line-height: 1; }
+.modal-close:hover { background: var(--line-mid); color: var(--ink); }
+.modal-body { padding: 18px 20px; }
+.modal-footer { padding: 14px 20px 18px; border-top: 1px solid var(--line); display: flex; gap: 10px; justify-content: flex-end; }
+.dup-warning { background: #fef9c3; border: 1px solid #fbbf24; border-radius: 6px; padding: 12px 14px; margin-bottom: 16px; display: none; }
+.dup-warning.visible { display: block; }
+.dup-warning .dup-title { font-family: var(--font-cn); font-size: 13px; font-weight: 600; color: #92400e; margin-bottom: 8px; }
+.dup-warning .dup-matches { margin: 8px 0; }
+.dup-warning .dup-match-item { padding: 5px 8px; background: #fff; border: 1px solid #fde68a; border-radius: 4px; font-family: var(--font-cn); font-size: 12px; color: #78350f; margin-bottom: 4px; cursor: pointer; }
+.dup-warning .dup-match-item:hover { background: #fef3c7; }
+.dup-warning .dup-match-item .match-meta { font-family: var(--font-mono); font-size: 9px; color: #b45309; margin-top: 2px; }
+.dup-warning .dup-actions { display: flex; gap: 8px; margin-top: 10px; }
+.dup-warning .dup-actions button { padding: 5px 12px; font-family: var(--font-cn); font-size: 11px; border-radius: 4px; cursor: pointer; border: 1px solid; }
+.dup-warning .dup-actions .btn-view { background: transparent; border-color: #b45309; color: #b45309; }
+.dup-warning .dup-actions .btn-confirm { background: #b45309; border-color: #b45309; color: #fff; }
+.toast { position: fixed; bottom: 24px; right: 24px; background: var(--ink-green); color: #fff; padding: 12px 20px; border-radius: 6px; font-family: var(--font-cn); font-size: 13px; z-index: 2000; opacity: 0; transform: translateY(10px); transition: all .2s; pointer-events: none; }
+.toast.show { opacity: 1; transform: translateY(0); }
 </style>
 </head>
 <body>
-
 <div class="app">
   <aside class="sidebar">
     <div class="brand">业绩 <em>运营</em></div>
-    <div class="brand-sub">PERFORMANCE OPS · v7+</div>
+    <div class="brand-sub">PERFORMANCE OPS · v8</div>
     <div class="nav-section">3 业务功能</div>
     <a class="nav-item active">3.1.1 客户管理</a>
-    <a class="nav-item">3.1.2 商机管理</a>
+    <a class="nav-item" href="46-opportunity-mgmt-merged.html">3.1.2 商机管理</a>
     <a class="nav-item">3.1.3 营销战役管理</a>
     <a class="nav-item">3.2.1 项目管理</a>
     <a class="nav-item">3.2.2 回款里程碑</a>
   </aside>
-
   <main class="main">
     <div class="crumb">业务功能 <span class="sep">/</span> 营销管理 <span class="sep">/</span> 客户管理</div>
     <h1 class="page-title">3.1.1 客户 <em>管理</em></h1>
-    <div class="page-meta">客户主数据 · 12 字段（含集团层级 + 客户级别 + 客户经理 + 战役分布）+ 商机/项目 双向视图 · v7+ 增强</div>
-
+    <div class="page-meta">客户主数据 · 4 核心字段（客户名称 / MU / 企业性质 / 行业类别）· 新增重名检测 · 双栏详情（基本信息 + 商机信息）</div>
     <div class="kpi-row">
       <div class="kpi-card"><div class="label">客户总数</div><div class="value">487</div><div class="delta">active 423 · archived 64</div></div>
       <div class="kpi-card good"><div class="label">本周新增</div><div class="value">3</div><div class="delta">山东工商银行 + 2 子公司</div></div>
       <div class="kpi-card good"><div class="label">活跃客户（含商机）</div><div class="value">142</div><div class="delta">29% 渗透率</div></div>
-      <div class="kpi-card"><div class="label">A 级大客户（≥1000 万）</div><div class="value">28</div><div class="delta">YTD 签单 ¥ 3,820 万 · 87% 集中度</div></div>
+      <div class="kpi-card"><div class="label">覆盖 MU 数</div><div class="value">22</div><div class="delta">总计 27 个 MU · 5 待开拓</div></div>
     </div>
-
     <div class="toolbar">
-      <button class="btn primary">+ 新增客户</button>
-      <div class="group">客户级别 <select><option>全部</option><option>A · 重点 (28)</option><option>B · 重要 (84)</option><option>C · 一般 (231)</option><option>D · 长尾 (144)</option></select></div>
-      <div class="group">企业性质 <select><option>全部</option><option>央企 (102)</option><option>地方国企 (164)</option><option>民企 (174)</option><option>外企 (32)</option><option>事业单位 (15)</option></select></div>
-      <div class="group">行业 <select><option>全部</option><option>金融</option><option>能源化工</option><option>钢铁</option><option>制造</option><option>政府</option><option>交通运输</option><option>传媒文化</option></select></div>
-      <div class="group">客户经理 <select><option>全部</option><option>我负责的 (32)</option><option>陈飞 / 王正 / 张丽...</option></select></div>
-      <div class="group">关联战役 <select><option>全部</option><option>2026 央企战役</option><option>2026 区域薪酬战役</option><option>2026 区域银行战役</option><option>2026 钢铁战役</option><option>未挂战役</option></select></div>
-      <input class="search" placeholder="客户名称 / 信用代码 模糊搜索...">
+      <button class="btn primary" onclick="openAddModal()">+ 新增客户</button>
+      <div class="group">MU <select><option>全部</option><option>央企大客户部</option><option>战略大客户部</option><option>山东区</option><option>广东区</option><option>北京区</option></select></div>
+      <div class="group">企业性质 <select><option>全部</option><option>一级央企</option><option>二三级央企</option><option>省属国企</option><option>市属国企</option><option>民营企业</option></select></div>
+      <div class="group">行业类别 <select><option>全部</option><option>金融</option><option>能源化工</option><option>钢铁冶金</option><option>交通运输</option><option>传媒文化</option></select></div>
+      <input class="search" placeholder="客户名称模糊搜索...">
     </div>
-
     <div class="split">
       <table class="data-table">
-        <thead>
-          <tr>
-            <th style="width: 28px;">#</th>
-            <th>客户名称（全称）</th>
-            <th style="width: 60px;">级别</th>
-            <th>企业性质</th>
-            <th>行业</th>
-            <th>MU</th>
-            <th>客户经理</th>
-            <th class="num">商机</th>
-            <th class="num">YTD 签单</th>
-            <th>战役</th>
-          </tr>
-        </thead>
+        <thead><tr>
+          <th style="width:28px">#</th><th>客户名称（全称）</th>
+          <th style="width:80px">MU</th><th>企业性质</th><th>行业类别</th>
+          <th class="num">商机数</th><th class="num">YTD 签单</th>
+        </tr></thead>
         <tbody>
-          <!-- 中信集团（父） -->
-          <tr class="parent-row">
-            <td class="mono">1</td>
-            <td><span class="tier-tag group">集团</span>中国中信集团总部</td>
-            <td><span class="lv-pill A">A</span></td>
-            <td>央企</td>
-            <td>金融</td>
-            <td>战略客户</td>
-            <td>黄诗览</td>
-            <td class="num">5</td>
-            <td class="num">¥ 2,800</td>
-            <td><span class="camp-chip parent">央企</span></td>
+          <tr class="parent-row clickable active-row" onclick="selectCustomer(this, 0)">
+            <td class="mono">1</td><td><span class="tier-tag group">集团</span>中国中信集团总部</td>
+            <td>战略大客户部</td><td>一级央企</td><td>金融</td><td class="num">5</td><td class="num">¥ 2,800 万</td>
           </tr>
-          <tr class="child-row">
-            <td class="mono">2</td>
-            <td><span class="tier-tag sub">子</span>中信华创信用科技</td>
-            <td><span class="lv-pill B">B</span></td>
-            <td>央企</td>
-            <td>金融</td>
-            <td>战略客户</td>
-            <td>张丽</td>
-            <td class="num">2</td>
-            <td class="num">¥ 1,920</td>
-            <td><span class="camp-chip parent">央企</span></td>
+          <tr class="child-row clickable" onclick="selectCustomer(this, 1)">
+            <td class="mono">2</td><td><span class="tier-tag sub">子</span>中信华创信用科技</td>
+            <td>战略大客户部</td><td>二三级央企</td><td>金融</td><td class="num">2</td><td class="num">¥ 1,920 万</td>
           </tr>
-          <tr class="child-row">
-            <td class="mono">3</td>
-            <td><span class="tier-tag sub">子</span>中信海洋直升机</td>
-            <td><span class="lv-pill C">C</span></td>
-            <td>央企</td>
-            <td>交通运输</td>
-            <td>战略客户</td>
-            <td>张丽</td>
-            <td class="num">1</td>
-            <td class="num">¥ 380</td>
-            <td><span class="camp-chip parent">央企</span></td>
+          <tr class="child-row clickable" onclick="selectCustomer(this, 2)">
+            <td class="mono">3</td><td><span class="tier-tag sub">子</span>中信海洋直升机</td>
+            <td>战略大客户部</td><td>二三级央企</td><td>交通运输</td><td class="num">1</td><td class="num">¥ 380 万</td>
           </tr>
-          <!-- 南方航空 -->
-          <tr>
-            <td class="mono">4</td>
-            <td>南方航空股份公司</td>
-            <td><span class="lv-pill A">A</span></td>
-            <td>央企</td>
-            <td>交通运输</td>
-            <td>广东</td>
-            <td>陈飞</td>
-            <td class="num">3</td>
-            <td class="num">¥ 680</td>
-            <td><span class="camp-chip parent">央企</span> <span class="camp-chip sub">广东</span></td>
+          <tr class="clickable" onclick="selectCustomer(this, 3)">
+            <td class="mono">4</td><td>南方航空股份公司</td>
+            <td>广东区</td><td>一级央企</td><td>交通运输</td><td class="num">3</td><td class="num">¥ 680 万</td>
           </tr>
-          <!-- 山东出版集团 -->
-          <tr class="parent-row">
-            <td class="mono">5</td>
-            <td><span class="tier-tag group">集团</span>山东出版集团</td>
-            <td><span class="lv-pill B">B</span></td>
-            <td>地方国企</td>
-            <td>传媒文化</td>
-            <td>山东</td>
-            <td>王正</td>
-            <td class="num">2</td>
-            <td class="num">¥ 0 (投标中)</td>
-            <td><span class="camp-chip parent">薪酬</span> <span class="camp-chip sub">山东薪酬</span></td>
+          <tr class="parent-row clickable" onclick="selectCustomer(this, 4)">
+            <td class="mono">5</td><td><span class="tier-tag group">集团</span>山东出版集团</td>
+            <td>山东区</td><td>省属国企</td><td>传媒文化</td><td class="num">2</td><td class="num">¥ 0 (投标中)</td>
           </tr>
-          <!-- 百果园 -->
-          <tr>
-            <td class="mono">6</td>
-            <td>百果园实业（深圳）</td>
-            <td><span class="lv-pill C">C</span></td>
-            <td>民企</td>
-            <td>零售</td>
-            <td>广东</td>
-            <td>陈飞</td>
-            <td class="num">2</td>
-            <td class="num">¥ 17</td>
-            <td><span class="camp-chip parent">未挂</span></td>
+          <tr class="clickable" onclick="selectCustomer(this, 5)">
+            <td class="mono">6</td><td>百果园实业（深圳）</td>
+            <td>广东区</td><td>民营企业</td><td>零售商贸</td><td class="num">2</td><td class="num">¥ 17 万</td>
           </tr>
-          <!-- 华夏银行 -->
-          <tr>
-            <td class="mono">7</td>
-            <td>华夏银行股份</td>
-            <td><span class="lv-pill A">A</span></td>
-            <td>央企</td>
-            <td>金融</td>
-            <td>北京</td>
-            <td>季琳</td>
-            <td class="num">3</td>
-            <td class="num">¥ 540</td>
-            <td><span class="camp-chip parent">央企</span> <span class="camp-chip sub">薪酬</span></td>
+          <tr class="clickable" onclick="selectCustomer(this, 6)">
+            <td class="mono">7</td><td>华夏银行股份</td>
+            <td>北京区</td><td>二三级央企</td><td>金融</td><td class="num">3</td><td class="num">¥ 540 万</td>
           </tr>
-          <!-- 湖北宏泰 -->
-          <tr>
-            <td class="mono">8</td>
-            <td>湖北宏泰国有资本投资</td>
-            <td><span class="lv-pill B">B</span></td>
-            <td>地方国企</td>
-            <td>金融</td>
-            <td>湖北</td>
-            <td>季琳</td>
-            <td class="num">1</td>
-            <td class="num">¥ 0 (投标中)</td>
-            <td><span class="camp-chip parent">央企</span> <span class="camp-chip sub">信创</span></td>
+          <tr class="clickable" onclick="selectCustomer(this, 7)">
+            <td class="mono">8</td><td>湖北宏泰国有资本投资</td>
+            <td>湖北区</td><td>省属国企</td><td>金融</td><td class="num">1</td><td class="num">¥ 0 (投标中)</td>
           </tr>
-          <!-- 贵州磷化 -->
-          <tr>
-            <td class="mono">9</td>
-            <td>贵州磷化（集团）</td>
-            <td><span class="lv-pill B">B</span></td>
-            <td>地方国企</td>
-            <td>能源化工</td>
-            <td>贵州</td>
-            <td>李远</td>
-            <td class="num">1</td>
-            <td class="num">¥ 0 (投标中)</td>
-            <td><span class="camp-chip parent">未挂</span></td>
+          <tr class="clickable" onclick="selectCustomer(this, 8)">
+            <td class="mono">9</td><td>贵州磷化（集团）</td>
+            <td>行业拓展部</td><td>省属国企</td><td>能源化工</td><td class="num">1</td><td class="num">¥ 0 (投标中)</td>
           </tr>
-          <!-- 山东工商银行 -->
-          <tr>
-            <td class="mono">10</td>
-            <td>山东工商银行（5/4 新增）</td>
-            <td><span class="lv-pill B">B</span></td>
-            <td>地方国企</td>
-            <td>金融</td>
-            <td>山东</td>
-            <td>王正</td>
-            <td class="num">1</td>
-            <td class="num">¥ 0 (待投)</td>
-            <td><span class="camp-chip parent">银行</span></td>
+          <tr class="clickable" onclick="selectCustomer(this, 9)">
+            <td class="mono">10</td><td>山东工商银行</td>
+            <td>山东区</td><td>市属国企</td><td>金融</td><td class="num">1</td><td class="num">¥ 0 (待投)</td>
           </tr>
           <tr style="background: var(--bg-card-quiet);">
-            <td colspan="10" style="text-align: center; padding: 14px; color: var(--ink-mute); font-family: var(--font-mono); font-size: 11px;">⌄ 还有 477 行 · 滚动加载</td>
+            <td colspan="7" style="text-align:center;padding:14px;color:var(--ink-mute);font-family:var(--font-mono);font-size:11px;">⌄ 还有 477 行 · 滚动加载</td>
           </tr>
         </tbody>
       </table>
-
-      <!-- 详情面板 · 中信集团总部 -->
       <div class="detail-pane">
-        <h3>中国中信集团总部 <em>· 集团母</em></h3>
-        <div class="sub-meta">CUS-0001 · 创建于 2024-08-15 · 最近更新 5/3 · 客户经理 黄诗览</div>
-
-        <!-- 基础信息 12 字段 -->
-        <div class="section-card">
-          <div class="title"><span>① 基础<em>信息</em>（12 字段）</span><span class="right">来自客户主数据</span></div>
-          <div class="kv-grid">
-            <div><span class="k">客户名称（全称）</span><span class="v">中国中信集团总部</span></div>
-            <div><span class="k">客户编号</span><span class="v">CUS-0001</span></div>
-            <div><span class="k">统一社会信用代码</span><span class="v" style="font-family: var(--font-mono);">9111****000123456X</span></div>
-            <div><span class="k">企业性质</span><span class="v">央企</span></div>
-            <div><span class="k">行业</span><span class="v">金融</span></div>
-            <div><span class="k">客户级别</span><span class="v"><span class="lv-pill A">A</span> 重点</span></div>
-            <div><span class="k">集团层级</span><span class="v"><span class="tier-tag group">集团</span> 含 26 个子公司</span></div>
-            <div><span class="k">MU</span><span class="v">战略客户推进部</span></div>
-            <div><span class="k">HCM 区域</span><span class="v">央企</span></div>
-            <div><span class="k">客户经理</span><span class="v">黄诗览</span></div>
-            <div><span class="k">协同人员</span><span class="v">陈飞 (售前)</span></div>
-            <div><span class="k">客户状态</span><span class="v" style="color: var(--ink-green);">active · 持续合作</span></div>
-          </div>
+        <div class="detail-head">
+          <h3 id="dp-name">中国中信集团总部 <em>· 集团母</em></h3>
+          <div class="meta" id="dp-meta">CUS-0001 · 创建于 2024-08-15 · 最近更新 5/3 · 客户经理 黄诗览</div>
         </div>
-
-        <!-- 关联战役（v7） -->
-        <div class="section-card">
-          <div class="title"><span>② 关联<em>战役</em></span><span class="right">来自 3.1.3</span></div>
-          <div class="compact-list">
-            <div class="item">
-              <span class="val"><span class="camp-chip parent">2026 央企战役</span></span>
-              <span class="label">5 商机 · ¥ 2,800 / 8,000 万 (35%)</span>
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="switchTab('basic', this)">基本信息</button>
+          <button class="tab-btn" onclick="switchTab('opp', this)">商机信息 <span class="tab-badge" id="opp-count">5</span></button>
+        </div>
+        <div class="tab-pane active" id="pane-basic">
+          <div class="field-group">
+            <label>客户名称（工商登记全称）<span class="req">*</span></label>
+            <input type="text" id="dp-field-name" value="中国中信集团总部">
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label>MU（归属事业部 / 区域）<span class="req">*</span></label>
+              <select id="dp-field-mu">
+                <option>央企大客户部</option><option selected>战略大客户部</option><option>高端客户部</option>
+                <option>行业拓展部</option><option>山东区</option><option>广东区</option><option>北京区</option>
+                <option>天津区</option><option>上海区</option><option>江苏区</option><option>湖北区</option>
+                <option>重庆区</option><option>辽宁区</option><option>江西区</option><option>湖南区</option>
+                <option>吉林区</option><option>黑龙江区</option><option>河北区</option><option>海南区</option>
+                <option>内蒙区</option><option>甘肃区</option><option>数字粮储</option><option>郑州华粮</option>
+                <option>企业金融</option><option>中小企业</option><option>浪潮易云</option><option>公司其他</option>
+              </select>
             </div>
-            <div class="item">
-              <span class="val">└ <span class="camp-chip sub">央企薪酬监管 2.0</span></span>
-              <span class="label">2 商机</span>
+            <div class="field-group">
+              <label>企业性质 <span class="req">*</span></label>
+              <select id="dp-field-nature">
+                <optgroup label="央企 / 国企">
+                  <option selected>一级央企</option><option>二三级央企</option><option>省属国企</option>
+                  <option>市属国企</option><option>区属国企</option>
+                </optgroup>
+                <optgroup label="政府机关">
+                  <option>中央行政机关</option><option>地方政府行政机构</option>
+                </optgroup>
+                <optgroup label="事业单位">
+                  <option>中央事业单位</option><option>地方事业单位</option>
+                </optgroup>
+                <optgroup label="其他类型">
+                  <option>集体所有制</option><option>中外合资</option><option>外商独资</option><option>民营企业</option>
+                </optgroup>
+              </select>
             </div>
-            <div class="item">
-              <span class="val">└ <span class="camp-chip sub">央企集团内复制</span></span>
-              <span class="label">3 商机（核心场景）</span>
-            </div>
+          </div>
+          <div class="field-group">
+            <label>行业类别 <span class="req">*</span></label>
+            <select id="dp-field-industry">
+              <option selected>金融</option><option>保险</option><option>能源化工</option><option>钢铁冶金</option>
+              <option>先进制造</option><option>高校科研</option><option>政府机关</option><option>交通运输</option>
+              <option>传媒文化</option><option>医疗卫生</option><option>农林粮食</option><option>建筑地产</option>
+              <option>零售商贸</option><option>信息技术</option><option>其他</option>
+            </select>
+          </div>
+          <div class="sys-info">
+            <div class="row"><span>客户编号</span><span class="val mono">CUS-0001</span></div>
+            <div class="row"><span>创建时间</span><span class="val">2024-08-15</span></div>
+            <div class="row"><span>最近更新</span><span class="val">2026-05-03 · 黄诗览</span></div>
+          </div>
+          <div class="detail-actions">
+            <button class="btn ghost" onclick="cancelEdit()">取消</button>
+            <button class="btn primary" onclick="saveCustomer()">保存</button>
           </div>
         </div>
-
-        <!-- 关联商机 5 项 -->
-        <div class="section-card">
-          <div class="title"><span>③ 关联<em>商机</em>（5 项）</span><span class="right">→ 跳商机管理</span></div>
-          <div class="bar-row">
-            <span class="name">HCM 综合运维续约 <span class="stage">中标未签单</span></span>
-            <span class="amt committed">¥ 2,800</span>
+        <div class="tab-pane" id="pane-opp">
+          <div class="opp-summary">
+            <div class="card"><div class="k">YTD 签单</div><div class="v"><em>¥ 2,800</em> 万</div></div>
+            <div class="card"><div class="k">在跟商机</div><div class="v"><em>5</em> 项</div></div>
           </div>
-          <div class="bar-row">
-            <span class="name">金融控股 HCM 升级 <span class="stage">S4</span></span>
-            <span class="amt committed">¥ 580</span>
+          <div class="opp-item">
+            <div class="r1"><span class="name">HCM 综合运维续约</span><span class="amt green">¥ 2,800 万</span></div>
+            <div class="r2">OPP-2025-0123 <span class="stage-tag">中标未签单</span> · 售前 黄诗览</div>
           </div>
-          <div class="bar-row">
-            <span class="name">子集团数据中台 <span class="stage">S3</span></span>
-            <span class="amt">¥ 320</span>
+          <div class="opp-item">
+            <div class="r1"><span class="name">金融控股 HCM 升级</span><span class="amt">¥ 580 万</span></div>
+            <div class="r2">OPP-2026-0041 <span class="stage-tag">S4-投标</span> · 售前 陈飞</div>
           </div>
-          <div class="bar-row">
-            <span class="name">智能客服项目 <span class="stage">S2</span></span>
-            <span class="amt muted">¥ 180</span>
+          <div class="opp-item">
+            <div class="r1"><span class="name">子集团数据中台</span><span class="amt" style="color:var(--ink-mute)">¥ 320 万</span></div>
+            <div class="r2">OPP-2026-0058 <span class="stage-tag">S3-方案</span></div>
           </div>
-          <div class="bar-row">
-            <span class="name">培训管理系统 <span class="stage">S1</span></span>
-            <span class="amt muted">¥ 120</span>
+          <div class="opp-item">
+            <div class="r1"><span class="name">智能客服项目</span><span class="amt" style="color:var(--ink-mute)">¥ 180 万</span></div>
+            <div class="r2">OPP-2026-0062 <span class="stage-tag">S2-确认</span></div>
           </div>
-        </div>
-
-        <!-- 关联项目 3 项（在交付） -->
-        <div class="section-card">
-          <div class="title"><span>④ 关联<em>项目</em>（在交付）</span><span class="right">→ 跳项目管理</span></div>
-          <div class="compact-list">
-            <div class="item"><span class="val">中信集团 HCM 综合运维</span><span class="label" style="color: var(--ink-green);">运行中</span></div>
-            <div class="item"><span class="val">中信和业 HCM 服务</span><span class="label" style="color: var(--blue);">初验</span></div>
-            <div class="item"><span class="val">中信海洋直升机 HCM</span><span class="label" style="color: var(--ink-mute);">已结</span></div>
+          <div class="opp-item">
+            <div class="r1"><span class="name">培训管理系统</span><span class="amt" style="color:var(--ink-mute)">¥ 120 万</span></div>
+            <div class="r2">OPP-2026-0071 <span class="stage-tag">S1-发现</span></div>
           </div>
-        </div>
-
-        <!-- 子公司列表（仅集团母客户显示） -->
-        <div class="section-card">
-          <div class="title"><span>⑤ 子<em>公司</em>（26 个子公司）</span><span class="right">仅集团客户显示</span></div>
-          <div class="compact-list">
-            <div class="item"><span class="val">中信华创信用科技</span><span class="label">2 商机 · ¥ 1,920</span></div>
-            <div class="item"><span class="val">中信海洋直升机</span><span class="label">1 商机 · ¥ 380</span></div>
-            <div class="item"><span class="val">中信金融控股</span><span class="label">1 商机 · ¥ 580</span></div>
-            <div class="item"><span class="val">中信和业服务</span><span class="label">交付中</span></div>
-            <div style="padding: 6px 0; text-align: center; color: var(--ink-mute); font-family: var(--font-mono); font-size: 10px;">⌄ 还有 22 家 · 含 18 家有商机</div>
+          <div style="margin-top: 14px;">
+            <button class="btn primary" style="width: 100%;" onclick="alert('→ 跳转至 3.1.2 商机管理，新建商机并关联此客户')">+ 新建商机</button>
           </div>
-        </div>
-
-        <!-- 操作 -->
-        <div style="display: flex; gap: 8px; margin-top: 14px;">
-          <button class="btn ghost">编辑客户</button>
-          <button class="btn">+ 新增子公司</button>
-          <button class="btn primary" style="flex: 1;">→ 查看商机详情</button>
         </div>
       </div>
     </div>
-
     <div class="callout">
-      <div class="label">v7+ 增强说明</div>
+      <div class="label">字段规格说明（v8）</div>
       <div class="text">
-        <b>① 12 字段 vs v4 的 4 字段</b>：补齐统一社会信用代码 / 客户编号 / 客户级别 / 集团层级 / 客户经理 / 协同人员 / 客户状态<br>
-        <b>② 集团层级</b>：央企集团（如中信、中铁建）通常一管几十家子公司，原"客户名 + MU"二维太扁平，**加父子关系**才能复制成单（5/6 你提的"集团内复制效应"对应这里）<br>
-        <b>③ 客户级别（A/B/C/D）</b>：替代之前推断的"大客户(≥1000 万)"单维度，配合销售资源分配 + 客户经理工作量调度<br>
-        <b>④ 关联战役</b>：链接 3.1.3 战役管理 · 一个客户的所有商机自动聚合到该客户的"战役分布"视图<br>
-        <b>⑤ 关联项目</b>：链接 3.2.1 项目管理 · 已签的客户自动反向关联，给客户经理一眼看历史交付状态<br>
-        <b>等你确认</b>：列表上的列已展示所有 v7+ 字段，需要 +/- 任何字段告诉我；详情面板的 5 个分区是否覆盖了你的工作流。
+        <b>4 核心字段</b>：客户名称（全称，必填）· MU（27个选项，必填）· 企业性质（分组选项，必填）· 行业类别（15类，必填）<br>
+        <b>双栏详情</b>：<em>基本信息</em> 栏可直接编辑 4 字段并保存；<em>商机信息</em> 栏展示该客户所有关联商机与 YTD 签单汇总<br>
+        <b>重名检测</b>：点"+ 新增客户"后，实时模糊匹配已有客户名，命中时弹出警告卡片<br>
+        <b>系统字段</b>：客户编号（CUS-XXXX）· 创建时间 · 最近更新人 — 只读
       </div>
     </div>
   </main>
 </div>
+<div class="modal-overlay" id="add-modal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2>新增 <em>客户</em></h2>
+      <button class="modal-close" onclick="closeAddModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="dup-warning" id="dup-warning">
+        <div class="dup-title">⚠ 发现相似客户，请确认是否重复录入</div>
+        <div class="dup-matches" id="dup-matches"></div>
+        <div class="dup-actions">
+          <button class="btn-view" onclick="closeAddModal()">查看已有客户</button>
+          <button class="btn-confirm" onclick="confirmNoDup()">确认不重复，继续新建</button>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>客户名称（工商登记全称）<span class="req">*</span></label>
+        <input type="text" id="new-name" placeholder="请填写工商登记全称，如：中国中信集团有限公司" oninput="checkDuplicate(this.value)">
+        <div class="hint">请填写完整法定名称，便于后续合同及发票核对</div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label>MU（归属事业部 / 区域）<span class="req">*</span></label>
+          <select id="new-mu">
+            <option value="">— 请选择 MU —</option>
+            <option>央企大客户部</option><option>战略大客户部</option><option>高端客户部</option>
+            <option>行业拓展部</option><option>山东区</option><option>广东区</option><option>北京区</option>
+            <option>天津区</option><option>上海区</option><option>江苏区</option><option>湖北区</option>
+            <option>重庆区</option><option>辽宁区</option><option>江西区</option><option>湖南区</option>
+            <option>吉林区</option><option>黑龙江区</option><option>河北区</option><option>海南区</option>
+            <option>内蒙区</option><option>甘肃区</option><option>数字粮储</option><option>郑州华粮</option>
+            <option>企业金融</option><option>中小企业</option><option>浪潮易云</option><option>公司其他</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>企业性质 <span class="req">*</span></label>
+          <select id="new-nature">
+            <option value="">— 请选择 —</option>
+            <optgroup label="央企 / 国企">
+              <option>一级央企</option><option>二三级央企</option><option>省属国企</option>
+              <option>市属国企</option><option>区属国企</option>
+            </optgroup>
+            <optgroup label="政府机关">
+              <option>中央行政机关</option><option>地方政府行政机构</option>
+            </optgroup>
+            <optgroup label="事业单位">
+              <option>中央事业单位</option><option>地方事业单位</option>
+            </optgroup>
+            <optgroup label="其他类型">
+              <option>集体所有制</option><option>中外合资</option><option>外商独资</option><option>民营企业</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>行业类别 <span class="req">*</span></label>
+        <select id="new-industry">
+          <option value="">— 请选择行业 —</option>
+          <option>金融</option><option>保险</option><option>能源化工</option><option>钢铁冶金</option>
+          <option>先进制造</option><option>高校科研</option><option>政府机关</option><option>交通运输</option>
+          <option>传媒文化</option><option>医疗卫生</option><option>农林粮食</option><option>建筑地产</option>
+          <option>零售商贸</option><option>信息技术</option><option>其他</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn ghost" onclick="closeAddModal()">取消</button>
+      <button class="btn primary" onclick="submitNewCustomer()">创建客户</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
 <script>
+const existingCustomers = [
+  { name: '中国中信集团总部',   mu: '战略大客户部', nature: '一级央企',  industry: '金融',   id: 'CUS-0001' },
+  { name: '中信华创信用科技',   mu: '战略大客户部', nature: '二三级央企', industry: '金融',   id: 'CUS-0002' },
+  { name: '中信海洋直升机',     mu: '战略大客户部', nature: '二三级央企', industry: '交通运输', id: 'CUS-0003' },
+  { name: '南方航空股份公司',   mu: '广东区',       nature: '一级央企',  industry: '交通运输', id: 'CUS-0004' },
+  { name: '山东出版集团',       mu: '山东区',       nature: '省属国企',  industry: '传媒文化', id: 'CUS-0005' },
+  { name: '百果园实业（深圳）', mu: '广东区',       nature: '民营企业',  industry: '零售商贸', id: 'CUS-0006' },
+  { name: '华夏银行股份',       mu: '北京区',       nature: '二三级央企', industry: '金融',   id: 'CUS-0007' },
+  { name: '湖北宏泰国有资本投资', mu: '湖北区',     nature: '省属国企',  industry: '金融',   id: 'CUS-0008' },
+  { name: '贵州磷化（集团）',   mu: '行业拓展部',   nature: '省属国企',  industry: '能源化工', id: 'CUS-0009' },
+  { name: '山东工商银行',       mu: '山东区',       nature: '市属国企',  industry: '金融',   id: 'CUS-0010' },
+];
+const detailData = [
+  { name: '中国中信集团总部', tag: '· 集团母', meta: 'CUS-0001 · 创建于 2024-08-15 · 最近更新 5/3 · 客户经理 黄诗览', mu: '战略大客户部', nature: 0, industry: 0, oppCount: 5 },
+  { name: '中信华创信用科技', tag: '',         meta: 'CUS-0002 · 子公司 · 更新 5/2 · 客户经理 张丽', mu: '战略大客户部', nature: 1, industry: 0, oppCount: 2 },
+  { name: '中信海洋直升机',   tag: '',         meta: 'CUS-0003 · 子公司 · 更新 4/28 · 客户经理 张丽', mu: '战略大客户部', nature: 1, industry: 7, oppCount: 1 },
+  { name: '南方航空股份公司', tag: '',         meta: 'CUS-0004 · 创建 2024-11-03 · 客户经理 陈飞', mu: '广东区', nature: 0, industry: 7, oppCount: 3 },
+  { name: '山东出版集团',     tag: '· 集团母', meta: 'CUS-0005 · 创建 2025-01-10 · 客户经理 王正', mu: '山东区', nature: 2, industry: 8, oppCount: 2 },
+  { name: '百果园实业（深圳）', tag: '',       meta: 'CUS-0006 · 创建 2025-06-22 · 客户经理 陈飞', mu: '广东区', nature: 13, industry: 12, oppCount: 2 },
+  { name: '华夏银行股份',     tag: '',         meta: 'CUS-0007 · 创建 2025-03-14 · 客户经理 季琳', mu: '北京区', nature: 1, industry: 0, oppCount: 3 },
+  { name: '湖北宏泰国有资本投资', tag: '',     meta: 'CUS-0008 · 创建 2025-09-01 · 客户经理 季琳', mu: '湖北区', nature: 2, industry: 0, oppCount: 1 },
+  { name: '贵州磷化（集团）', tag: '',         meta: 'CUS-0009 · 创建 2025-10-05 · 客户经理 李远', mu: '行业拓展部', nature: 2, industry: 2, oppCount: 1 },
+  { name: '山东工商银行',     tag: '',         meta: 'CUS-0010 · 新增 5/4 · 客户经理 王正', mu: '山东区', nature: 3, industry: 0, oppCount: 1 },
+];
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('pane-' + tab).classList.add('active');
+}
+function selectCustomer(row, idx) {
+  document.querySelectorAll('tr.clickable').forEach(r => r.classList.remove('active-row'));
+  row.classList.add('active-row');
+  const d = detailData[idx];
+  document.getElementById('dp-name').innerHTML = d.name + (d.tag ? ` <em>${d.tag}</em>` : '');
+  document.getElementById('dp-meta').textContent = d.meta;
+  document.getElementById('dp-field-name').value = d.name;
+  document.getElementById('opp-count').textContent = d.oppCount;
+  const muSel = document.getElementById('dp-field-mu');
+  Array.from(muSel.options).forEach(o => o.selected = (o.text === d.mu));
+  document.getElementById('dp-field-nature').selectedIndex = d.nature;
+  document.getElementById('dp-field-industry').selectedIndex = d.industry;
+  switchTab('basic', document.querySelector('.tab-btn'));
+}
+let dupConfirmed = false;
+function checkDuplicate(val) {
+  dupConfirmed = false;
+  const q = val.trim().toLowerCase();
+  if (q.length < 2) { hideDupWarning(); return; }
+  const matches = existingCustomers.filter(c => c.name.toLowerCase().includes(q));
+  if (matches.length === 0) { hideDupWarning(); return; }
+  const warn = document.getElementById('dup-warning');
+  const matchBox = document.getElementById('dup-matches');
+  matchBox.innerHTML = matches.slice(0, 3).map(c =>
+    `<div class="dup-match-item"><div>${c.name}</div><div class="match-meta">${c.id} · ${c.mu} · ${c.nature} · ${c.industry}</div></div>`
+  ).join('');
+  warn.classList.add('visible');
+}
+function hideDupWarning() { document.getElementById('dup-warning').classList.remove('visible'); }
+function confirmNoDup() { dupConfirmed = true; hideDupWarning(); showToast('已确认不重复，请继续填写其他字段'); }
+function openAddModal() {
+  document.getElementById('new-name').value = '';
+  document.getElementById('new-mu').selectedIndex = 0;
+  document.getElementById('new-nature').selectedIndex = 0;
+  document.getElementById('new-industry').selectedIndex = 0;
+  hideDupWarning(); dupConfirmed = false;
+  document.getElementById('add-modal').classList.add('open');
+  setTimeout(() => document.getElementById('new-name').focus(), 50);
+}
+function closeAddModal() { document.getElementById('add-modal').classList.remove('open'); }
+function submitNewCustomer() {
+  const name    = document.getElementById('new-name').value.trim();
+  const mu      = document.getElementById('new-mu').value;
+  const nature  = document.getElementById('new-nature').value;
+  const industry= document.getElementById('new-industry').value;
+  if (!name)    { alert('请填写客户名称'); return; }
+  if (!mu)      { alert('请选择 MU'); return; }
+  if (!nature)  { alert('请选择企业性质'); return; }
+  if (!industry){ alert('请选择行业类别'); return; }
+  const q = name.toLowerCase();
+  const matches = existingCustomers.filter(c => c.name.toLowerCase().includes(q));
+  if (matches.length > 0 && !dupConfirmed) { checkDuplicate(name); return; }
+  closeAddModal();
+  showToast(`✓ 客户「${name}」已创建`);
+}
+function saveCustomer() {
+  const name = document.getElementById('dp-field-name').value.trim();
+  if (!name) { alert('客户名称不能为空'); return; }
+  showToast('✓ 客户信息已保存');
+}
+function cancelEdit() { showToast('已取消编辑'); }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+document.getElementById('add-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeAddModal();
+});
 if (new URLSearchParams(location.search).get('embedded') === '1') {
   const sb = document.querySelector('.sidebar'); if (sb) sb.style.display = 'none';
   const app = document.querySelector('.app'); if (app) app.style.gridTemplateColumns = '1fr';
